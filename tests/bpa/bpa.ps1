@@ -22,9 +22,9 @@ $tools = @(
         "rulesUrl" = "https://raw.githubusercontent.com/microsoft/Analysis-Services/master/BestPracticeRules/BPARules.json"
     },
     @{
-        "tool" = "PBIInspector";
-        "downloadUrl" = "https://github.com/NatVanG/PBI-InspectorV2/releases/latest/download/win-x64-CLI.zip";
-        "rulesUrl" = "https://raw.githubusercontent.com/NatVanG/PBI-InspectorV2/refs/heads/main/Rules/Base-rules.json"
+        "tool" = "FabInspector";
+        "downloadUrl" = "https://github.com/NatVanG/fab-inspector/releases/latest/download/win-x64-FabInspCLI.zip";
+        "rulesUrl" = "https://raw.githubusercontent.com/NatVanG/fab-inspector/refs/heads/main/Rules/Base-rules.json"
     }
 )
 
@@ -62,8 +62,8 @@ foreach ($tool in $tools) {
 
 $tabularEditorEXE = "$toolsPath\TabularEditor\TabularEditor.exe"
 $tabularEditorRulesPath = "$currentFolder\bpa-rules-semanticmodel.json"
-$pbiInspectorEXE = "$toolsPath\PBIInspector\win-x64\CLI\PBIRInspectorCLI.exe"
-$pbiInspectorRulesPath = "$currentFolder\bpa-rules-report.json"
+$fabInspectorEXE = "$toolsPath\fabInspector\win-x64\FabInspCLI\fab-inspector.exe"
+$fabInspectorRulesPath = "$currentFolder\bpa-rules-report.json"
 
 if (!(Test-Path $tabularEditorRulesPath)) {
 
@@ -71,9 +71,9 @@ if (!(Test-Path $tabularEditorRulesPath)) {
     $tabularEditorRulesPath = "$toolsPath\TabularEditor\defaultRules.json"
 }
 
-if (!(Test-Path $pbiInspectorRulesPath)) {
+if (!(Test-Path $fabInspectorRulesPath)) {
     Write-Host "Using default rules for PBI Inspector"
-    $pbiInspectorRulesPath = "$toolsPath\PBIInspector\defaultRules.json"
+    $fabInspectorRulesPath = "$toolsPath\fabInspector\defaultRules.json"
 }
 
 foreach ($srcPath in $src) {
@@ -118,9 +118,9 @@ foreach ($srcPath in $src) {
                 continue
             }
 
-            Write-Host "Running PBI Inspector BPA rules for: '$itemPath'"
+            Write-Host "Running FAB Inspector BPA rules for: '$itemPath'"
 
-            $process = Start-Process -FilePath $pbiInspectorEXE -ArgumentList "-pbipreport ""$itemPath"" -rules ""$pbiInspectorRulesPath"" -formats ""GitHub""" -NoNewWindow -Wait -PassThru    
+            $process = Start-Process -FilePath $fabInspectorEXE -ArgumentList "-fabricitem ""$itemPath"" -rules ""$fabInspectorRulesPath"" -formats ""GitHub""" -NoNewWindow -Wait -PassThru    
 
             if ($process.ExitCode -ne 0) {
                 throw "Error running BPA rules for: '$itemPath'"

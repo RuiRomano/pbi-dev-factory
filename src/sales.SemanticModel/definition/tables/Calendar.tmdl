@@ -1,5 +1,6 @@
 table Calendar
 	lineageTag: bfa0074c-0a44-4a9c-8bba-c87af778b3d7
+	dataCategory: Time
 
 	column Day
 		dataType: int64
@@ -12,11 +13,12 @@ table Calendar
 
 	column Month
 		dataType: int64
-		isHidden
 		formatString: 0
 		lineageTag: 229b9d13-a91e-42b0-9d59-bf1aa3568da7
 		summarizeBy: none
 		sourceColumn: Month
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
@@ -39,23 +41,29 @@ table Calendar
 
 	column Date
 		dataType: dateTime
-		isHidden
-		formatString: Long Date
+		isKey
+		formatString: yyyy-mm-dd
 		lineageTag: c7ef3a60-e14b-4548-aaaa-fbeb247346f4
+		isDefaultLabel
 		summarizeBy: none
 		sourceColumn: Date
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
 		annotation UnderlyingDateTimeDataType = Date
 
+		annotation PBI_FormatHint = {"isCustom":true}
+
 	column 'Month Name'
 		dataType: string
-		isHidden
 		lineageTag: 062506a9-c575-44d5-8498-18f83383b9bb
 		summarizeBy: none
 		sourceColumn: Month Name
 		sortByColumn: Month
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
@@ -99,21 +107,23 @@ table Calendar
 
 	column 'Is Weekend'
 		dataType: boolean
-		isHidden
 		formatString: """TRUE"";""TRUE"";""FALSE"""
 		lineageTag: ba6865ae-6e84-400d-8dda-5f8e8e62867f
 		summarizeBy: none
 		sourceColumn: Is Weekend
 
+		changedProperty = IsHidden
+
 		annotation SummarizationSetBy = Automatic
 
 	column 'Fiscal Year'
 		dataType: int64
-		isHidden
 		formatString: 0
 		lineageTag: 5689ae25-2b3b-4051-8540-36656934f3a5
 		summarizeBy: none
 		sourceColumn: Fiscal Year
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 

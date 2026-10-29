@@ -9,3 +9,5 @@ __pycache__/
 .venv/
 fabric_cicd.error.log
 fabric_cicd.debug.log
+
+tests/bpa/_tools/**

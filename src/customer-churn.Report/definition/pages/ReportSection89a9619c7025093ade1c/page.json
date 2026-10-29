@@ -25,15 +25,7 @@
         "objects": {
           "general": [
             {
-              "properties": {
-                "requireSingleSelect": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "true"
-                    }
-                  }
-                }
-              }
+              "properties": {}
             }
           ]
         }
@@ -88,27 +80,6 @@
       }
     ],
     "filterSortOrder": "Custom"
-  },
-  "pageBinding": {
-    "name": "Pod6",
-    "type": "Drillthrough",
-    "parameters": [
-      {
-        "name": "Param_Filterf99428c5489cc4e6747a",
-        "boundFilter": "Filterf99428c5489cc4e6747a",
-        "qnaSingleSelectRequired": true,
-        "fieldExpr": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Calendar"
-              }
-            },
-            "Property": "Year"
-          }
-        }
-      }
-    ]
   },
   "objects": {
     "outspacePane": [

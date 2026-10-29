@@ -142,16 +142,6 @@
     "CompatibilityLevel": 1200
   },
   {
-    "ID": "MINIMIZE_POWER_QUERY_TRANSFORMATIONS",
-    "Name": "[Performance] Minimize Power Query transformations",
-    "Category": "Performance",
-    "Description": "Minimize Power Query transformations in order to improve model processing performance. It is a best practice to offload these transformations to the data warehouse if possible. Also, please check whether query folding is occurring within your model. Please reference the article below for more information on query folding.\r\nReference: https://docs.microsoft.com/power-query/power-query-folding",
-    "Severity": 2,
-    "Scope": "Partition",
-    "Expression": "\nSourceType.ToString() = \"M\"\r\nand\r\n(\r\nQuery.Contains(\"Table.Combine(\")\r\nor\r\n\nQuery.Contains(\"Table.Join(\")\r\nor\r\n\nQuery.Contains(\"Table.NestedJoin(\")\r\nor\r\nQuery.Contains(\"Table.AddColumn(\")\r\nor\r\nQuery.Contains(\"Table.Group(\")\r\nor\r\nQuery.Contains(\"Table.Sort(\")\r\nor\r\nQuery.Contains(\"Table.Pivot(\")\r\nor\r\nQuery.Contains(\"Table.Unpivot(\")\r\nor\r\nQuery.Contains(\"Table.UnpivotOtherColumns(\")\r\nor\r\nQuery.Contains(\"Table.Distinct(\")\r\nor\r\nQuery.Contains(\"[Query=\"\"SELECT\")\r\nor\r\nQuery.Contains(\"Value.NativeQuery\")\r\nor\r\nQuery.Contains(\"OleDb.Query\")\r\nor\r\nQuery.Contains(\"Odbc.Query\")\r\n)",
-    "CompatibilityLevel": 1200
-  },
-  {
     "ID": "AVOID_USING_MANY-TO-MANY_RELATIONSHIPS_ON_TABLES_USED_FOR_DYNAMIC_ROW_LEVEL_SECURITY",
     "Name": "[Performance] Avoid using many-to-many relationships on tables used for dynamic row level security",
     "Category": "Performance",
@@ -178,16 +168,6 @@
     "Severity": 2,
     "Scope": "Relationship",
     "Expression": "FromCardinality == \"Many\"\n\r\nand\r\n\nToCardinality == \"Many\"\r\n\nand\r\n\nCrossFilteringBehavior == \"BothDirections\"",
-    "CompatibilityLevel": 1200
-  },
-  {
-    "ID": "REMOVE_REDUNDANT_COLUMNS_IN_RELATED_TABLES",
-    "Name": "[Performance] Remove redundant columns in related tables",
-    "Category": "Performance",
-    "Description": "Removing unnecessary columns reduces model size and speeds up data loading.",
-    "Severity": 2,
-    "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "UsedInRelationships.Any() == false \r\nand\r\nModel.AllColumns.Any(Name == current.Name and Table.Name != current.Table.Name and Table.UsedInRelationships.Any(FromTable.Name == current.Table.Name))",
     "CompatibilityLevel": 1200
   },
   {
@@ -508,17 +488,6 @@
     "CompatibilityLevel": 1200
   },
   {
-    "ID": "PARTITION_NAME_SHOULD_MATCH_TABLE_NAME_FOR_SINGLE_PARTITION_TABLES",
-    "Name": "[Naming Conventions] Partition name should match table name for single partition tables",
-    "Category": "Naming Conventions",
-    "Description": "Tables with just one partition should match their table and partition names.Tables with more than one partition should have each partition name starting with the table name.",
-    "Severity": 1,
-    "Scope": "Table",
-    "Expression": "(Partitions.Count = 1 and Partitions[0].Name <> Name)",
-    "FixExpression": "Partitions[0].Name = it.Name",
-    "CompatibilityLevel": 1200
-  },
-  {
     "ID": "SPECIAL_CHARS_IN_OBJECT_NAMES",
     "Name": "[Naming Conventions] Object names must not contain special characters",
     "Category": "Naming Conventions",
@@ -560,24 +529,13 @@
   },
   {
     "ID": "DATECOLUMN_FORMATSTRING",
-    "Name": "[Formatting] Provide format string for \"Date\" columns",
+    "Name": "[Formatting] Provide format string 'yyyy-mm-dd' for \"Date\" columns",
     "Category": "Formatting",
-    "Description": "Columns of type \"DateTime\" that have \"Month\" in their names should be formatted as \"mm/dd/yyyy\".",
+    "Description": "Columns of type \"DateTime\" that have \"Month\" in their names should be formatted as \"yyyy-mm-dd\".",
     "Severity": 1,
     "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "Name.IndexOf(\"Date\", \"OrdinalIgnoreCase\") >= 0 \r\nand \r\nDataType = \"DateTime\" \r\nand \r\nFormatString <> \"mm/dd/yyyy\"",
-    "FixExpression": "FormatString = \"mm/dd/yyyy\"",
-    "CompatibilityLevel": 1200
-  },
-  {
-    "ID": "MONTHCOLUMN_FORMATSTRING",
-    "Name": "[Formatting] Provide format string for \"Month\" columns",
-    "Category": "Formatting",
-    "Description": "Columns of type \"DateTime\" that have \"Month\" in their names should be formatted as \"MMMM yyyy\".",
-    "Severity": 1,
-    "Scope": "DataColumn, CalculatedColumn, CalculatedTableColumn",
-    "Expression": "Name.IndexOf(\"Month\", \"OrdinalIgnoreCase\") >= 0 and DataType = \"DateTime\" and FormatString <> \"MMMM yyyy\"",
-    "FixExpression": "FormatString = \"MMMM yyyy\"",
+    "Expression": "Name.IndexOf(\"Date\", \"OrdinalIgnoreCase\") >= 0 \r\nand \r\nDataType = \"DateTime\" \r\nand \r\nFormatString <> \"yyyy-mm-dd\"",
+    "FixExpression": "FormatString = \"yyyy-mm-dd\"",
     "CompatibilityLevel": 1200
   },
   {
@@ -606,7 +564,7 @@
     "Category": "Formatting",
     "Severity": 2,
     "Scope": "Measure",
-    "Expression": "not FormatString.Contains(\"$\") and not FormatString.Contains(\"%\") and not (FormatString = \"#,0\" or FormatString = \"#,0.0\")",
+    "Expression": "not FormatString.Contains(\"$\") and not FormatString.Contains(\"%\") and not (FormatString = \"#,##0\" or FormatString = \"#,0.0\")",
     "FixExpression": "FormatString = \"#,0\"",
     "CompatibilityLevel": 1200
   },

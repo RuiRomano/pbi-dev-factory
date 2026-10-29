@@ -14,8 +14,3 @@ relationship 079ad58b-2f43-efa0-7fb6-5775474da9b9
 	fromColumn: Sales.'Order Date'
 	toColumn: Calendar.Date
 
-relationship 92b8a424-f739-c57d-a8de-be6b9ea34685
-	isActive: false
-	fromColumn: Sales.'Delivery Date'
-	toColumn: Calendar.Date
-

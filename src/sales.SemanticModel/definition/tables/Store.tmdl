@@ -62,7 +62,7 @@ table Store
 
 	column 'Open Date'
 		dataType: dateTime
-		formatString: Long Date
+		formatString: yyyy-mm-dd
 		lineageTag: 66cf5168-4add-4a05-b2c8-0380a85b0539
 		summarizeBy: none
 		sourceColumn: Open Date
@@ -73,7 +73,7 @@ table Store
 
 	column 'Close Date'
 		dataType: dateTime
-		formatString: Long Date
+		formatString: yyyy-mm-dd
 		lineageTag: e627ea17-3b62-46f2-a2f4-549dc98beb06
 		summarizeBy: count
 		sourceColumn: Close Date
