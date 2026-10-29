@@ -16,7 +16,7 @@ on:
 env:
   WORKSPACE_NAME: "RR - PBI Factory {prd}"
   ENVIRONMENT: "PRD"
-  AUTH: "SPN"
+  AUTH: "CLI"
   
 jobs:
   deploy:    
