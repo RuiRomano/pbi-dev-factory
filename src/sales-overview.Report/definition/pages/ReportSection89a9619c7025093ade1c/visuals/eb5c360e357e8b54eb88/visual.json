@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "eb5c360e357e8b54eb88",
   "position": {
-    "x": 31.548678625222511,
-    "y": 12.619471450089005,
+    "x": 0,
+    "y": 0,
     "z": 5000,
-    "height": 62.045734629604269,
-    "width": 942.25386827331238,
+    "height": 62.368599142792689,
+    "width": 902.2657342657343,
     "tabOrder": 4000
   },
   "visual": {
@@ -22,7 +22,7 @@
                     "value": "Northwind Retail Group - ",
                     "textStyle": {
                       "fontFamily": "Segoe (Bold)",
-                      "fontSize": "24pt",
+                      "fontSize": "18pt",
                       "color": "#000000"
                     }
                   },
@@ -31,7 +31,7 @@
                     "textStyle": {
                       "fontWeight": "bold",
                       "fontFamily": "Segoe (Bold)",
-                      "fontSize": "24pt",
+                      "fontSize": "18pt",
                       "color": "#000000"
                     }
                   }

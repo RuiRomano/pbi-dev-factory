@@ -414,6 +414,16 @@
     "CompatibilityLevel": 1200
   },
   {
+    "ID": "PROVIDE_DESCRIPTIONS_FOR_TABLES_MEASURES_AND_COLUMNS",
+    "Name": "[Maintenance] Provide descriptions for tables, measures and columns",
+    "Category": "Maintenance",
+    "Description": "All tables, measures and columns, including hidden objects, must have a non-empty description. Descriptions containing only whitespace are considered missing.",
+    "Severity": 2,
+    "Scope": "Table, CalculatedTable, CalculationGroup, Measure, DataColumn, CalculatedColumn, CalculatedTableColumn",
+    "Expression": "not IsHidden and string.IsNullOrWhiteSpace(Description)",
+    "CompatibilityLevel": 1200
+  },
+  {
     "ID": "UNNECESSARY_COLUMNS",
     "Name": "[Maintenance] Remove unnecessary columns",
     "Category": "Maintenance",
