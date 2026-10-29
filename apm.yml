@@ -1,0 +1,14 @@
+name: pbi-dev-skills
+version: 1.0.0
+description: APM project for pbi-dev-skills
+author: ruiromano
+
+targets:
+  - copilot
+
+dependencies:
+  apm: 
+    - microsoft/skills-for-fabric/plugins/powerbi-authoring
+
+includes: auto
+scripts: {}

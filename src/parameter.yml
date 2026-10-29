@@ -1,0 +1,11 @@
+
+# Semantic model parameters (find & replace over TMDL M parameter expression)
+
+find_replace:
+    - find_value: expression\s+Environment\s*=\s*"(.*?)"
+      replace_value:
+          DEV: "DEV"
+          PRD: "PRD"
+      is_regex: "true"
+      item_type: "SemanticModel"
+      file_path: "**/expressions.tmdl"
