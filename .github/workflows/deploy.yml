@@ -21,7 +21,7 @@ env:
 jobs:
   deploy:    
     runs-on: ubuntu-latest
-    environment: ${{ env.ENVIRONMENT }}
+    environment: "PRD"
     
     steps:
       - name: Check out the code
@@ -39,7 +39,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}"}'
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
           allow-no-subscriptions: true
 
       - name: Run Deployment Script

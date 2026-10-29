@@ -19,9 +19,10 @@ print(f"Auth Mode: {auth_mode}", flush=True)
 
 if auth_mode == "INTERACTIVE":
     credential = InteractiveBrowserCredential()
-elif auth_mode == "SPN":
-    # Check current login: az account show
+elif auth_mode == "SPN":    
     credential = EnvironmentCredential()
+elif auth_mode == "CLI":    
+    credential = AzureCliCredential()
 else:
     raise ValueError("AUTH must be INTERACTIVE or SPN")
 
