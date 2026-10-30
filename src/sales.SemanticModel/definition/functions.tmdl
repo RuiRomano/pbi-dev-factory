@@ -23,6 +23,24 @@ function 'Tests.Run' =
 		UNION (
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Sales should have rows", 'Sales' ),
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Customer should have rows", 'Customer' ),
+		    VAR expected =
+		        CALCULATE (
+		            SUM ( 'Sales'[Quantity] ),
+		            TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+		            TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+		            TREATAS ( { "Southridge Video" }, 'Product'[Brand] ),
+		            TREATAS ( { DATE ( 2017, 6, 27 ) }, 'Calendar'[Date] )
+		        )
+		    VAR actual =
+		        CALCULATE (
+		            [Sales Qty Last Year],
+		            TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+		            TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+		            TREATAS ( { "Southridge Video" }, 'Product'[Brand] ),
+		            TREATAS ( { DATE ( 2018, 6, 27 ) }, 'Calendar'[Date] )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "Sales Qty Last Year - fixed date shifts to prior year", expected, actual ),
 			// Tests [# New Customers]
 		    VAR actual =
 		        CALCULATE (
@@ -598,4 +616,3 @@ function 'PQL.Assert.Tbl.ShouldHaveColumns' =
 	annotation DAXLIB_PackageId = PQL.Assert
 
 	annotation DAXLIB_PackageVersion = 0.8.0
-
