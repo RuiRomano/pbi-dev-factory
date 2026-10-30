@@ -1,6 +1,6 @@
 ---
 name: team-practices
-description: "Apply this repository's Power BI team practices: write and maintain specs, follow team rules, implement changes, test with local BPA and Fabric data tests, and document the project. Use when planning, specifying, implementing, documenting or testing any semantic model or report in this repo, including autopilot, autonomous or end-to-end development. Autopilot implementation chains development, local BPA, test-workspace deployment, refresh, tests and documentation. Team rules take precedence over conflicting guidance in other skills."
+description: "Apply this repository's Power BI team practices: write and maintain specs, follow team rules, implement changes with local BPA, deploy to the Fabric development environment, test and query live semantic models, and document the project. Use when planning, specifying, implementing, documenting or testing any semantic model or report in this repo, including autopilot, autonomous or end-to-end development. Autopilot implementation chains development, local BPA, development-workspace deployment, refresh, tests, live queries and documentation. Team rules take precedence over conflicting guidance in other skills."
 argument-hint: "Describe what you want to spec, implement, document or test"
 ---
 
@@ -21,9 +21,8 @@ Deliver Power BI work the way this team does it: start from a reviewed spec, bui
 | Developer wants to... | Workflow |
 | --- | --- |
 | Start a new development or refactor, or update an existing spec | [spec](./references/spec.md) |
-| Build what an approved spec describes, including autopilot or end-to-end delivery | [implement](./references/implement.md) |
+| Build what an approved spec describes | [implement](./references/implement.md) |
 | Generate or refresh project documentation | [document](./references/document.md) |
-| Run BPA, deploy to Fabric and run data tests | [test](./references/test.md) |
 
 Workflows are step-by-step procedures in `references/`. Follow their checklist. They chain: spec, then implement, then test, then document. Each one can also run on its own.
 
@@ -52,14 +51,14 @@ How to apply them:
 - **Never invent business definitions.** Sources, join keys, security rules and metric definitions come from the developer or the data. Record unknowns as open questions.
 - **Smallest complete change.** Change only what the request needs. Match the existing conventions of the model or report.
 - **Evidence over claims.** A successful save, deploy or script run is not proof. Report each check as passed, failed, not run or not applicable, with evidence.
-- **Stay in your lane.** Standalone spec, review and test workflows don't change `src/`. Implementation deploys only when requested, including an autopilot or end-to-end request under the implementation workflow's test-target safeguards. Its repair loop may fix change-related failures within the approved spec. Never print secrets or ask for credentials in chat.
+- **Stay in your lane.** Standalone spec and review workflows don't change `src/`. Implementation deploys only when requested, including an autopilot or end-to-end request under the implementation workflow's test-target safeguards. Its repair loop may fix change-related failures within the approved spec. Never print secrets or ask for credentials in chat.
 
 ## Definition of done
 
 End every task with this report. Each workflow says what to add.
 
 ```markdown
-**Workflow:** <spec / implement / test / document>
+**Workflow:** <spec / implement / document>
 **Changed:** <files or objects and what changed, or "nothing (read-only)">
 **Spec:** <link to the spec and its status, or "none">
 
