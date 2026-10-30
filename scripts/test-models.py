@@ -6,6 +6,21 @@ from uuid import UUID
 
 from dotenv import load_dotenv
 
+
+def run_fab(*args: str):
+    result = subprocess.run(
+        ["fab", *args, "--output_format", "json"],
+        stdout=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        timeout=120,
+    )
+    if result.returncode:
+        print(result.stdout, flush=True)
+        result.check_returncode()
+    return json.loads(result.stdout)["result"]["data"][0]
+
+
 root = Path(__file__).resolve().parents[1]
 load_dotenv(root / ".env")
 
@@ -30,37 +45,13 @@ for platform_file in models:
 
     print(f"Testing semantic model: {display_name}", flush=True)
 
-    result = subprocess.run(
-        [
-            "fab", "get", f"/{workspace_name}.Workspace/{display_name}.SemanticModel",
-            "-q", "id", "--output_format", "json", "-f",
-        ],
-        stdout=subprocess.PIPE,
-        text=True,
-        encoding="utf-8",
+    model_id = UUID(
+        run_fab("get", f"/{workspace_name}.Workspace/{display_name}.SemanticModel", "-q", "id", "-f")
     )
-    if result.returncode:
-        print(result.stdout, flush=True)
-        result.check_returncode()
-
-    response = json.loads(result.stdout)
-    model_id = UUID(response["result"]["data"][0])
-
-    query_result = subprocess.run(
-        [
-            "fab", "api", "-A", "powerbi", f"datasets/{model_id}/executeQueries",
-            "-X", "post", "-i", query, "--output_format", "json",
-        ],
-        stdout=subprocess.PIPE,
-        text=True,
-        encoding="utf-8",
+    api_result = run_fab(
+        "api", "-A", "powerbi", f"datasets/{model_id}/executeQueries",
+        "-X", "post", "-i", query,
     )
-    if query_result.returncode:
-        print(query_result.stdout, flush=True)
-    query_result.check_returncode()
-
-    query_response = json.loads(query_result.stdout)
-    api_result = query_response["result"]["data"][0]
     test_results = api_result["text"]
     if api_result["status_code"] != 200 or "error" in test_results:
         raise RuntimeError(f"Query failed for {display_name}: {json.dumps(api_result)}")

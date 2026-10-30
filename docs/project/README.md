@@ -43,6 +43,22 @@ from GitHub Actions against the PRD workspace. It uses the PRD environment's
 `fab auth login --azure-cli`, and runs the same script. A failed test fails the
 workflow.
 
+## Refresh deployed models
+
+With the same dependencies, Fabric CLI authentication and `WORKSPACE_NAME`
+configuration as the test script, run:
+
+```powershell
+python scripts\refresh-models.py
+```
+
+The [refresh script](../../scripts/refresh-models.py) discovers models under
+`src` using their `.platform` display names and requests a full refresh for each
+deployed model, one at a time. It polls the specific refresh every 10 seconds
+for up to one hour per model. It prints success only when the refresh completes.
+A CLI error, API error, unsuccessful refresh or timeout raises an error and
+stops the script. Timing out does not cancel the refresh in the service.
+
 ## Inspection and Validation
 
 Documented on 2026-10-30 from the local model metadata and structured report inspection. Coverage includes five tables, 63 columns, 13 measures, four relationships, one hierarchy, two report pages and nine visuals. No other semantic models, reports or standalone report definitions were found.
