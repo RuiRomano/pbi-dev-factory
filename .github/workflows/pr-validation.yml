@@ -1,0 +1,23 @@
+name: PR validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/**"
+  workflow_dispatch:
+
+jobs:
+  bpa:
+    uses: ./.github/workflows/bpa.yml
+
+  deploy:
+    needs: bpa
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+
+  test:
+    needs: deploy
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
