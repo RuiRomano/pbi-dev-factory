@@ -11,6 +11,9 @@ table Sales
 		formatString: #,##0
 		lineageTag: c2ff8d96-2f03-4005-84df-91458625b73b
 
+	measure 'Sales Qty Last Year' = CALCULATE([Sales Qty], SAMEPERIODLASTYEAR('Calendar'[Date]))
+		formatString: #,##0		
+
 	measure 'Sales Amount' = SUMX('Sales', 'Sales'[Quantity] * 'Sales'[Net Price])
 		formatString: $ #,##0
 		lineageTag: a8e95485-02a2-4525-b02a-b2418fbdbe4c
