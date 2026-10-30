@@ -1,12 +1,12 @@
 name: bpa
   
 on:
-  pull_request:
-    branches: 
-      - main      
-    paths:
-      - 'src/**'
-      - '.bpa/**'   
+  # pull_request:
+  #   branches: 
+  #     - main      
+  #   paths:
+  #     - 'src/**'
+  #     - '.bpa/**'   
   
   workflow_dispatch:
         
