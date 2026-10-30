@@ -22,7 +22,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          python -m pip install ms-fabric-cli
+          python -m pip install ms-fabric-cli python-dotenv
 
       - name: Azure Login
         uses: azure/login@v2
