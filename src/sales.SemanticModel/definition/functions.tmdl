@@ -12,17 +12,485 @@ function 'PQL.Assert.Tbl.ShouldHaveRows' =
 				"Actual", IF(_Passed, "HAS ROWS (" & FORMAT(_RowCount, "0") & ")", "EMPTY (0 rows)"),
 				"Passed", _Passed
 			)
-	lineageTag: 2fa4a3f3-c3e7-4891-b169-84ceda6dd659
+	lineageTag: 49068057-9dc6-4c27-8a80-78094393071f
 
 	annotation DAXLIB_PackageId = PQL.Assert
 
 	annotation DAXLIB_PackageVersion = 0.8.0
 
-function Tests =
-		() => UNION(
-		        PQL.Assert.Tbl.ShouldHaveRows("Sales should have rows", 'Sales')
-		        ,
-		        PQL.Assert.Tbl.ShouldHaveRows("Customer should have rows", 'Customer')
+function 'Tests.Run' =
+		() =>
+		UNION (
+		    PQL.Assert.Tbl.ShouldHaveRows ( "Sales should have rows", 'Sales' ),
+		    PQL.Assert.Tbl.ShouldHaveRows ( "Customer should have rows", 'Customer' ),
+		    VAR actual =
+		        CALCULATE (
+		            [# New Customers],
+		            TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+		            TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+		            TREATAS ( { "Southridge Video" }, 'Product'[Brand] ),
+		            TREATAS ( { DATE ( 2017, 6, 27 ) }, 'Calendar'[Date] )
 		        )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "1 brand - positive: first purchase", 1, actual ),
+		    VAR actual =
+		        COALESCE (
+		            CALCULATE (
+		                [# New Customers],
+		                TREATAS ( { 357592 }, 'Customer'[CustomerKey] ),
+		                TREATAS ( { "Cell phones" }, 'Product'[Category] ),
+		                TREATAS ( { "Contoso" }, 'Product'[Brand] ),
+		                TREATAS ( { DATE ( 2019, 12, 25 ) }, 'Calendar'[Date] )
+		            ),
+		            0
+		        )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "1 brand - negative: repeat purchase is not new", 0, actual ),
+		    VAR actual =
+		        CALCULATE (
+		            [# New Customers],
+		            TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+		            TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+		            TREATAS ( { "Tailspin Toys" }, 'Product'[Brand] ),
+		            TREATAS ( { DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "1 brand - prevent false negative: earlier excluded brand", 1, actual ),
+		    VAR actual =
+		        CALCULATE (
+		            [# New Customers],
+		            TREATAS ( { 2070376 }, 'Customer'[CustomerKey] ),
+		            TREATAS ( { "Audio" }, 'Product'[Category] ),
+		            TREATAS ( { "Northwind Traders", "Wide World Importers" }, 'Product'[Brand] ),
+		            TREATAS ( { DATE ( 2018, 1, 18 ) }, 'Calendar'[Date] )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "2 brands - positive: same-day purchases count customer once", 1, actual ),
+		    VAR actual =
+		        COALESCE (
+		            CALCULATE (
+		                [# New Customers],
+		                TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+		                TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+		                TREATAS ( { "Southridge Video", "Tailspin Toys" }, 'Product'[Brand] ),
+		                TREATAS ( { DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
+		            ),
+		            0
+		        )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "2 brands - prevent false positive: earlier selected brand", 0, actual ),
+		    VAR actual =
+		        CALCULATE (
+		            [# New Customers],
+		            TREATAS ( { 368977 }, 'Customer'[CustomerKey] ),
+		            TREATAS ( { "Audio" }, 'Product'[Category] ),
+		            TREATAS ( { "Southridge Video", "Wide World Importers" }, 'Product'[Brand] ),
+		            TREATAS ( { DATE ( 2019, 5, 22 ) }, 'Calendar'[Date] )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "2 brands - prevent false negative: earlier excluded category", 1, actual )
+		)
 	lineageTag: ce15773d-5b5a-4708-8f2c-b3ae3575ab40
+
+/// DAX Assertion Library Functions
+/// Publisher: PQL (Power Query Lint)
+/// These functions provide a standardized way to write unit tests for DAX models
+/// Basic Assertions - PQL.Assert namespace
+/// Asserts that a condition is TRUE. The BOOLEAN parameter converts BLANK() to FALSE before the function runs, so a BLANK condition fails here and passes ShouldBeFalse. Use ShouldNotBeNull first when the value can be BLANK.
+function 'PQL.Assert.ShouldBeTrue' =
+		(testName : STRING, actualCondition : BOOLEAN) =>
+		    VAR _Passed = actualCondition = TRUE
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "TRUE",
+		        "Actual", IF(actualCondition, "TRUE", "FALSE"),
+		        "Passed", _Passed
+		    )
+	lineageTag: 15d834e1-e3c1-4800-8307-da51107a7f28
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a condition is FALSE. The BOOLEAN parameter converts BLANK() to FALSE before the function runs, so a BLANK condition passes. Use ShouldNotBeNull first when the value can be BLANK.
+function 'PQL.Assert.ShouldBeFalse' =
+		(testName : STRING, actualCondition : BOOLEAN) =>
+		    VAR _Passed = actualCondition = FALSE
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "FALSE",
+		        "Actual", IF(actualCondition, "TRUE", "FALSE"),
+		        "Passed", _Passed
+		    )
+	lineageTag: d2a7099f-f955-4098-95ab-7b33c0037642
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a value is NULL (DAX BLANK()).
+function 'PQL.Assert.ShouldBeNull' =
+		(testName : STRING, actualValue : VARIANT) =>
+		    VAR _Passed = ISBLANK(actualValue)
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "NULL",
+		        "Actual", IF(ISBLANK(actualValue), "NULL", IF(EXACT(actualValue, ""), "BLANK (empty string)", "HAS VALUE")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 5aff047b-652a-4252-8788-56d0929cf3e5
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a value is not NULL (not DAX BLANK()). Accepts both simple values and expressions.
+function 'PQL.Assert.ShouldNotBeNull' =
+		(testName : STRING, actualValue : SCALAR VARIANT EXPR) =>
+		    VAR _ActualResult = actualValue
+		    VAR _Passed = NOT ISBLANK(_ActualResult)
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "NOT NULL",
+		        "Actual", IF(ISBLANK(_ActualResult), "NULL", IF(EXACT(_ActualResult, ""), "BLANK (empty string)", "HAS VALUE")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 9dededf1-c704-44f2-893b-b6b6140af51f
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a value is BLANK (empty string "").
+function 'PQL.Assert.ShouldBeBlank' =
+		(testName : STRING, actualValue : VARIANT) =>
+		    VAR _Passed = NOT ISBLANK(actualValue) && EXACT(actualValue, "")
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "BLANK (empty string)",
+		        "Actual", IF(ISBLANK(actualValue), "NULL", IF(EXACT(actualValue, ""), "BLANK (empty string)", "HAS VALUE")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 7b32192b-212c-431d-8cab-20ee570086d5
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a value is not BLANK (not empty string "").
+function 'PQL.Assert.ShouldNotBeBlank' =
+		(testName : STRING, actualValue : SCALAR VARIANT EXPR) =>
+		    VAR _ActualResult = actualValue
+		    VAR _Passed = ISBLANK(_ActualResult) || NOT EXACT(_ActualResult, "")
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "NOT BLANK (not empty string)",
+		        "Actual", IF(ISBLANK(_ActualResult), "NULL", IF(EXACT(_ActualResult, ""), "BLANK (empty string)", "HAS VALUE")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 859aee01-e56e-4c70-9ef9-631fd07814f0
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a value is NULL or BLANK (BLANK() or empty string "").
+function 'PQL.Assert.ShouldBeNullOrBlank' =
+		(testName : STRING, actualValue : VARIANT) =>
+		    VAR _Passed = ISBLANK(actualValue) || EXACT(actualValue, "")
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "NULL OR BLANK",
+		        "Actual", IF(ISBLANK(actualValue), "NULL", IF(EXACT(actualValue, ""), "BLANK (empty string)", "HAS VALUE")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 80d0079e-2a56-434b-a44c-f33a60ddd0af
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a value is not NULL and not BLANK (has actual content).
+function 'PQL.Assert.ShouldNotBeNullOrBlank' =
+		(testName : STRING, actualValue : SCALAR VARIANT EXPR) =>
+		    VAR _ActualResult = actualValue
+		    VAR _Passed = NOT ISBLANK(_ActualResult) && NOT EXACT(_ActualResult, "")
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "NOT NULL AND NOT BLANK",
+		        "Actual", IF(ISBLANK(_ActualResult), "NULL", IF(EXACT(_ActualResult, ""), "BLANK (empty string)", "HAS VALUE")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 5f7734f1-890a-48a2-99e9-227c49622930
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+function 'PQL.Assert.ShouldEqual' =
+		(testName : STRING, expected : VARIANT, actual : VARIANT) =>
+		    VAR _ExpType = SWITCH(TRUE(), ISBLANK(expected), 0, ISLOGICAL(expected), 1, ISTEXT(expected), 2, ISNUMBER(expected), 3, 4)
+		    VAR _ActType = SWITCH(TRUE(), ISBLANK(actual), 0, ISLOGICAL(actual), 1, ISTEXT(actual), 2, ISNUMBER(actual), 3, 4)
+		    VAR _Passed = _ExpType = _ActType && FORMAT(expected, "") = FORMAT(actual, "")
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", FORMAT(expected, ""),
+		        "Actual", FORMAT(actual, ""),
+		        "Passed", _Passed
+		    )
+	lineageTag: f8614f10-40e8-4588-af6b-545d4c5e5579
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+function 'PQL.Assert.ShouldNotEqual' =
+		(testName : STRING, notExpected : VARIANT, actual : VARIANT) =>
+		    VAR _ExpType = SWITCH(TRUE(), ISBLANK(notExpected), 0, ISLOGICAL(notExpected), 1, ISTEXT(notExpected), 2, ISNUMBER(notExpected), 3, 4)
+		    VAR _ActType = SWITCH(TRUE(), ISBLANK(actual), 0, ISLOGICAL(actual), 1, ISTEXT(actual), 2, ISNUMBER(actual), 3, 4)
+		    VAR _Passed = NOT(_ExpType = _ActType && FORMAT(notExpected, "") = FORMAT(actual, ""))
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "NOT " & FORMAT(notExpected, ""),
+		        "Actual", FORMAT(actual, ""),
+		        "Passed", _Passed
+		    )
+	lineageTag: fc53e9df-cdfd-44d3-938e-d9899b93c129
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that two strings are exactly equal (case-sensitive comparison). NULL (BLANK()) equals only NULL, not "", like ShouldEqual (changed in 0.8.0; 0.7.x treated NULL as "").
+function 'PQL.Assert.ShouldEqualExactly' =
+		(testName : STRING, expected : STRING, actual : STRING) =>
+		    VAR _Passed = IF(ISBLANK(expected) || ISBLANK(actual), ISBLANK(expected) && ISBLANK(actual), EXACT(expected, actual))
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", IF(ISBLANK(expected), "NULL", expected),
+		        "Actual", IF(ISBLANK(actual), "NULL", actual),
+		        "Passed", _Passed
+		    )
+	lineageTag: 36131393-ab7d-42ed-8339-4f8d8a77bf88
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a number is greater than a threshold. A NULL (BLANK()) actual value fails (changed in 0.8.0; 0.7.x compared it as 0).
+function 'PQL.Assert.ShouldBeGreaterThan' =
+		(testName : STRING, threshold : DOUBLE, actual : DOUBLE) =>
+		    VAR _Passed = NOT ISBLANK(actual) && actual > threshold
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "> " & FORMAT(threshold, ""),
+		        "Actual", IF(ISBLANK(actual), "NULL", FORMAT(actual, "")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 6c0bb20d-ab5f-4bd4-81d8-c60aa96dacfa
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a number is less than a threshold. A NULL (BLANK()) actual value fails (changed in 0.8.0; 0.7.x compared it as 0).
+function 'PQL.Assert.ShouldBeLessThan' =
+		(testName : STRING, threshold : DOUBLE, actual : DOUBLE) =>
+		    VAR _Passed = NOT ISBLANK(actual) && actual < threshold
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "< " & FORMAT(threshold, ""),
+		        "Actual", IF(ISBLANK(actual), "NULL", FORMAT(actual, "")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 391077d2-e0e4-48ca-9ddd-b0bdcd82a844
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a number is greater than or equal to a threshold. A NULL (BLANK()) actual value fails (changed in 0.8.0; 0.7.x compared it as 0).
+function 'PQL.Assert.ShouldBeGreaterOrEqual' =
+		(testName : STRING, threshold : DOUBLE, actual : DOUBLE) =>
+		    VAR _Passed = NOT ISBLANK(actual) && actual >= threshold
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", ">= " & FORMAT(threshold, ""),
+		        "Actual", IF(ISBLANK(actual), "NULL", FORMAT(actual, "")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 7d53aa96-2534-4094-ad36-8c1611c31728
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a number is less than or equal to a threshold. A NULL (BLANK()) actual value fails (changed in 0.8.0; 0.7.x compared it as 0).
+function 'PQL.Assert.ShouldBeLessOrEqual' =
+		(testName : STRING, threshold : DOUBLE, actual : DOUBLE) =>
+		    VAR _Passed = NOT ISBLANK(actual) && actual <= threshold
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "<= " & FORMAT(threshold, ""),
+		        "Actual", IF(ISBLANK(actual), "NULL", FORMAT(actual, "")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 58077270-ee0e-4644-a68d-f3ea602b4770
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a number is within an inclusive range. A NULL (BLANK()) actual value fails (changed in 0.8.0; 0.7.x compared it as 0).
+function 'PQL.Assert.ShouldBeBetween' =
+		(testName : STRING, lowerBound : DOUBLE, upperBound : DOUBLE, actual : DOUBLE) =>
+		    VAR _Passed = NOT ISBLANK(actual) && actual >= lowerBound && actual <= upperBound
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", FORMAT(lowerBound, "") & " <= value <= " & FORMAT(upperBound, ""),
+		        "Actual", IF(ISBLANK(actual), "NULL", FORMAT(actual, "")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 37872374-a8a1-435a-8346-4af6024d8733
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a value is outside an inclusive range: actual < lowerBound or actual > upperBound. Argument order matches ShouldBeBetween. A NULL (BLANK()) actual value fails.
+function 'PQL.Assert.ShouldNotBeBetween' =
+		(testName : STRING, lowerBound : DOUBLE, upperBound : DOUBLE, actual : DOUBLE) =>
+		    VAR _Passed = NOT ISBLANK(actual) && (actual < lowerBound || actual > upperBound)
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "NOT " & FORMAT(lowerBound, "General Number") & " <= value <= " & FORMAT(upperBound, "General Number"),
+		        "Actual", IF(ISBLANK(actual), "NULL", FORMAT(actual, "General Number")),
+		        "Passed", _Passed
+		    )
+	lineageTag: 5b4b9c5c-0ffc-4505-a842-af050a621023
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// String Assertions - PQL.Assert namespace
+/// Asserts that a string starts with the specified prefix (case-insensitive). A NULL (BLANK()) actual value fails (changed in 0.8.0; 0.7.x compared it as "").
+function 'PQL.Assert.ShouldStartWith' =
+		(testName : STRING, prefix : STRING, actual : STRING) =>
+		    VAR _Passed = NOT ISBLANK(actual) && LEFT(UPPER(actual), LEN(prefix)) = UPPER(prefix)
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "Starts with '" & prefix & "'",
+		        "Actual", IF(ISBLANK(actual), "NULL", actual),
+		        "Passed", _Passed
+		    )
+	lineageTag: 2ed2f5ac-4ca0-42a9-8ae5-774e992fbb9f
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a string ends with the specified suffix (case-insensitive). A NULL (BLANK()) actual value fails (changed in 0.8.0; 0.7.x compared it as "").
+function 'PQL.Assert.ShouldEndWith' =
+		(testName : STRING, suffix : STRING, actual : STRING) =>
+		    VAR _Passed = NOT ISBLANK(actual) && RIGHT(UPPER(actual), LEN(suffix)) = UPPER(suffix)
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "Ends with '" & suffix & "'",
+		        "Actual", IF(ISBLANK(actual), "NULL", actual),
+		        "Passed", _Passed
+		    )
+	lineageTag: 7055bc7e-7c20-4cfa-8b74-ca4c529a3989
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a string contains the specified substring (case-insensitive). A NULL (BLANK()) actual value fails (changed in 0.8.0; 0.7.x compared it as "").
+function 'PQL.Assert.ShouldContainString' =
+		(testName : STRING, substring : STRING, actual : STRING) =>
+		    VAR _Passed = NOT ISBLANK(actual) && CONTAINSSTRING(actual, substring)
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "Contains '" & substring & "'",
+		        "Actual", IF(ISBLANK(actual), "NULL", actual),
+		        "Passed", _Passed
+		    )
+	lineageTag: bb2eaee1-f353-4d31-841f-2d9221a3f9b9
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Asserts that a string contains a pattern (case-insensitive). Uses CONTAINSSTRING: a substring match where ? matches one character and * matches any run of characters. It is not a regular expression and does not need to match the whole value. A NULL (BLANK()) actual value fails (changed in 0.8.0; 0.7.x compared it as "").
+function 'PQL.Assert.ShouldMatch' =
+		(testName : STRING, pattern : STRING, actual : STRING) =>
+		    VAR _Passed = NOT ISBLANK(actual) && CONTAINSSTRING(actual, pattern)
+		    RETURN ROW(
+		        "TestName", testName,
+		        "Expected", "Matches '" & pattern & "'",
+		        "Actual", IF(ISBLANK(actual), "NULL", actual),
+		        "Passed", _Passed
+		    )
+	lineageTag: 715c85a1-085d-4a1f-94a6-725f24faeb6b
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Runs all DAX expression best practice checks.
+/// This function executes all DAX expression validation rules and returns combined results.
+function 'PQL.Assert.BP.CheckDAXExpressions' =
+		() =>
+		    UNION(
+		        PQL.Assert.BP.ShouldUseFullyQualifiedColumnReferences(),
+		        PQL.Assert.BP.ShouldUseTreatAsInsteadOfIntersect()
+		    )
+	lineageTag: 89923e07-d106-41d0-b80d-8cd86c05c138
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Runs all error prevention best practice checks.
+/// This function executes all error prevention validation rules and returns combined results.
+function 'PQL.Assert.BP.CheckErrorPrevention' =
+		() =>
+		    PQL.Assert.BP.ShouldHaveSameDataTypeInRelationships()
+	lineageTag: 0330a464-61f8-4864-9d80-2b7389783432
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Schema & Column Shape
+/// Asserts that a table has all the specified columns (comma-separated list).
+/// @param {STRING} testName - Description of the test being performed
+/// @param {STRING} tableName - Table name as text, e.g. "Sales" (not a table expression or 'Sales')
+/// @param {STRING} columnNamesList - Comma-separated column names, e.g. "OrderID,Amount"
+function 'PQL.Assert.Tbl.ShouldHaveColumns' =
+		(testName : STRING, tableName : STRING, columnNamesList : STRING) =>
+			VAR _Columns = INFO.VIEW.COLUMNS()
+			VAR _TableColumns = FILTER(_Columns, [Table] = tableName)
+			VAR _ExpectedCount = LEN(columnNamesList) - LEN(SUBSTITUTE(columnNamesList, ",", "")) + 1
+			VAR _ColumnNamesUpper = UPPER(columnNamesList)
+			VAR _MatchedColumns = FILTER(
+				_TableColumns,
+				CONTAINSSTRING("," & _ColumnNamesUpper & ",", "," & TRIM(UPPER([Name])) & ",")
+			)
+			VAR _MatchedCount = COUNTROWS(_MatchedColumns)
+			VAR _MissingCount = _ExpectedCount - _MatchedCount
+			VAR _ActualColumnNames = CONCATENATEX(_TableColumns, [Name], ", ", [Name], ASC)
+			VAR _Passed = _MissingCount <= 0
+			RETURN ROW(
+				"TestName", testName,
+				"Expected", "Table '" & tableName & "' has columns: " & columnNamesList,
+				"Actual", IF(_Passed, "ALL COLUMNS FOUND", "MISSING " & FORMAT(_MissingCount, "0") & " COLUMN(S). Available: " & _ActualColumnNames),
+				"Passed", _Passed
+			)
+	lineageTag: 459b90f4-0717-4acf-9414-1cca4612543a
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
 

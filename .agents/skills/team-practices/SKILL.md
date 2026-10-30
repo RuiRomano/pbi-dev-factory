@@ -1,0 +1,86 @@
+---
+name: team-practices
+description: "Apply this repository's Power BI team practices: write and maintain specs, follow team rules, implement changes, test with local BPA and Fabric data tests, and document the project. Use when planning, specifying, implementing, documenting or testing any semantic model or report in this repo, including autopilot, autonomous or end-to-end development. Autopilot implementation chains development, local BPA, test-workspace deployment, refresh, tests and documentation. Team rules take precedence over conflicting guidance in other skills."
+argument-hint: "Describe what you want to spec, implement, document or test"
+---
+
+# Power BI Team Practices
+
+Deliver Power BI work the way this team does it: start from a reviewed spec, build within the team rules, prove the result with the project tests, and keep the documentation current. This skill adds team process and rules on top of the domain skills. It does not replace them.
+
+## Start here
+
+1. **Understand the request.** What the developer wants, which models or reports in `src/` are affected, and whether a spec already exists in `docs/specs/`. Reuse what the developer already said.
+2. **Load the domain skills** the task needs: `semantic-model-authoring` for models, DAX, relationships and data sources; `powerbi-report-cli` for pages, visuals, filters and bindings. Load both when the work spans models and reports.
+3. **Load the team rules.** Read the [rule files](#team-rules) for the artifacts in scope. They are required for spec and implementation work, and they apply to reviews, documentation and testing too.
+4. **Pick the workflow** below, load its file, and load the files its **Uses:** line names.
+5. **Report back** with the template in [Definition of done](#definition-of-done).
+
+## Workflow selector
+
+| Developer wants to... | Workflow |
+| --- | --- |
+| Start a new development or refactor, or update an existing spec | [spec](./references/spec.md) |
+| Build what an approved spec describes, including autopilot or end-to-end delivery | [implement](./references/implement.md) |
+| Generate or refresh project documentation | [document](./references/document.md) |
+| Run BPA, deploy to Fabric and run data tests | [test](./references/test.md) |
+
+Workflows are step-by-step procedures in `references/`. Follow their checklist. They chain: spec, then implement, then test, then document. Each one can also run on its own.
+
+For autopilot implementation, [implement](./references/implement.md) owns the full chain after spec approval: develop, local BPA, deploy to the configured test workspace, refresh, test, then document. Load both [test](./references/test.md) and [document](./references/document.md); do not stop at their standalone hand-offs. Autopilot authorizes project-wide test deployment, not production deployment or changes to the approved spec. Explicit scope restrictions still apply.
+
+## Team rules
+
+The rule files in `references/rules/` are the repository's authority for development decisions.
+
+| File | Covers |
+| --- | --- |
+| [semantic-model-rules](./references/rules/semantic-model-rules.md) | Star schema, explicit measures, measure placement, naming consistency, table naming |
+| [report-rules](./references/rules/report-rules.md) | Design standards, Contoso theme, color, typography, layout, brand signature, rendered review |
+| [contoso-theme.json](./references/rules/contoso-theme.json) | Power BI theme baseline for new reports |
+| [contoso-design-standards.png](./references/rules/contoso-design-standards.png) | Brand reference image for new reports |
+
+How to apply them:
+
+- **Precedence.** When another loaded skill gives conflicting development guidance, follow the team rules, whichever skill was loaded first. Reapply them after loading any additional skill. Keep the other skills' non-conflicting workflows, tool requirements and validation steps. Team rules do not override safety requirements, higher-priority instructions or explicit developer decisions.
+- **Scope.** Apply the rules to the work in scope. Do not rename unrelated objects or redesign an existing model or report just to enforce them. Report existing deviations instead.
+- **Specs.** Every spec states which rules apply and calls out any planned deviation for the developer to approve.
+- **Hand-off.** Before handing off, check the affected objects against the rules and list any unresolved deviation.
+
+## Repository layout
+
+| Path | Contents |
+| --- | --- |
+| `src/` | PBIP projects: `*.SemanticModel` and `*.Report` folders |
+| `docs/specs/` | Development specs, one per feature or refactor |
+| `docs/project/` | Generated project documentation |
+| `scripts/bpa/bpa.ps1` | Local Best Practice Analyzer for models and reports |
+| `scripts/deploy.py`, `scripts/refresh.py`, `scripts/test-data.py` | Fabric deployment, refresh and data tests |
+| `.env` | Target Fabric environment. Never print its contents. |
+
+## Working principles
+
+- **The spec is the contract.** Implementation follows an approved spec. When the work needs to diverge, update the spec and get agreement before building the divergence.
+- **Discover before asking.** Inspect `src/`, the model metadata and the report definitions yourself. Ask only for business decisions and details you can't retrieve.
+- **Never invent business definitions.** Sources, join keys, security rules and metric definitions come from the developer or the data. Record unknowns as open questions.
+- **Smallest complete change.** Change only what the request needs. Match the existing conventions of the model or report.
+- **Evidence over claims.** A successful save, deploy or script run is not proof. Report each check as passed, failed, not run or not applicable, with evidence.
+- **Stay in your lane.** Standalone spec, review and test workflows don't change `src/`. Implementation deploys only when requested, including an autopilot or end-to-end request under the implementation workflow's test-target safeguards. Its repair loop may fix change-related failures within the approved spec. Never print secrets or ask for credentials in chat.
+
+## Definition of done
+
+End every task with this report. Each workflow says what to add.
+
+```markdown
+**Workflow:** <spec / implement / test / document>
+**Changed:** <files or objects and what changed, or "nothing (read-only)">
+**Spec:** <link to the spec and its status, or "none">
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Team rules | passed / failed / not run / n/a | <rules and objects checked> |
+| <workflow check> | ... | ... |
+
+**Not verified:** <checks not run and why, or "none">
+**Assumptions and open questions:** <list, or "none">
+```

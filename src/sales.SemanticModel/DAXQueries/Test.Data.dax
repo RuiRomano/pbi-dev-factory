@@ -1,9 +1,1 @@
-DEFINE 
-
-    FUNCTION Tests = () => UNION(
-        PQL.Assert.Tbl.ShouldHaveRows("Sales should have rows", 'Sales')
-        ,
-        PQL.Assert.Tbl.ShouldHaveRows("Customer should have rows", 'Customer')
-        )
-
-EVALUATE Tests()
+EVALUATE Tests.Run()

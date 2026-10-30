@@ -13,7 +13,7 @@ annotation PBI_QueryOrder = ["HttpSource","Environment","Randomizer","Calendar",
 
 annotation __TEdtr = 1
 
-annotation PBI_ProTooling = ["DevMode","CalcGroup","TMDLView_Desktop","DaxQueryView_Desktop","TMDL-Extension"]
+annotation PBI_ProTooling = ["DevMode","CalcGroup","TMDLView_Desktop","DaxQueryView_Desktop","TMDL-Extension","MCP-PBIModeling"]
 
 ref table Calendar
 ref table Sales

@@ -77,6 +77,40 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: 3e5cb67e-a411-476f-ad34-7ec10dfd084d
 
+	measure '# New Customers' = ```
+			
+			VAR CustomersWithNewDate =
+			    CALCULATETABLE (                        -- Prepares a table that 
+			        ADDCOLUMNS (                        -- for each customer contains
+			            VALUES ( Sales[CustomerKey] ),  -- the date of their first purchase
+			            "@NewCustomerDate", CALCULATE (        
+			    MIN ( Sales[Order Date] ),  -- The date of the first sale is the MIN of Order Date
+			    REMOVEFILTERS ( 'Calendar'[Date] )    -- at any time in the past
+			)
+			        ),
+			        ALLSELECTED ( Customer ),           -- Regardless of local filters on Customer
+			        ALLSELECTED ( 'Calendar' )              -- and on Date
+			    ) 
+			VAR CustomersWithLineage =                  -- Here we change the data lineage
+			    TREATAS (                               -- of the CustomersWithNewDate variable
+			        CustomersWithNewDate,               -- so that it filters the 
+			        Sales[CustomerKey],                 -- Customer Key and the
+			        'Calendar'[Date]                        -- Date columns in different tables
+			    )
+			VAR Result =                                 
+			    CALCULATE (                             
+			        DISTINCTCOUNT ( Sales[CustomerKey] ), -- Counts the number of customers only
+			        KEEPFILTERS ( CustomersWithLineage )  -- if they appear in their @NewCustomerDate
+			    )
+			RETURN
+			    Result
+			
+			```
+		formatString: #,##0
+		lineageTag: f7fd3d2d-9a79-4951-b933-d6c7c7840fa8
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
 	column 'Order Number'
 		dataType: int64
 		formatString: 0
