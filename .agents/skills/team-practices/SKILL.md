@@ -27,8 +27,6 @@ Deliver Power BI work the way this team does it: start from a reviewed spec, bui
 
 Workflows are step-by-step procedures in `references/`. Follow their checklist. They chain: spec, then implement, then test, then document. Each one can also run on its own.
 
-For autopilot implementation, [implement](./references/implement.md) owns the full chain after spec approval: develop, local BPA, deploy to the configured test workspace, refresh, test, then document. Load both [test](./references/test.md) and [document](./references/document.md); do not stop at their standalone hand-offs. Autopilot authorizes project-wide test deployment, not production deployment or changes to the approved spec. Explicit scope restrictions still apply.
-
 ## Team rules
 
 The rule files in `references/rules/` are the repository's authority for development decisions.
@@ -46,17 +44,6 @@ How to apply them:
 - **Scope.** Apply the rules to the work in scope. Do not rename unrelated objects or redesign an existing model or report just to enforce them. Report existing deviations instead.
 - **Specs.** Every spec states which rules apply and calls out any planned deviation for the developer to approve.
 - **Hand-off.** Before handing off, check the affected objects against the rules and list any unresolved deviation.
-
-## Repository layout
-
-| Path | Contents |
-| --- | --- |
-| `src/` | PBIP projects: `*.SemanticModel` and `*.Report` folders |
-| `docs/specs/` | Development specs, one per feature or refactor |
-| `docs/project/` | Generated project documentation |
-| `scripts/bpa/bpa.ps1` | Local Best Practice Analyzer for models and reports |
-| `scripts/deploy.py`, `scripts/refresh.py`, `scripts/test-data.py` | Fabric deployment, refresh and data tests |
-| `.env` | Target Fabric environment. Never print its contents. |
 
 ## Working principles
 

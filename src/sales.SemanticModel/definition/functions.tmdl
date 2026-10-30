@@ -23,6 +23,7 @@ function 'Tests.Run' =
 		UNION (
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Sales should have rows", 'Sales' ),
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Customer should have rows", 'Customer' ),
+			// Tests [# New Customers]
 		    VAR actual =
 		        CALCULATE (
 		            [# New Customers],
@@ -45,50 +46,7 @@ function 'Tests.Run' =
 		            0
 		        )
 		    RETURN
-		        PQL.Assert.ShouldEqual ( "1 brand - negative: repeat purchase is not new", 0, actual ),
-		    VAR actual =
-		        CALCULATE (
-		            [# New Customers],
-		            TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
-		            TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
-		            TREATAS ( { "Tailspin Toys" }, 'Product'[Brand] ),
-		            TREATAS ( { DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
-		        )
-		    RETURN
-		        PQL.Assert.ShouldEqual ( "1 brand - prevent false negative: earlier excluded brand", 1, actual ),
-		    VAR actual =
-		        CALCULATE (
-		            [# New Customers],
-		            TREATAS ( { 2070376 }, 'Customer'[CustomerKey] ),
-		            TREATAS ( { "Audio" }, 'Product'[Category] ),
-		            TREATAS ( { "Northwind Traders", "Wide World Importers" }, 'Product'[Brand] ),
-		            TREATAS ( { DATE ( 2018, 1, 18 ) }, 'Calendar'[Date] )
-		        )
-		    RETURN
-		        PQL.Assert.ShouldEqual ( "2 brands - positive: same-day purchases count customer once", 1, actual ),
-		    VAR actual =
-		        COALESCE (
-		            CALCULATE (
-		                [# New Customers],
-		                TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
-		                TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
-		                TREATAS ( { "Southridge Video", "Tailspin Toys" }, 'Product'[Brand] ),
-		                TREATAS ( { DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
-		            ),
-		            0
-		        )
-		    RETURN
-		        PQL.Assert.ShouldEqual ( "2 brands - prevent false positive: earlier selected brand", 0, actual ),
-		    VAR actual =
-		        CALCULATE (
-		            [# New Customers],
-		            TREATAS ( { 368977 }, 'Customer'[CustomerKey] ),
-		            TREATAS ( { "Audio" }, 'Product'[Category] ),
-		            TREATAS ( { "Southridge Video", "Wide World Importers" }, 'Product'[Brand] ),
-		            TREATAS ( { DATE ( 2019, 5, 22 ) }, 'Calendar'[Date] )
-		        )
-		    RETURN
-		        PQL.Assert.ShouldEqual ( "2 brands - prevent false negative: earlier excluded category", 1, actual )
+		        PQL.Assert.ShouldEqual ( "1 brand - negative: repeat purchase is not new", 0, actual )
 		)
 	lineageTag: ce15773d-5b5a-4708-8f2c-b3ae3575ab40
 

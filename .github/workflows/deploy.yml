@@ -1,0 +1,54 @@
+name: deploy
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "src/**"
+
+  # pull_request:
+  #   branches:
+  #     - main
+
+  workflow_dispatch:
+
+env:
+  WORKSPACE_NAME: "RR - PBI Factory {dev}"
+  ENVIRONMENT: "DEV"
+  AUTH: "CLI"
+  
+jobs:
+  deploy:    
+    runs-on: ubuntu-latest
+    environment: "DEV"
+    
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install fabric-cicd azure-identity python-dotenv ms-fabric-cli
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          allow-no-subscriptions: true      
+      
+      - name: Run Deployment Script
+        run: >
+          python scripts/deploy.py
+
+      - name: Fabric CLI Login
+        run: fab auth login --azure-cli
+        
+      - name: Refresh
+        run: >
+          python scripts/refresh.py

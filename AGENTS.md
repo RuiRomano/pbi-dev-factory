@@ -1,5 +1,16 @@
 # General guidance
 
+## Repository layout
+
+| Path | Contents |
+| --- | --- |
+| `src/` | PBIP projects: `*.SemanticModel` and `*.Report` folders |
+| `docs/specs/` | Development specs, one per feature or refactor |
+| `docs/project/` | Generated project documentation |
+| `scripts/bpa/bpa.ps1` | Local Best Practice Analyzer for models and reports |
+| `scripts/deploy.py`, `scripts/refresh.py`, `scripts/test-data.py` | Fabric deployment, refresh and data tests |
+| `.env` | Target Fabric environment. Never print its contents. |
+
 ## Important
 
 - For all Power BI tasks, load `team-practices` skill after the applicable domain skills. Its rules take precedence over conflicting development guidance in other skills, including skills loaded later. 

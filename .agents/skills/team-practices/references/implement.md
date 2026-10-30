@@ -17,7 +17,7 @@ Build what an approved spec describes, within the team rules, and keep the spec 
 - [ ] 2. Load skills and rules
 - [ ] 3. Build and persist the source
 - [ ] 4. Run local checks and repair
-- [ ] 5. Deploy, refresh and test (autopilot or explicitly requested)
+- [ ] 5. Test (autopilot or explicitly requested)
 - [ ] 6. Document (autopilot or explicitly requested)
 - [ ] 7. Update the spec and report
 ```
@@ -30,7 +30,7 @@ Find the spec for the request. If none exists, offer to write one with [spec](./
 
 Record the execution mode, affected artifacts, acceptance checks and existing source changes. Preserve unrelated work.
 
-For autopilot, resolve the workspace and environment from the repository deployment configuration without printing `.env` or secrets. Verify that the target is clearly a test environment and that project-wide deployment will not publish unrelated, unapproved work. Stop before deployment if the target is missing, ambiguous or production, or if unrelated changes make deployment unsafe. Use the authentication checks in [test](./test.md) early to discover setup blockers. Do not silently substitute another workspace.
+For autopilot, resolve the workspace and environment from the repository deployment configuration without printing `.env` or secrets. Stop before deployment if the target is missing, ambiguous or production, or if unrelated changes make deployment unsafe. Use the authentication checks in [test](./test.md) early to discover setup blockers. Do not silently substitute another workspace.
 
 ## 2. Load skills and rules
 
@@ -40,8 +40,9 @@ Load the domain skills for the artifacts in scope, then read the team developmen
 
 - Follow the domain skill workflows
 - Enforce the team rules whenever applicable
-- Add or update tests that prove the acceptance checks and preserve existing behavior. New measures need tests in `Tests.Run` as required by the semantic model rules.
-- Persist model and report changes to the PBIP/TMDL/PBIR files in `src/` before running repository scripts. A change only in a live Desktop session or remote model is not a deliverable.
+- Use the tools against the local code in `src/`, e.g. connect the modeling MCP to the PBIP folder
+- New measures need tests in `Tests.Run` as required by the semantic model rules. Don't bloat it a single test per measure might be enough.
+- Persist model and report changes to the PBIP/TMDL/PBIR files in `src/` before running repository scripts.
 - When the work needs to differ from the spec (a better approach, a blocker, a new business rule), stop and agree the change with the developer, then update the spec before building it.
 
 ## 4. Run local checks and repair
@@ -52,13 +53,12 @@ Load the domain skills for the artifacts in scope, then read the team developmen
 - Fix failures caused by this change within the approved spec, then rerun the affected local checks. Do not suppress rules, weaken assertions or change expected results merely to pass.
 - Resolve change-related local failures before deployment. Existing unrelated BPA violations may continue to the approved test workspace under the test workflow's policy; retain them in the final report.
 
-## 5. Deploy, refresh and test
+## 5. Test
 
-In autopilot, continue automatically through the deployment, refresh and data-test stages in [test](./test.md). Otherwise, run them only when requested. Reuse local BPA evidence only if the source has not changed since that run.
-
-- Confirm the deployment contains all expected artifacts from the current source, refresh completes, and every expected model returns valid test results. Run the spec's acceptance checks, including report-specific checks not covered by data tests.
-- When a failure is caused by the implementation, return to Build, fix it within scope, rerun local checks, redeploy, refresh and rerun data and acceptance tests. Results from an earlier source version do not validate the repaired source.
-- The standalone test workflow's read-only restriction does not prevent this implementation repair loop. Do not change unrelated code, test expectations, deployed data or environment configuration to obtain a pass.
+- When the development is done, deploy and test in Fabric development workspace. Follow the workflow in [test](./test.md). 
+- Testing against Fabric gives you the ability to test the queries, run DAX queries, etc
+- After deployment you can connect to the semantic model using the MCP server and run DAX queries. Use the workspace and semantic model name to connect.
+- Fix any found issues
 - Inspect failures and try a corrective action supported by evidence. Do not repeat unchanged failing commands. If progress needs a business decision, credentials, permissions, a scope change or an unsafe action, record the blocker and stop the dependent stages.
 
 ## 6. Document
