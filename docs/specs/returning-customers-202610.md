@@ -8,7 +8,7 @@ Add `Sales[# Returning Customers]` to the sales semantic model, following the cl
 
 ## Scope
 - Change: Add one visible measure in `Sales` and corresponding assertions in `Tests.Run`.
-- Keep unchanged: Existing measures, existing tests, data sources, schema, relationships, report definitions, refresh behavior and deployment.
+- Keep unchanged: Existing measures, existing tests, data sources, schema, relationships, report definitions.
 
 ## Approach
 The existing measures live in [Sales.tmdl](../../src/sales.SemanticModel/definition/tables/Sales.tmdl). `# Customers (w/ Sales)` counts distinct sales customer keys. `# New Customers` derives first-purchase dates using `ALLSELECTED` on Customer and Calendar, clears the Calendar Date filter during that calculation, then applies customer/date lineage with `TREATAS` and `KEEPFILTERS`. Product, category, brand and other remaining filters still affect that classification; it is not an unconditional lifetime-first-purchase definition.
