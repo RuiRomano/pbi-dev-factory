@@ -1,12 +1,12 @@
 # Power BI project instructions
 
-## Team style
+## Team rules
 
-For all Power BI tasks, load `team-style` after the applicable domain skills.
-Its rules take precedence over conflicting style guidance in other skills,
+For all Power BI tasks, load `team-rules` after the applicable domain skills.
+Its rules take precedence over conflicting development guidance in other skills,
 including skills loaded later. Keep non-conflicting workflows, tool requirements,
 and validation steps. Reapply these rules when loading additional skills.
-See [Team Style](.agents/skills/team-style/SKILL.md).
+See [Team Rules](.agents/skills/team-rules/SKILL.md).
 
 ## Tools
 
