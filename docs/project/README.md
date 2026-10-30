@@ -10,7 +10,7 @@ The source queries can randomize sales quantities and net prices at refresh. Tre
 
 | Artifact | Type | Source | Connected artifact(s) | Purpose | Documentation |
 |---|---|---|---|---|---|
-| sales | Semantic model | `src/sales.SemanticModel` | sales-overview report | Sales amounts, cost, margin, quantities and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
+| sales | Semantic model | `src/sales.SemanticModel` | sales-overview report | Sales amounts, cost, margin, quantities, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
 | sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, and annual category KPIs. | [Open](sales-overview.report.md) |
 
 ## Project Entry Point and Shared Resources
@@ -23,48 +23,32 @@ The [description specification](../specs/semantic-model-descriptions-202610.md) 
 
 ## Run deployed model tests
 
-Install the project requirements and the Fabric CLI, then authenticate with
-`fab auth login`. Set `WORKSPACE_NAME` in the root `.env` file and run:
+Install the project requirements and the Fabric CLI, then authenticate with `fab auth login --azure-cli` using an existing Azure CLI session. Set `WORKSPACE_NAME` in the root `.env` file and run:
 
 ```powershell
-python scripts\test-models.py
+python scripts\test-data.py
 ```
 
-The [test script](../../scripts/test-models.py) finds semantic models under `src`,
-reads their display names from `.platform`, resolves their deployed IDs with
-`fab get`, and runs `EVALUATE TESTS()` through the Power BI API. It prints the
-query results as an aligned table and stops on a CLI or query error. After testing all models, it
-raises one error listing every test whose `[Passed]` value is not JSON `true`,
-including the model name and test details, and exits with a nonzero status.
+The [test script](../../scripts/test-data.py) finds semantic models under `src`, reads their display names from `.platform`, resolves their deployed IDs with `fab get`, and runs `EVALUATE Tests.Run()` through the Power BI API. It prints the query results as an aligned table and stops on a CLI or query error. After testing all models, it raises one error listing every test whose `[Passed]` value is not JSON `true`, including the model name and test details, and exits with a nonzero status.
 
-The [model-test workflow](../../.github/workflows/test-models.yml) runs manually
-from GitHub Actions against the PRD workspace. It uses the PRD environment's
-`AZURE_CREDENTIALS` secret to sign in to Azure, authenticates Fabric CLI with
-`fab auth login --azure-cli`, and runs the same script. A failed test fails the
-workflow.
+The [test workflow](../../.github/workflows/test.yml) runs manually from GitHub Actions against the DEV workspace. It uses the DEV environment's `AZURE_CREDENTIALS` secret to sign in to Azure, authenticates Fabric CLI with `fab auth login --azure-cli`, and runs the same script. A failed test fails the workflow.
 
 ## Refresh deployed models
 
-With the same dependencies, Fabric CLI authentication and `WORKSPACE_NAME`
-configuration as the test script, run:
+With the same dependencies, Fabric CLI authentication and `WORKSPACE_NAME` configuration as the test script, run:
 
 ```powershell
-python scripts\refresh-models.py
+python scripts\refresh.py
 ```
 
-The [refresh script](../../scripts/refresh-models.py) discovers models under
-`src` using their `.platform` display names and requests a full refresh for each
-deployed model, one at a time. It polls the specific refresh every 10 seconds
-for up to one hour per model. It prints success only when the refresh completes.
-A CLI error, API error, unsuccessful refresh or timeout raises an error and
-stops the script. Timing out does not cancel the refresh in the service.
+The [refresh script](../../scripts/refresh.py) discovers models under `src` using their `.platform` display names and requests a full refresh for each deployed model, one at a time. It polls the specific refresh every five seconds for up to 600 seconds per model. It prints success only when the refresh completes. A CLI error, API error, unsuccessful refresh or timeout raises an error and stops the script. Timing out does not cancel the refresh in the service.
 
 ## Inspection and Validation
 
-Documented on 2026-10-30 from the local model metadata and structured report inspection. Coverage includes five tables, 63 columns, 13 measures, four relationships, one hierarchy, two report pages and nine visuals. No other semantic models, reports or standalone report definitions were found.
+Updated on 2026-10-30 for [returning customers](../specs/returning-customers-202610.md). Coverage includes one model and one report, with five tables, 63 columns, 15 measures, four relationships, one hierarchy, two report pages and nine visuals. Report documentation and screenshots were preserved because no report definitions changed.
 
 Both page screenshots were captured and reviewed. They show the existing Desktop window without a reload from disk. Saved report metadata is authoritative for bindings and calculations; screenshots illustrate the current rendered experience. The KPI heading differs between the window and saved definition. See the [report limitations](sales-overview.report.md#inspection-and-screenshot-limitations).
 
-No model or report definitions were changed, refreshed or deployed. Model load and documentation checks do not establish numerical correctness, source-data uniqueness or deployed access controls.
+The model was saved locally, deployed to the configured DEV workspace and refreshed. The deployment script also republished the unchanged report. All 36 `Tests.Run` assertions passed, including the original four; the reused customer measures matched their baseline. Independent first-sale calculations matched 2,815 grouped returning-customer results. Source-data uniqueness and deployed access controls were not tested.
 
-Documentation validation passed: both artifacts have exactly one document, all 63 columns and 13 measure expressions are covered, both pages have valid PNG screenshots, all 12 relative links resolve, and the relationship diagram parses as Mermaid.
+Both artifacts have one document and both report pages retain their screenshots. Updated links were checked. The pre-existing description-spec link above points to a file absent from this worktree; it remains a documentation gap outside this change.

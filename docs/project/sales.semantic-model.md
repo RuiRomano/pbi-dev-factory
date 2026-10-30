@@ -2,7 +2,7 @@
 
 ## Overview
 
-This model supports sample retail sales analysis for report consumers and self-service analysts. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, customers with sales and time comparisons.
+This model supports sample retail sales analysis for report consumers and self-service analysts. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, new and returning customers, customers with sales and time comparisons.
 
 The dependent [sales-overview report](sales-overview.report.md) uses these measures for summary cards, charts and an annual category matrix. The report names Northwind Retail Group, but the model sources workshop sample files and modifies some values during refresh. It is not evidence of certified company revenue.
 
@@ -12,11 +12,11 @@ The dependent [sales-overview report](sales-overview.report.md) uses these measu
 | Storage mode(s) | Import |
 | Tables | 5 |
 | Columns | 63: 53 visible, 10 hidden |
-| Measures | 13 |
+| Measures | 15 |
 | Relationships | 4 |
 | Hierarchies | 1, with 3 levels |
 | Calculation groups | None |
-| Compatibility level | 1606 |
+| Compatibility level | 1702 |
 | Culture / source query culture | en-US / en-GB |
 
 ## Model Structure
@@ -40,7 +40,7 @@ erDiagram
 
 Because filters do not flow back from sales into dimensions, a date or store selection does not automatically reduce `# Customers` or `# Products`. Use `# Customers (w/ Sales)` for the customer count represented in filtered sales. Key uniqueness and unmatched fact keys were not checked against data.
 
-`Calendar` is marked as a time table with `Date` as its key. Auto date/time is disabled, and implicit measures are discouraged. No calculation groups, perspectives or DAX user-defined functions were found. One en-US culture is defined.
+`Calendar` is marked as a time table with `Date` as its key. Auto date/time is disabled, and implicit measures are discouraged. No calculation groups or perspectives are defined. DAX user-defined functions provide the PQL assertions and `Tests.Run` test suite. One en-US culture is defined.
 
 ## Tables and Columns
 
@@ -175,6 +175,22 @@ Counts distinct customer keys in filtered sales, not all customer records or loy
 ```dax
 DISTINCTCOUNT('Sales'[CustomerKey])
 ```
+
+### # New Customers
+
+Counts customers whose first qualifying purchase falls in the current context. Its existing DAX uses `ALLSELECTED` on Customer and Calendar, clears the Calendar Date filter while finding first purchases, and applies customer/date lineage with `TREATAS` and `KEEPFILTERS`. Product, category, brand and other remaining filters still affect classification. This is not an unconditional lifetime-first-purchase count.
+
+### # Returning Customers
+
+Counts customers with sales who are not new in the same context. It reuses both existing customer measures and inherits their filter behavior. Earlier purchases in excluded brands or categories do not override the new-customer classification. A customer with first and later purchases in the same period is new only.
+
+```dax
+[# Customers (w/ Sales)] - [# New Customers]
+```
+
+The measure is visible in Sales, uses integer format `#,##0`, and has no display folder. No sales returns blank; sales from only new customers returns zero. Totals recalculate classification in their own filter context instead of summing daily or monthly returning counts.
+
+For example, the verified customer 102075 fixture has sales on 2017-06-27 and 2019-12-04. With both dates selected, returning counts are zero and one on the date rows, but zero at the total because the period includes the first purchase.
 
 ### Sales Qty
 
@@ -336,6 +352,16 @@ No incremental-refresh policy or refresh schedule is present in the inspected mo
 
 ## Existing Deviations and Inspection Limits
 
-The star schema and hidden relationship keys follow the team structure rules. Measure names do not follow the required UPPERCASE convention. Visible numeric fields such as Product.Unit Price, Product.Unit Cost, Product.Weight, Sales.Exchange Rate and Store.Square Meters do not have corresponding explicit measures and hidden base columns. No objects were renamed or changed to address these deviations.
+The star schema and hidden relationship keys follow the team structure rules. The returning-customer measure follows existing customer-measure naming and placement. Visible numeric fields such as Product.Unit Price, Product.Unit Cost, Product.Weight, Sales.Exchange Rate and Store.Square Meters do not have corresponding explicit measures and hidden base columns. No unrelated objects were renamed or changed to address these deviations.
 
-The local model loaded successfully through semantic metadata tooling. Inspection was offline: row counts, key uniqueness, inferred Age type, refresh success, measure error states and numerical results were not verified. The diagram describes declared relationships, not tested referential integrity. The original company-context file is unavailable, so company-specific revenue and fiscal definitions remain unconfirmed.
+The original documentation inspection was offline. The returning-customer implementation was subsequently loaded locally, deployed to `RR - PBI Factory {dev}`, refreshed and tested on 2026-10-30. Its live metadata reports Ready, Int64, visible, format `#,##0` and a populated description. Key uniqueness, inferred Age type and deployed security were not tested in this change. The diagram describes declared relationships, not tested referential integrity. The original company-context file is unavailable, so company-specific revenue and fiscal definitions remain unconfirmed.
+
+## Customer Classification Tests
+
+The [returning-customer spec](../specs/returning-customers-202610.md) defines the approved behavior. [Tests.Run](../../src/sales.SemanticModel/definition/functions.tmdl) now has 36 assertions: the original four remain unchanged and 32 cover returning customers, supporting fixtures and reconciliation.
+
+Run `python scripts\test-data.py` from the repository root against the configured development workspace. All 36 assertions returned boolean true after deployment and refresh. Coverage includes single-brand first and repeat purchases, selected and excluded brands/categories, multiple same-day rows, periods containing first and later purchases, non-contiguous date selections, blank versus zero, and date/month/customer/category-brand rows and totals.
+
+An independent per-customer first-sale calculation matched the returning measure across 2,815 grouped results, including totals: 725 date rows, 1,974 customer rows, five year rows and 111 year/category/brand rows. Both reused measures matched their pre-change baseline in all five year/total rows and eight fixture scopes.
+
+Local BPA ran with `& .\scripts\bpa\bpa.ps1 -src @('.\src')` against the model and report using the repository rule files. It exited zero with 72 existing severity-2 `PROVIDE_DESCRIPTIONS_FOR_TABLES_MEASURES_AND_COLUMNS` warnings across five tables, 14 existing measures and 53 visible columns. The returning measure had no violations. Report definitions were unchanged; the repository deployment script republished the existing report alongside the model.
