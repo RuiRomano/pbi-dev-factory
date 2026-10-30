@@ -15,7 +15,7 @@ description: "Apply this team's opinionated Power BI development rules when plan
 
 ## References
 
-- For semantic model work, read [Semantic model rules](./references/semantic-model-style.md).
-- For report work, read [Report rules](./references/report-style.md). When authoring new reports, also inspect the [Contoso design standards](./references/contoso-design-standards.png).
+- For semantic model work, read [Semantic model rules](./references/semantic-model-rules.md).
+- For report work, read [Report rules](./references/report-rules.md). When authoring new reports, also inspect the [Contoso design standards](./references/contoso-design-standards.png).
 - For new reports, use the [Contoso Power BI theme](./references/contoso-theme.json) as the formatting baseline.
 - Read both rule files when the task covers semantic models and reports.

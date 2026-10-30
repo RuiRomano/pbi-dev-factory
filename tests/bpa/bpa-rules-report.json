@@ -1,6 +1,25 @@
 {
   "rules": [
     {
+      "id": "THEME_NAME",
+      "name": "Theme name",
+      "description": "Report theme should use team Contoso theme file.",
+      "part": "Report",
+      "disabled": false,
+      "test": [
+        {
+          "substr": [
+            {
+              "var": "themeCollection.customTheme.name"
+            },
+            0,
+            7
+          ]
+        },
+        "Contoso"
+      ]
+    },
+    {
       "id": "REMOVE_UNUSED_CUSTOM_VISUALS",
       "name": "Remove custom visuals which are not used in the report.",
       "description": "Returns an array of custom visual names to be removed if any. To disable this rule, mark it as disabled in the base rules file.",

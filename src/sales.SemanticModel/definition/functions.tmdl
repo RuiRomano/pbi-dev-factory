@@ -1,0 +1,28 @@
+/// Table Assertions - PQL.Assert.Tbl namespace
+/// Table-level assertion functions for schema and structure validation
+/// Publisher: PQL (Power Query Lint)
+/// Asserts that a table has at least one row.
+function 'PQL.Assert.Tbl.ShouldHaveRows' =
+		(testName : STRING, tableRef : TABLE EXPR) =>
+			VAR _RowCount = COUNTROWS(tableRef)
+			VAR _Passed = _RowCount > 0
+			RETURN ROW(
+				"TestName", testName,
+				"Expected", "Table has rows",
+				"Actual", IF(_Passed, "HAS ROWS (" & FORMAT(_RowCount, "0") & ")", "EMPTY (0 rows)"),
+				"Passed", _Passed
+			)
+	lineageTag: 2fa4a3f3-c3e7-4891-b169-84ceda6dd659
+
+	annotation DAXLIB_PackageId = PQL.Assert
+
+	annotation DAXLIB_PackageVersion = 0.8.0
+
+function Tests =
+		() => UNION(
+		        PQL.Assert.Tbl.ShouldHaveRows("Sales should have rows", 'Sales')
+		        ,
+		        PQL.Assert.Tbl.ShouldHaveRows("Customer should have rows", 'Customer')
+		        )
+	lineageTag: ce15773d-5b5a-4708-8f2c-b3ae3575ab40
+

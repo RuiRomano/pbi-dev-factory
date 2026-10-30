@@ -21,6 +21,28 @@ The report uses a registered [Contoso theme](../../src/sales-overview.Report/Sta
 
 The [description specification](../specs/semantic-model-descriptions-202610.md) provides supporting interpretation and caveats. Its linked company-context file is absent from the current worktree, so it was not treated as an available business glossary.
 
+## Run deployed model tests
+
+Install the project requirements and the Fabric CLI, then authenticate with
+`fab auth login`. Set `WORKSPACE_NAME` in the root `.env` file and run:
+
+```powershell
+python scripts\test-models.py
+```
+
+The [test script](../../scripts/test-models.py) finds semantic models under `src`,
+reads their display names from `.platform`, resolves their deployed IDs with
+`fab get`, and runs `EVALUATE TESTS()` through the Power BI API. It prints the
+query results as an aligned table and stops on a CLI or query error. After testing all models, it
+raises one error listing every test whose `[Passed]` value is not JSON `true`,
+including the model name and test details, and exits with a nonzero status.
+
+The [model-test workflow](../../.github/workflows/test-models.yml) runs manually
+from GitHub Actions against the PRD workspace. It uses the PRD environment's
+`AZURE_CREDENTIALS` secret to sign in to Azure, authenticates Fabric CLI with
+`fab auth login --azure-cli`, and runs the same script. A failed test fails the
+workflow.
+
 ## Inspection and Validation
 
 Documented on 2026-10-30 from the local model metadata and structured report inspection. Coverage includes five tables, 63 columns, 13 measures, four relationships, one hierarchy, two report pages and nine visuals. No other semantic models, reports or standalone report definitions were found.

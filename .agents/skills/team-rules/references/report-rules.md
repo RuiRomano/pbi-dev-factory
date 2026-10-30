@@ -1,4 +1,4 @@
-# Report Style
+# Report Development Rules
 
 ## Design guidance for new reports
 

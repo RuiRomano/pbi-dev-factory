@@ -1,0 +1,36 @@
+name: bpa
+  
+on:
+  pull_request:
+    branches: 
+      - main      
+    paths:
+      - 'src/**'
+      - '.bpa/**'   
+  
+  workflow_dispatch:
+        
+jobs:
+  
+  bpa:   
+    runs-on: windows-latest
+    
+    steps:
+        - name: Check out the code
+          uses: actions/checkout@v6
+
+        - uses: actions/cache@v5
+          id: cache-tools
+          with:
+            path: |
+              ./tests/bpa/_tools/
+            key: ${{ runner.os }}-tools
+
+        - name: BPA Semantic Models
+          id: bpa-semantic-models
+          run: .\scripts\bpa\bpa.ps1 -src @("./src/*.SemanticModel")
+      
+        - name: BPA Reports
+          if: ${{ success() || steps.bpa-semantic-models.conclusion == 'failure' }}
+          id: bpa-reports
+          run: .\scripts\bpa\bpa.ps1 -src @("./src/*.Report")

@@ -14,14 +14,14 @@ on:
   workflow_dispatch:
 
 env:
-  WORKSPACE_NAME: "RR - PBI Factory {prd}"
-  ENVIRONMENT: "PRD"
+  WORKSPACE_NAME: "RR - PBI Factory {dev}"
+  ENVIRONMENT: "DEV"
   AUTH: "CLI"
   
 jobs:
   deploy:    
     runs-on: ubuntu-latest
-    environment: "PRD"
+    environment: "DEV"
     
     steps:
       - name: Check out the code
