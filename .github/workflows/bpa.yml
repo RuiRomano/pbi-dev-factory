@@ -1,3 +1,6 @@
+# Runs Best Practice Analyzer (BPA) checks on semantic models and reports under src.
+# Caches BPA tools and runs report checks even if semantic model checks fail.
+# Supports calls from other workflows and manual runs.
 name: bpa
   
 on:

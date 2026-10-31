@@ -1,3 +1,6 @@
+# Runs test-data.py against the configured Fabric development workspace.
+# Uses the DEV environment and authenticates Fabric CLI through Azure CLI with AZURE_CREDENTIALS.
+# Supports calls from other workflows and manual runs.
 name: test
 
 on:

@@ -1,3 +1,6 @@
+# Deploys to the configured Fabric development workspace, then runs refresh.py.
+# Uses the DEV environment and AZURE_CREDENTIALS for Azure CLI authentication.
+# Supports calls from other workflows and manual runs.
 name: deploy
 
 on:

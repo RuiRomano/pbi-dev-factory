@@ -1,3 +1,6 @@
+# Validates non-draft pull requests targeting main when files under src change.
+# Runs BPA first, then deploys and tests, with each job requiring the previous job to succeed.
+# Also exposes a manual trigger; the BPA job requires a non-draft pull request event.
 name: PR validation
 
 on:
