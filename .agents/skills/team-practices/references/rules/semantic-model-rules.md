@@ -6,6 +6,7 @@
 - Ensure names are consistent across the model. For example, its not consistent to have a measure `Sales Amount Last Year` and another `Cost (LY)`
 - Apply the naming conventions below. For existing models, apply these rules only when design changes are in scope. Do not rename unrelated objects.
 - When creating measures also add at least one test in the DAX function `Tests.Run` in the model. This function is executed for data quality tests.
+- When creating descriptions or AI context, load the [company-context.md](company-context.md)  for tone and business context so descriptions sound like they come from someone at Northwind Retail Group
 
 ## Naming Conventions
 

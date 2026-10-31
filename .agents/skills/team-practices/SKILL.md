@@ -36,6 +36,7 @@ The rule files in `references/rules/` are the repository's authority for develop
 | [report-rules](./references/rules/report-rules.md) | Design standards, Contoso theme, color, typography, layout, brand signature, rendered review |
 | [contoso-theme.json](./references/rules/contoso-theme.json) | Power BI theme baseline for new reports |
 | [contoso-design-standards.png](./references/rules/contoso-design-standards.png) | Brand reference image for new reports |
+| [company-context.md](./references/rules/company-context.md) | Use this as general background when building reports, writing descriptions, or documenting any data model at Northwind Retail Group. Not for external distribution. |
 
 How to apply them:
 
