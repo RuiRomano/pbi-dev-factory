@@ -1,10 +1,13 @@
+/// Product dimension with one row per product key, containing product attributes, catalog prices and category classifications for filtering sales.
 table Product
 	lineageTag: e9374b9a-faee-4f9e-b2e7-d9aafb9d6a91
 
+	/// Number of product dimension rows in the current context, including products without sales. Sales and calendar filters do not flow back to this dimension.
 	measure '# Products' = COUNTROWS('Product')
 		formatString: #,##0
 		lineageTag: 1f8f1a2a-06b6-4989-8af7-212719cf3617
 
+	/// Product name, used as the dimension's default label.
 	column Product
 		dataType: string
 		lineageTag: da435585-1f9a-44bd-ba2c-34c98f298cfc
@@ -26,6 +29,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product business code supplied by the source.
 	column 'Product Code'
 		dataType: string
 		lineageTag: e9d204ad-76d8-4db9-9d1a-b9c07a4b50b2
@@ -34,6 +38,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Manufacturer of the product.
 	column Manufacturer
 		dataType: string
 		lineageTag: 59e45f50-f68d-44c3-becd-70ccd5a7eb7d
@@ -42,6 +47,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Brand of the product.
 	column Brand
 		dataType: string
 		lineageTag: a71b235d-8f7e-4678-85a3-96a78d64bf87
@@ -50,6 +56,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product color supplied by the source.
 	column Color
 		dataType: string
 		lineageTag: 7054b4d0-6d93-4c96-be74-800d02d96e43
@@ -58,6 +65,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Unit of measure for the product's Weight value.
 	column 'Weight Unit Measure'
 		dataType: string
 		lineageTag: 78fcf7c4-2b5d-45b0-abf9-6ee3b3aa255b
@@ -66,6 +74,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product weight in the unit specified by Weight Unit Measure.
 	column Weight
 		dataType: decimal
 		lineageTag: a6299b36-bd05-4b41-8493-e45359af237b
@@ -74,6 +83,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Catalog cost per product unit from the source. Sales cost measures use Sales[Unit Cost], not this attribute.
 	column 'Unit Cost'
 		dataType: decimal
 		lineageTag: f89fa3e3-061d-4269-8cd3-aa6ce2a464d2
@@ -82,6 +92,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Catalog price per product unit from the source. Sales Amount uses Sales[Net Price], not this attribute.
 	column 'Unit Price'
 		dataType: decimal
 		lineageTag: ef300027-e4eb-4c7d-9770-ab8f6dab6b15
@@ -90,6 +101,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Code identifying the product subcategory.
 	column 'Subcategory Code'
 		dataType: string
 		lineageTag: 7cd08eb9-2cad-4263-ae88-8c5121a68b7e
@@ -98,6 +110,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product subcategory name.
 	column Subcategory
 		dataType: string
 		lineageTag: 0a208c62-4bdd-4873-af18-ebc286c5b3bb
@@ -106,6 +119,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Code identifying the product category.
 	column 'Category Code'
 		dataType: string
 		lineageTag: c0fc218a-5a06-4757-9172-2d303a67f3ff
@@ -114,6 +128,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product category name.
 	column Category
 		dataType: string
 		lineageTag: 0f4b99cc-fdb6-4f04-b7d9-bbdcf7b2c601

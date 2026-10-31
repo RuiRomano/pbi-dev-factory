@@ -1,6 +1,8 @@
+/// Store dimension with one row per store key, containing location, floor area and operating dates for filtering sales.
 table Store
 	lineageTag: 54d5f884-12db-4e03-a120-08cd725db2c4
 
+	/// Number of store dimension rows in the current context, including stores without sales. Sales and calendar filters do not flow back to this dimension.
 	measure '# Stores' = COUNTROWS('Store')
 		formatString: #,##0
 		lineageTag: 868df9c8-f579-47d1-a776-3d29121df7c7
@@ -17,6 +19,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Store business code supplied by the source.
 	column 'Store Code'
 		dataType: string
 		lineageTag: 307e3348-2132-4db3-b76a-771ac4561ef5
@@ -25,6 +28,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Country where the store is located.
 	column Country
 		dataType: string
 		lineageTag: 7564fe29-ad01-43e0-ba93-2e1634e1a9b3
@@ -34,6 +38,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// State or province where the store is located.
 	column State
 		dataType: string
 		lineageTag: f471c9c0-1924-46e4-99d8-59ccf0f64cba
@@ -42,6 +47,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Store name, used as the dimension's default label.
 	column Store
 		dataType: string
 		lineageTag: 7bee915f-7eb7-4dbc-a16f-e796f410b3f5
@@ -51,6 +57,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Store floor area in square meters.
 	column 'Square Meters'
 		dataType: int64
 		formatString: 0
@@ -60,6 +67,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Store opening date supplied by the source.
 	column 'Open Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
@@ -71,6 +79,7 @@ table Store
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Store closing date supplied by the source.
 	column 'Close Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
@@ -82,6 +91,7 @@ table Store
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Store status value supplied by the source.
 	column Status
 		dataType: string
 		lineageTag: 93122991-3d6a-413c-ad26-3610fa90013b

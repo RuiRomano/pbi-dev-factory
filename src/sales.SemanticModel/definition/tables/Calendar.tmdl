@@ -1,7 +1,9 @@
+/// Daily calendar from 2017-01-01 through 2021-12-31, with one row per date. Filters sales by order date and supports time comparisons.
 table Calendar
 	lineageTag: bfa0074c-0a44-4a9c-8bba-c87af778b3d7
 	dataCategory: Time
 
+	/// Day of the month, from 1 to 31.
 	column Day
 		dataType: int64
 		formatString: 0
@@ -11,6 +13,7 @@ table Calendar
 
 		annotation SummarizationSetBy = User
 
+	/// Calendar month number, from 1 to 12.
 	column Month
 		dataType: int64
 		formatString: 0
@@ -22,6 +25,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Calendar quarter label, from Q1 to Q4.
 	column Quarter
 		dataType: string
 		lineageTag: 0d2804c4-111e-4544-aaf6-c6a6988e49a1
@@ -30,6 +34,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Calendar year of the date.
 	column Year
 		dataType: int64
 		formatString: 0
@@ -39,6 +44,7 @@ table Calendar
 
 		annotation SummarizationSetBy = User
 
+	/// Daily calendar key related to Sales[Order Date].
 	column Date
 		dataType: dateTime
 		isKey
@@ -56,6 +62,7 @@ table Calendar
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Abbreviated month name, sorted by calendar month number.
 	column 'Month Name'
 		dataType: string
 		lineageTag: 062506a9-c575-44d5-8498-18f83383b9bb
@@ -67,6 +74,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Calendar year and abbreviated month converted to a date and displayed as month and year.
 	column Year-Month
 		dataType: dateTime
 		formatString: mmm yyyy
@@ -78,6 +86,7 @@ table Calendar
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Week of the year from Power Query Date.WeekOfYear, using its default first-day convention.
 	column 'Week Number'
 		dataType: int64
 		formatString: 0
@@ -87,6 +96,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Power Query Date.DayOfWeek index plus one, using its default first-day convention.
 	column 'Day of Week'
 		dataType: int64
 		formatString: 0
@@ -96,6 +106,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Full weekday name, sorted by Day of Week.
 	column 'Day Name'
 		dataType: string
 		lineageTag: 64852f77-1949-4ead-8d3c-ba5471bda0f6
@@ -105,6 +116,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// True when the default Power Query Date.DayOfWeek index is at least five. No explicit first-day convention is supplied.
 	column 'Is Weekend'
 		dataType: boolean
 		formatString: """TRUE"";""TRUE"";""FALSE"""
@@ -116,6 +128,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Fiscal year ending in June: calendar year plus one for July through December, otherwise calendar year.
 	column 'Fiscal Year'
 		dataType: int64
 		formatString: 0
@@ -127,6 +140,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Label calculated as FQ plus integer division of calendar month plus five by three. The existing formula produces FQ2 through FQ5, not a conventional fiscal-quarter cycle.
 	column 'Fiscal Quarter'
 		dataType: string
 		lineageTag: 58e95095-84d6-47f8-a9af-9ee5f1d2621b
