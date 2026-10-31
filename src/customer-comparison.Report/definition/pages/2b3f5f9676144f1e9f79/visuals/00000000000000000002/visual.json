@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "00000000000000000002",
+  "position": {"x": 48, "y": 168, "z": 1, "width": 1824, "height": 528, "tabOrder": 1},
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {"projections": [{"field": {"Column": {"Expression": {"SourceRef": {"Entity": "Calendar"}}, "Property": "Year-Month"}}, "queryRef": "Calendar.Year-Month", "nativeQueryRef": "Month", "active": true}]},
+        "Y": {"projections": [
+          {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "# New Customers"}}, "queryRef": "Sales.# New Customers", "nativeQueryRef": "New customers", "displayName": "New customers"},
+          {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "# Returning Customers"}}, "queryRef": "Sales.# Returning Customers", "nativeQueryRef": "Existing customers", "displayName": "Existing customers"}
+        ]},
+        "Tooltips": {"projections": [{"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "# Customers (w/ Sales)"}}, "queryRef": "Sales.# Customers (w/ Sales)", "nativeQueryRef": "Customers with sales", "displayName": "Customers with sales"}]}
+      },
+      "sortDefinition": {"sort": [{"field": {"Column": {"Expression": {"SourceRef": {"Entity": "Calendar"}}, "Property": "Year-Month"}}, "direction": "Ascending"}], "isDefaultSort": true}
+    },
+    "objects": {
+      "categoryAxis": [{"properties": {"axisType": {"expr": {"Literal": {"Value": "'Categorical'"}}}, "showAxisTitle": {"expr": {"Literal": {"Value": "false"}}}}}],
+      "valueAxis": [{"properties": {"start": {"expr": {"Literal": {"Value": "0D"}}}, "labelDisplayUnits": {"expr": {"Literal": {"Value": "1D"}}}, "labelPrecision": {"expr": {"Literal": {"Value": "0L"}}}, "showAxisTitle": {"expr": {"Literal": {"Value": "true"}}}, "titleText": {"expr": {"Literal": {"Value": "'Customers'"}}}}}],
+      "legend": [{"properties": {"show": {"expr": {"Literal": {"Value": "true"}}}, "position": {"expr": {"Literal": {"Value": "'Top'"}}}, "showTitle": {"expr": {"Literal": {"Value": "false"}}}}}],
+      "dataPoint": [
+        {"properties": {"fill": {"solid": {"color": {"expr": {"Literal": {"Value": "'#536CE5'"}}}}}}, "selector": {"metadata": "Sales.# New Customers"}},
+        {"properties": {"fill": {"solid": {"color": {"expr": {"Literal": {"Value": "'#20283F'"}}}}}}, "selector": {"metadata": "Sales.# Returning Customers"}}
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [{"properties": {"show": {"expr": {"Literal": {"Value": "true"}}}, "text": {"expr": {"Literal": {"Value": "'New versus existing customers by month'"}}}}}],
+      "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Side-by-side monthly counts of new and existing customers, ordered chronologically. Existing customers use the returning-customer measure. Hover for total customers with sales.'" }}}}}]
+    }
+  }
+}
