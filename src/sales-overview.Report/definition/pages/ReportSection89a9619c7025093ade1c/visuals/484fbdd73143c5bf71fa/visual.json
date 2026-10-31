@@ -7,7 +7,7 @@
     "z": 2000,
     "height": 213.47939203067233,
     "width": 1243.0179378337668,
-    "tabOrder": 1000
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "areaChart",
@@ -94,6 +94,21 @@
         ],
         "isDefaultSort": true
       }
+    },
+    "visualContainerObjects": {
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Monthly sales amount compared with the previous year and a 12-month moving average, ordered chronologically.'"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "drillFilterOtherVisuals": true
   }

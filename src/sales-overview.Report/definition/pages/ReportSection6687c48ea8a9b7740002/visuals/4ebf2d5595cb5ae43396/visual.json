@@ -7,7 +7,7 @@
     "z": 0,
     "height": 568.25729755580983,
     "width": 1205.7758723760398,
-    "tabOrder": 2000
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "pivotTable",
@@ -100,6 +100,19 @@
       }
     },
     "visualContainerObjects": {
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'KPI table showing sales amount, margin and cost by product category and year.'"
+                }
+              }
+            }
+          }
+        }
+      ],
       "title": [
         {
           "properties": {

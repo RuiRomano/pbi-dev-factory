@@ -7,7 +7,7 @@
     "z": 0,
     "height": 118.50033837130611,
     "width": 319.11933228062259,
-    "tabOrder": 9000
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "slicer",
@@ -61,6 +61,41 @@
       "general": [
         {
           "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Select a date range to filter the sales visuals on this page.'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Date range'"
+                }
+              }
+            }
+          }
         }
       ]
     },

@@ -7,7 +7,7 @@
     "z": 1000,
     "height": 272.37025879775433,
     "width": 485.84965082842666,
-    "tabOrder": 0
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "barChart",
@@ -101,6 +101,21 @@
           }
         ]
       }
+    },
+    "visualContainerObjects": {
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sales amount by product brand and customer gender. Drill down from brand to product.'"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "drillFilterOtherVisuals": true
   },
