@@ -38,6 +38,8 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
 
 ## 4. Run local checks and repair
 
+> Only on Windows environment. If not Windows skip this.
+
 - Check every new or changed object against the applicable team rules. Fix deviations you introduced. Report existing ones without changing them.
 - Run BPA from the repository root against every semantic model and report in `src/`:
 
