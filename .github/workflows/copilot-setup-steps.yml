@@ -38,8 +38,8 @@ jobs:
       - name: Fabric CLI Login
         run: fab auth login --azure-cli
 
-      - name: Verify AZ CLI and FAB CLI installation
+      - name: Verify FAB CLI installation
         run: |
           python --version
           fab --version
-          az account show
+          fab auth status
