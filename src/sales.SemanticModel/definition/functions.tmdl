@@ -647,3 +647,4 @@ function 'PQL.Assert.Tbl.ShouldHaveColumns' =
 	annotation DAXLIB_PackageId = PQL.Assert
 
 	annotation DAXLIB_PackageVersion = 0.8.0
+

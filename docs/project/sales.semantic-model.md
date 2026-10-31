@@ -242,6 +242,10 @@ Both measures reuse `[Margin]` and retain its `$ #,##0` currency format. `MARGIN
 
 Ten additional assertions in `Tests.Run` cover month and single-day LY, midyear YTD, category and brand filters, the calendar start, January 1, full-year totals and empty customer selections. These compare the measures with `[Margin]` under explicit date ranges or known boundary behavior.
 
+The developer approved proceeding without a separate spec for this small change. Both measures loaded successfully, were deployed to `RR - PBI Factory {dev}`, and passed all ten targeted assertions. Before refresh, Margin, Sales Amount and Cost matched their pre-change baseline across four years and the grand total. After `python scripts/refresh.py`, all 46 assertions passed with boolean true. A live comparison of 97 results for 2019, including month/category rows and the grand total, matched independent date-range calculations for both measures, including blank status. Refresh randomizes sales-line values, so monetary baselines were compared before refresh. The deployment script also republished the unchanged report.
+
+Local BPA was attempted before and after the change but could not start its Windows `TabularEditor.exe` on this Linux runner (`Permission denied`). Team-rule checks and TMDL loading passed; BPA results remain unverified. Secret scanning found no secrets. CodeQL does not analyze these DAX/TMDL changes.
+
 ### # Sales
 
 Counts filtered sales-table rows. At the intended grain this counts order lines, not distinct orders, baskets or units.
@@ -366,7 +370,7 @@ The original documentation inspection was offline. The returning-customer implem
 
 The [returning-customer spec](../specs/returning-customers-202610.md) defines the approved customer behavior. [Tests.Run](../../src/sales.SemanticModel/definition/functions.tmdl) now has 46 assertions: the original four remain unchanged, 32 cover returning customers, supporting fixtures and reconciliation, and ten cover Margin time intelligence.
 
-Run `python scripts\test-data.py` from the repository root against the configured development workspace. The original 36 assertions returned boolean true before the Margin time-intelligence change. Customer coverage includes single-brand first and repeat purchases, selected and excluded brands/categories, multiple same-day rows, periods containing first and later purchases, non-contiguous date selections, blank versus zero, and date/month/customer/category-brand rows and totals.
+Run `python scripts\test-data.py` from the repository root against the configured development workspace. All 46 assertions returned boolean true after the Margin time-intelligence deployment and refresh. Customer coverage includes single-brand first and repeat purchases, selected and excluded brands/categories, multiple same-day rows, periods containing first and later purchases, non-contiguous date selections, blank versus zero, and date/month/customer/category-brand rows and totals.
 
 An independent per-customer first-sale calculation matched the returning measure across 2,815 grouped results, including totals: 725 date rows, 1,974 customer rows, five year rows and 111 year/category/brand rows. Both reused measures matched their pre-change baseline in all five year/total rows and eight fixture scopes.
 
