@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "00000000000000000003",
+  "position": {"x": 32, "y": 448, "z": 2, "width": 1216, "height": 140, "tabOrder": 2},
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {"projections": [{"field": {"Column": {"Expression": {"SourceRef": {"Entity": "Calendar"}}, "Property": "Year-Month"}}, "queryRef": "Calendar.Year-Month", "nativeQueryRef": "Month"}]},
+        "Values": {"projections": [
+          {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "# New Customers"}}, "queryRef": "Sales.# New Customers", "nativeQueryRef": "New customers", "displayName": "New customers"},
+          {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "# Returning Customers"}}, "queryRef": "Sales.# Returning Customers", "nativeQueryRef": "Existing customers", "displayName": "Existing customers"},
+          {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "# Customers (w/ Sales)"}}, "queryRef": "Sales.# Customers (w/ Sales)", "nativeQueryRef": "Customers with sales", "displayName": "Customers with sales"}
+        ]}
+      },
+      "sortDefinition": {"sort": [{"field": {"Column": {"Expression": {"SourceRef": {"Entity": "Calendar"}}, "Property": "Year-Month"}}, "direction": "Ascending"}], "isDefaultSort": true}
+    },
+    "objects": {
+      "columnHeaders": [{"properties": {"autoSizeColumnWidth": {"expr": {"Literal": {"Value": "true"}}}, "columnAdjustment": {"expr": {"Literal": {"Value": "'growToFit'"}}}}}]
+    },
+    "visualContainerObjects": {
+      "title": [{"properties": {"show": {"expr": {"Literal": {"Value": "true"}}}, "text": {"expr": {"Literal": {"Value": "'Monthly detail'"}}}}}],
+      "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Monthly table of new, existing and total customers with sales. New plus existing equals total customers for each row. Grand totals reclassify customers across the selected period rather than sum monthly counts.'" }}}}}]
+    }
+  }
+}

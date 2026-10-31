@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "customer-comparison"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "a1eecd53-5377-4ae2-b678-dcd84a76b1a9"
+  }
+}
