@@ -8,6 +8,7 @@ table Sales
 		annotation PBI_FormatHint = {"isCustom":true}
 
 	measure 'Sales Qty' = sum('Sales'[Quantity])
+		formatString: #,##0
 		lineageTag: c2ff8d96-2f03-4005-84df-91458625b73b
 
 	measure 'Sales Amount' = SUMX('Sales', 'Sales'[Quantity] * 'Sales'[Net Price])
