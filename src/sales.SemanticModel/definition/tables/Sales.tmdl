@@ -1,30 +1,37 @@
+/// Sample retail sales at order-line grain, identified by Order Number and Line Number. Quantity, net price and time are refresh-generated; monetary metrics are not certified revenue or currency-converted.
 table Sales
 	lineageTag: 97143e5b-7736-4fcb-8042-26b92b1f5684
 
+	/// Distinct customer keys in filtered sales, not all customer records. Counts a customer once per context; group counts need not add to totals. Includes a blank key if present; blank when no sales exist.
 	measure '# Customers (w/ Sales)' = DISTINCTCOUNT('Sales'[CustomerKey])
 		formatString: #,##0
 		lineageTag: 4ec872f0-a42d-4aa9-bf6b-1ca7c4916336
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Individual product units sold, summed from refresh-randomized sales-line quantities. Not a count of orders, baskets or lines. Responds to order-date, product, customer and store filters.
 	measure 'Sales Qty' = sum('Sales'[Quantity])
 		formatString: #,##0
 		lineageTag: c2ff8d96-2f03-4005-84df-91458625b73b
 
+	/// Sample sales value: quantity times net unit price, with no currency conversion or explicit returns adjustment. Not certified net revenue. Quantity and net price are randomized at refresh; $ is display only.
 	measure 'Sales Amount' = SUMX('Sales', 'Sales'[Quantity] * 'Sales'[Net Price])
 		formatString: $ #,##0
 		lineageTag: a8e95485-02a2-4525-b02a-b2418fbdbe4c
 
+	/// Prior-year Sales Amount for the shifted calendar date selection, only when current Sales Amount is positive. Not currency-converted or certified revenue. Other dimension filters remain; $ is display only.
 	measure 'Sales Amount (LY)' = IF ([Sales Amount] > 0, CALCULATE([Sales Amount], SAMEPERIODLASTYEAR('Calendar'[Date])))
 		formatString: $ #,##0
 		lineageTag: 3fa889ae-64b9-4a6e-b0e6-c81c90fd32bf
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Average of nonblank daily Sales Amount over selected calendar dates, not every day including no-sales days. Explicit zero days count. Not currency-converted or certified revenue; $ is display only.
 	measure 'Sales Amount Avg per Day' = AVERAGEX(VALUES('Calendar'[Date]), [Sales Amount])
 		formatString: $ #,##0
 		lineageTag: 65842ce7-7176-4106-868e-2e83aaa62b4c
 
+	/// Monetary sales-line margin: quantity times (net unit price minus unit cost). Not margin percentage or net profit. Uses randomized sales values without currency conversion; $ is display only.
 	measure Margin =
 			SUMX (
 			    Sales,
@@ -34,12 +41,14 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: d22a262b-b776-4ccd-b9bd-7ef9c90eba51
 
+	/// Count of filtered sales rows, representing order lines at the intended grain. Not distinct orders, baskets or units. Responds to order-date, product, customer and store filters.
 	measure '# Sales' = COUNTROWS('Sales')
 		formatString: #,##0
 		lineageTag: 67791bd1-5f33-4a29-a9ac-be0ad2453fcf
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Nonblank daily Sales Amount average over 12 months ending at the latest selected calendar date, not average monthly totals. No currency conversion; $ is display only. Calendar/filter limits and sales-date guard apply; not a complete-history check.
 	measure 'Sales Amount (12M average)' =
 			
 			VAR v_selDate =
@@ -57,6 +66,7 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: 7fd60f7e-287e-46c3-a745-24c4507bc77b
 
+	/// Nonblank daily Sales Amount average over six months ending at the latest selected calendar date, not average monthly totals. No currency conversion; $ is display only. Calendar/filter limits and sales-date guard apply; not a complete-history check.
 	measure 'Sales Amount (6M average)' =
 			VAR v_selDate =
 			    MAX ( 'Calendar'[Date] )
@@ -73,10 +83,12 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: 9a48bea0-e5fb-40fa-9e81-f61288e31a02
 
+	/// Sales-line product cost amount: randomized quantity times sales-line unit cost. Not operating expenses or current Product unit cost. No currency conversion; $ is display only.
 	measure Cost = SUMX ( Sales, Sales[Quantity] * Sales[Unit Cost] )
 		formatString: $ #,##0
 		lineageTag: 3e5cb67e-a411-476f-ad34-7ec10dfd084d
 
+	/// Customers whose first qualifying purchase falls in the current context, not unconditional lifetime-new customers. Product/category/brand and remaining filters affect classification. Uses ALLSELECTED Customer/Calendar while finding first dates and removes Calendar Date filters; totals recalculate in their own context.
 	measure '# New Customers' = ```
 			
 			VAR CustomersWithNewDate =
@@ -111,13 +123,14 @@ table Sales
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
-	/// Customers with sales in the current context who are not new in that context. Complements # New Customers and inherits its ALLSELECTED Customer/Calendar and remaining product, category, brand and other filter scope, not an unconditional lifetime-first-purchase definition. A period containing first and later purchases counts the customer as new only. Totals recalculate in their own context. Returns blank with no sales and zero when all customers are new.
+	/// Customers with sales who are not new in the same context, not unconditional lifetime-repeat customers. Product/category/brand filters affect classification. Complements # New Customers and inherits its ALLSELECTED Customer/Calendar and remaining filter scope. A period containing first and later purchases counts the customer as new only. Totals recalculate in their own context. Returns blank with no sales and zero when all customers are new.
 	measure '# Returning Customers' = [# Customers (w/ Sales)] - [# New Customers]
 		formatString: #,##0
 		lineageTag: 776a5215-e6ed-42f1-af05-6475332d8cec
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Source order identifier, repeated across sales lines. Combine with Line Number for intended line identity; do not sum or treat # Sales as distinct orders.
 	column 'Order Number'
 		dataType: int64
 		formatString: 0
@@ -127,6 +140,7 @@ table Sales
 
 		annotation SummarizationSetBy = User
 
+	/// Source line identifier within an order, not a globally unique transaction key. Combine with Order Number for intended sales-line identity.
 	column 'Line Number'
 		dataType: int64
 		formatString: 0
@@ -151,6 +165,7 @@ table Sales
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Source delivery date on the sales line. Not related to Calendar; Calendar selections filter order dates, not delivery dates. Do not use to imply delivery-date time intelligence.
 	column 'Delivery Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
@@ -207,6 +222,7 @@ table Sales
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Source currency label on the sales line. Monetary measures do not convert currencies; $ display does not establish USD. Confirm compatible currency basis before aggregating.
 	column 'Currency Code'
 		dataType: string
 		lineageTag: a75ba79f-22a3-4bfd-9b52-80e5d73247a9
@@ -215,6 +231,7 @@ table Sales
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Source exchange-rate attribute with unverified direction and currency basis. No measure uses it for conversion; do not infer reporting-currency amounts or sum rates.
 	column 'Exchange Rate'
 		dataType: decimal
 		lineageTag: 0b3f913f-1587-4280-a8bb-21ab7d661086
@@ -223,6 +240,7 @@ table Sales
 
 		annotation SummarizationSetBy = User
 
+	/// Technical label copied from the Environment refresh parameter. Does not select a different source or represent a sales channel; exclude from the AI data schema.
 	column Environment
 		dataType: string
 		lineageTag: 05fb6ae8-19b4-40c5-81b2-e40a6edd8692
@@ -231,6 +249,7 @@ table Sales
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Random hour and minute generated at refresh, not an observed order or delivery timestamp. Do not use for trading-hour analysis; exclude from the AI data schema.
 	column Time
 		dataType: dateTime
 		formatString: Long Time

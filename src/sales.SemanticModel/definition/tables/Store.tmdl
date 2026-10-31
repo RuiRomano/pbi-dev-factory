@@ -1,6 +1,8 @@
+/// Store dimension, one record per StoreKey, with store geography, area and operating dates. Store geography differs from customer geography; status does not automatically exclude closed stores.
 table Store
 	lineageTag: 54d5f884-12db-4e03-a120-08cd725db2c4
 
+	/// Store dimension record count, not stores with sales or open stores only. No automatic status rule is applied. Sales-only date, customer or product filters do not reduce it through single-direction relationships.
 	measure '# Stores' = COUNTROWS('Store')
 		formatString: #,##0
 		lineageTag: 868df9c8-f579-47d1-a776-3d29121df7c7
@@ -17,6 +19,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Source business store code, distinct from hidden StoreKey used in relationships. Identifies a location, not an aggregatable quantity.
 	column 'Store Code'
 		dataType: string
 		lineageTag: 307e3348-2132-4db3-b76a-771ac4561ef5
@@ -25,6 +28,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Store country name, not customer country. Use for sales by selling location; clarify which geography is intended when a question says only country.
 	column Country
 		dataType: string
 		lineageTag: 7564fe29-ad01-43e0-ba93-2e1634e1a9b3
@@ -34,6 +38,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Store state or region label, not Customer State. Use with Store Country for selling-location sales comparisons.
 	column State
 		dataType: string
 		lineageTag: f471c9c0-1924-46e4-99d8-59ccf0f64cba
@@ -42,6 +47,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Store name for location performance comparisons, not a unique relationship key. Combine with Store Code or geography when names are ambiguous.
 	column Store
 		dataType: string
 		lineageTag: 7bee915f-7eb7-4dbc-a16f-e796f410b3f5
@@ -51,6 +57,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Store area in square meters, not a sales metric. No Sales per Square Meter measure exists; do not assume a sales-per-area calculation or sum repeated sales-line areas.
 	column 'Square Meters'
 		dataType: int64
 		formatString: 0
@@ -60,6 +67,7 @@ table Store
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Source store opening date, not a sales order date. Calendar does not filter this date, and it does not automatically limit sales to operating periods.
 	column 'Open Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
@@ -71,6 +79,7 @@ table Store
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Source store closing date when populated, not a sales order date. Blank handling and current operational status are not inferred; does not automatically exclude sales.
 	column 'Close Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
@@ -82,6 +91,7 @@ table Store
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Source store operating-status label. # Stores does not automatically count only open stores; apply an explicit status selection when needed without inventing status definitions.
 	column Status
 		dataType: string
 		lineageTag: 93122991-3d6a-413c-ad26-3610fa90013b

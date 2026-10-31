@@ -1,10 +1,13 @@
+/// Product dimension, one record per ProductKey, with category, subcategory, brand and manufacturer for slicing sales. Product unit price and cost are attributes, not realized sales-line amounts.
 table Product
 	lineageTag: e9374b9a-faee-4f9e-b2e7-d9aafb9d6a91
 
+	/// Product dimension record count, not products sold. Sales-only date, customer or store filters do not reduce it through single-direction relationships. Counts rows in the current Product filter context.
 	measure '# Products' = COUNTROWS('Product')
 		formatString: #,##0
 		lineageTag: 1f8f1a2a-06b6-4989-8af7-212719cf3617
 
+	/// Product name for merchandising comparisons. Use with category, subcategory or brand to slice sales; names are not guaranteed unique product identifiers.
 	column Product
 		dataType: string
 		lineageTag: da435585-1f9a-44bd-ba2c-34c98f298cfc
@@ -26,6 +29,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Source business product code, distinct from hidden ProductKey used in relationships. Identifies a product attribute, not a quantity to aggregate.
 	column 'Product Code'
 		dataType: string
 		lineageTag: e9d204ad-76d8-4db9-9d1a-b9c07a4b50b2
@@ -34,6 +38,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product manufacturer from the source. Distinct from Brand; use for manufacturer-level comparisons rather than assuming manufacturer and brand are interchangeable.
 	column Manufacturer
 		dataType: string
 		lineageTag: 59e45f50-f68d-44c3-becd-70ccd5a7eb7d
@@ -42,6 +47,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product brand used for sales comparisons and new/returning customer classification filters. Distinct from Manufacturer; selected brands affect qualifying purchase history.
 	column Brand
 		dataType: string
 		lineageTag: a71b235d-8f7e-4678-85a3-96a78d64bf87
@@ -50,6 +56,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Source product color attribute for grouping or filtering merchandise sales. Not a report formatting color.
 	column Color
 		dataType: string
 		lineageTag: 7054b4d0-6d93-4c96-be74-800d02d96e43
@@ -58,6 +65,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Unit label for Product Weight. Interpret weight alongside this field; weights in different units are not directly additive.
 	column 'Weight Unit Measure'
 		dataType: string
 		lineageTag: 78fcf7c4-2b5d-45b0-abf9-6ee3b3aa255b
@@ -66,6 +74,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product weight in Weight Unit Measure, not sales shipment weight. Do not sum across products or incompatible units without an explicit business definition.
 	column Weight
 		dataType: decimal
 		lineageTag: a6299b36-bd05-4b41-8493-e45359af237b
@@ -74,6 +83,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Per-unit cost on the product record, not sales-line unit cost used by Cost and Margin. Not a total sales cost; currency basis is unverified.
 	column 'Unit Cost'
 		dataType: decimal
 		lineageTag: f89fa3e3-061d-4269-8cd3-aa6ce2a464d2
@@ -82,6 +92,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Per-unit price on the product record, not realized Sales Net Price or Sales Amount. Not total sales value; currency basis is unverified.
 	column 'Unit Price'
 		dataType: decimal
 		lineageTag: ef300027-e4eb-4c7d-9770-ab8f6dab6b15
@@ -90,6 +101,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Source product subcategory identifier. Use Subcategory for readable labels; not an aggregatable measure or product relationship key.
 	column 'Subcategory Code'
 		dataType: string
 		lineageTag: 7cd08eb9-2cad-4263-ae88-8c5121a68b7e
@@ -98,6 +110,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product subcategory label within Category. Use to compare merchandise sales below category level; selected subcategories affect qualifying purchase history.
 	column Subcategory
 		dataType: string
 		lineageTag: 0a208c62-4bdd-4873-af18-ebc286c5b3bb
@@ -106,6 +119,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Source product category identifier. Use Category for readable labels; not an aggregatable measure or product relationship key.
 	column 'Category Code'
 		dataType: string
 		lineageTag: c0fc218a-5a06-4757-9172-2d303a67f3ff
@@ -114,6 +128,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Product category label for merchandising comparisons. Selected categories affect sales and new/returning customer qualifying purchase history.
 	column Category
 		dataType: string
 		lineageTag: 0f4b99cc-fdb6-4f04-b7d9-bbdcf7b2c601

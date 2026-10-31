@@ -1,6 +1,6 @@
 # Copilot readiness
 
-**Status:** Draft
+**Status:** In progress
 **Updated:** 2026-10-31
 
 ## Goal
@@ -34,3 +34,6 @@ Currency basis, exchange-rate direction and treatment of returns and discounts a
 
 ## Change log
 - 2026-10-31: Created a draft for the developer-approved metadata-only scope. Model implementation, deployment and Copilot testing have not started.
+- 2026-10-31: Developer approved implementation. Loaded the source model with offline authoring tools; deployment, refresh and owner-side Copilot testing are not authorized in this request.
+- 2026-10-31: Saved description-only changes on five tables, 53 visible columns and 15 measures; reloaded the persisted folder successfully with five tables, 15 measures and four relationships. Checked complete description coverage and proved all non-description TMDL lines remain unchanged, including existing calculations and tests. Updated model documentation and the catalog with draft schema selections, AI instructions and representative questions; all relative file links in updated documents resolve.
+- 2026-10-31: Attempted local BPA with `& ./scripts/bpa/bpa.ps1 -src @('./src')`; it exited 1 because Windows TabularEditor.exe could not start on the Linux runner at script line 105 (permission denied). No model or report BPA results were produced. No new measures or test logic were added. Fabric baseline comparisons, all 36 live assertions and actual Copilot answers remain unverified for this change. Keep In progress until supported BPA and authorized live/Copilot checks are complete.
