@@ -34,6 +34,14 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: d22a262b-b776-4ccd-b9bd-7ef9c90eba51
 
+	/// Margin for the same selected calendar period last year. Other filters are preserved.
+	measure 'MARGIN (LY)' = CALCULATE ( [Margin], SAMEPERIODLASTYEAR ( 'Calendar'[Date] ) )
+		formatString: $ #,##0
+
+	/// Margin from January 1 through the last selected calendar date. Other filters are preserved.
+	measure 'MARGIN (YTD)' = CALCULATE ( [Margin], DATESYTD ( 'Calendar'[Date] ) )
+		formatString: $ #,##0
+
 	measure '# Sales' = COUNTROWS('Sales')
 		formatString: #,##0
 		lineageTag: 67791bd1-5f33-4a29-a9ac-be0ad2453fcf
@@ -349,4 +357,3 @@ table Sales
 	annotation PBI_ResultType = Table
 
 	annotation PBI_NavigationStepName = Navigation
-

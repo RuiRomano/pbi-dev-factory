@@ -193,7 +193,56 @@ function 'Tests.Run' =
 		            "Returning", [# Returning Customers]
 		        )
 		    RETURN
-		        PQL.Assert.ShouldBeTrue ( "Returning - category brand rows and total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) )
+		        PQL.Assert.ShouldBeTrue ( "Returning - category brand rows and total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldNotBeNull ( "Margin LY - prior month has data", [MARGIN (LY)] ),
+		            PQL.Assert.ShouldEqual (
+		                "Margin LY - month preserves category and brand",
+		                CALCULATE ( [Margin], REMOVEFILTERS ( 'Calendar' ), DATESBETWEEN ( 'Calendar'[Date], DATE ( 2018, 6, 1 ), DATE ( 2018, 6, 30 ) ) ),
+		                [MARGIN (LY)]
+		            ),
+		            PQL.Assert.ShouldNotBeNull ( "Margin YTD - year to date has data", [MARGIN (YTD)] ),
+		            PQL.Assert.ShouldEqual (
+		                "Margin YTD - midyear preserves category and brand",
+		                CALCULATE ( [Margin], REMOVEFILTERS ( 'Calendar' ), DATESBETWEEN ( 'Calendar'[Date], DATE ( 2019, 1, 1 ), DATE ( 2019, 6, 30 ) ) ),
+		                [MARGIN (YTD)]
+		            )
+		        ),
+		        TREATAS ( { 2019 }, 'Calendar'[Year] ),
+		        TREATAS ( { 6 }, 'Calendar'[Month] ),
+		        TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+		        TREATAS ( { "Southridge Video" }, 'Product'[Brand] )
+		    ),
+		    CALCULATETABLE (
+		        PQL.Assert.ShouldEqual (
+		            "Margin LY - single day",
+		            CALCULATE ( [Margin], REMOVEFILTERS ( 'Calendar' ), TREATAS ( { DATE ( 2018, 6, 25 ) }, 'Calendar'[Date] ) ),
+		            [MARGIN (LY)]
+		        ),
+		        TREATAS ( { DATE ( 2019, 6, 25 ) }, 'Calendar'[Date] ),
+		        TREATAS ( { 215446 }, 'Customer'[CustomerKey] )
+		    ),
+		    CALCULATETABLE (
+		        PQL.Assert.ShouldBeNull ( "Margin LY - before calendar start is blank", [MARGIN (LY)] ),
+		        TREATAS ( { 2017 }, 'Calendar'[Year] )
+		    ),
+		    CALCULATETABLE (
+		        PQL.Assert.ShouldEqual ( "Margin YTD - January 1 resets the year", [Margin], [MARGIN (YTD)] ),
+		        TREATAS ( { DATE ( 2019, 1, 1 ) }, 'Calendar'[Date] )
+		    ),
+		    CALCULATETABLE (
+		        PQL.Assert.ShouldEqual ( "Margin YTD - full year total", [Margin], [MARGIN (YTD)] ),
+		        TREATAS ( { 2019 }, 'Calendar'[Year] )
+		    ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldBeNull ( "Margin LY - empty customer selection is blank", [MARGIN (LY)] ),
+		            PQL.Assert.ShouldBeNull ( "Margin YTD - empty customer selection is blank", [MARGIN (YTD)] )
+		        ),
+		        FILTER ( ALL ( 'Customer'[CustomerKey] ), FALSE () ),
+		        TREATAS ( { DATE ( 2019, 6, 30 ) }, 'Calendar'[Date] )
+		    )
 		)
 	lineageTag: ce15773d-5b5a-4708-8f2c-b3ae3575ab40
 
@@ -598,4 +647,3 @@ function 'PQL.Assert.Tbl.ShouldHaveColumns' =
 	annotation DAXLIB_PackageId = PQL.Assert
 
 	annotation DAXLIB_PackageVersion = 0.8.0
-
