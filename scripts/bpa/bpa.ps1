@@ -1,6 +1,11 @@
 param (
     $src = @("**\*.SemanticModel", "**\*.Report")        
 )
+
+if ([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
+    Write-Warning "BPA did not run because this script requires Windows. Tabular Editor and FAB Inspector use Windows executables."
+    return
+}
   
 $currentFolder = (Split-Path $MyInvocation.MyCommand.Definition -Parent)
 

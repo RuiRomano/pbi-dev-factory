@@ -7,7 +7,7 @@
 | `src/` | PBIP projects: `*.SemanticModel` and `*.Report` folders |
 | `docs/specs/` | Development specs, one per feature or refactor |
 | `docs/project/` | Generated project documentation |
-| `scripts/bpa/bpa.ps1` | Local Best Practice Analyzer for models and reports |
+| `scripts/bpa/bpa.ps1` | Windows-only local Best Practice Analyzer for models and reports |
 | `scripts/deploy.py`, `scripts/refresh.py`, `scripts/test-data.py` | Fabric deployment, refresh and data tests |
 | `.env` | Target Fabric environment. Never print its contents. |
 
