@@ -1,10 +1,8 @@
 # Document the project
 
-Generate professional, business-friendly Markdown documentation for every semantic model and report in `src/`, and keep it in step with the code. Save under `docs/project/` unless the developer names another destination.
+Generate professional, business-friendly Markdown documentation for every artifact in `src/`, and keep it in step with the code. Save under `docs/project/` unless the developer names another destination.
 
 **When called by implement:** update the affected artifact documents, catalog entries and changed report pages in place. Discover all artifacts to keep the catalog accurate, but preserve unrelated documents and screenshots. Validate coverage and links for the updated content, report existing gaps separately, and return evidence to [implement](./implement.md) for its final report.
-
-**Uses:** [catalog template](./templates/docs-catalog.md), [semantic model template](./templates/docs-semantic-model.md), [report template](./templates/docs-report.md); the team rules for the artifacts documented, to report deviations.
 
 ## Checklist
 
@@ -69,5 +67,3 @@ Writing guidance:
 - Every report page has a screenshot or an explicit capture limitation.
 - All relative links and image paths resolve.
 - Mermaid diagrams use valid syntax.
-
-Add to the report: a **Documentation** row with documents created or updated, a **Coverage** row with artifacts and pages covered, and any team-rule deviations noticed during inspection under "Noticed, not changed".

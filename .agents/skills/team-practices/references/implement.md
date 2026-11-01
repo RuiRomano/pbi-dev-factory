@@ -1,6 +1,6 @@
 # Implement a spec
 
-Build what an approved spec describes, within the team rules, and keep the spec in step with what was actually built. In autopilot, own the full delivery: develop, run local BPA, deploy to the development workspace, refresh, run tests and live queries, and document.
+Build what an approved spec describes (simple asks may not have a spec), within the team rules, and keep the spec in step with what was actually built. In autopilot, own the full delivery: develop, run local BPA, deploy to the development workspace, refresh, run tests and live queries, and document.
 
 Development is done offline against `src/` but there is a development environment you can deploy the semantic model to test developments (e.g. test new measures with DAX queries)
 
@@ -24,7 +24,7 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
 
 ## 2. Load skills and rules
 
-- Load the domain skills for the artifacts in scope, then read the team development rule files in `./references/rules`. 
+- Load the domain skills for the artifacts in scope, then read the team development rule files in `./rules`. 
 - Team rules take precedence over conflicting guidance in the domain skills. Reapply them if you load another skill later.
 
 ## 3. Build and persist the source

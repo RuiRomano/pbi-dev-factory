@@ -1,19 +1,19 @@
 ---
 name: team-practices
-description: "Apply this repository's Power BI team practices: write and maintain specs, follow team rules, implement changes with local BPA, deploy to the Fabric development environment, test and query live semantic models, and document the project. Use when planning, specifying, implementing, documenting or testing any semantic model or report in this repo, including autopilot, autonomous or end-to-end development. Autopilot implementation chains development, local BPA, development-workspace deployment, refresh, tests, live queries and documentation. Team rules take precedence over conflicting guidance in other skills."
+description: "Apply this repository's Power BI team practices: write and maintain specs, follow team rules, implement changes with local BPA, deploy to the Fabric development environment, test and query live semantic models, and document the project. Team rules take precedence over conflicting guidance in other skills."
 argument-hint: "Describe what you want to spec, implement, document or test"
 ---
 
 # Power BI Team Practices
 
-Deliver Power BI work the way this team does it: start from a reviewed spec, build within the team rules, prove the result with the project tests, and keep the documentation current. This skill adds team process and rules on top of the domain skills. It does not replace them.
+**Deliver Power BI work the way this team does it**: start from a reviewed spec, build within the team rules, prove the result with the project tests, and keep the documentation current. This skill adds team process and rules on top of the domain skills. It does not replace them.
 
 ## Start here
 
 1. **Understand the request.** What the developer wants, which models or reports in `src/` are affected, and whether a spec already exists in `docs/specs/`. Reuse what the developer already said.
-2. **Load the domain skills** the task needs: `semantic-model-authoring` for models, DAX, relationships and data sources; `powerbi-report-cli` for pages, visuals, filters and bindings. Load both when the work spans models and reports.
-3. **Load the team rules.** Read the [rule files](#team-rules) for the artifacts in scope. They are required for spec and implementation work, and they apply to reviews, documentation and testing too.
-4. **Pick the workflow** below, load its file, and load the files its **Uses:** line names.
+2. **Load the domain skills** the task needs: `semantic-model-authoring` for models, DAX, relationships and data sources; `powerbi-report-cli` for Power BI report pages, visuals, filters and bindings. Load both when the work spans models and reports.
+3. **Load the team rules.** Read the [team rule files](#team-rules) for the artifacts in scope. They are required for spec and implementation work, and they apply to reviews, documentation and testing too.
+4. **Pick the workflow** below, load its file, and follow its checklist.
 5. **Report back** with the template in [Definition of done](#definition-of-done).
 
 ## Workflow selector
@@ -40,7 +40,7 @@ The rule files in `references/rules/` are the repository's authority for develop
 
 How to apply them:
 
-- **Precedence.** When another loaded skill gives conflicting development guidance, follow the team rules, whichever skill was loaded first. Reapply them after loading any additional skill. Keep the other skills' non-conflicting workflows, tool requirements and validation steps. Team rules do not override safety requirements, higher-priority instructions or explicit developer decisions.
+- **Precedence.** When another loaded skill gives conflicting development guidance, follow the team rules, whichever skill was loaded first. Keep the other skills' non-conflicting workflows, tool requirements and validation steps. Team rules do not override safety requirements, higher-priority instructions or explicit developer decisions.
 - **Scope.** Apply the rules to the work in scope. Do not rename unrelated objects or redesign an existing model or report just to enforce them. Report existing deviations instead.
 - **Specs.** Every spec states which rules apply and calls out any planned deviation for the developer to approve.
 - **Hand-off.** Before handing off, check the affected objects against the rules and list any unresolved deviation.

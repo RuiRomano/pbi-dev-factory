@@ -15,6 +15,7 @@
 
 - For all Power BI tasks, load `team-practices` skill after the applicable domain skills. Its rules take precedence over conflicting development guidance in other skills, including skills loaded later. 
 - Development should be made against the code in `src/` bu testing measures, testing refresh should be done against a live Fabric development workspace you can configure running `scripts\deploy.py`.
+- Implementation asks should follow the `implement` workflow in `team-practices` skill: spec > review > implement > test > deploy to dev > repeat
 
 ## Tool routing
 
