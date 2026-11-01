@@ -188,3 +188,13 @@ Open **Settings > Copilot** and disable **Require Approval for workflow runs** s
 
 > [!NOTE]
 > Disabling workflow approval allows agent-triggered workflows to run with their configured secrets and workspace permissions. Use this setting only in a trusted repository targeting a development workspace.
+
+## Resources
+
+- [Power BI Agentic Overview](https://learn.microsoft.com/power-bi/developer/agentic/power-bi-agentic-overview): Overview of agentic development tools and workflows for Power BI.
+- [Power BI Desktop projects (PBIP)](https://learn.microsoft.com/power-bi/developer/projects/projects-overview): Store Power BI models and reports as project files for source control.
+- [Power BI Project (PBIP) is now generally available - here's how it works](https://www.red-gate.com/simple-talk/data-analytics/powerbi/power-bi-project-pbip-format-guide/): A guide to the PBIP format and how it works.
+- [Introduction to CI/CD in Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/cicd/cicd-overview): Overview of source control and deployment workflows in Fabric.
+- [Source control for semantic models: deploy it right (part 1)](https://tabulareditor.com/blog/source-control-for-semantic-models): Guidance on semantic model source control.
+- [Validate every model change: deploy it right (part 2)](https://tabulareditor.com/blog/validate-every-model-change-with-a-pipeline): Guidance on validating model changes with a pipeline.
+- [How to write AI agent skills](https://tabulareditor.com/blog/how-to-write-ai-agent-skills): Guidance on writing skills for AI agents.
