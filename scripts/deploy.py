@@ -8,7 +8,7 @@ load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 environment = (os.getenv("ENVIRONMENT") or "").strip().upper() or "DEV"
 workspace_name = os.getenv("WORKSPACE_NAME")
-auth_mode = (os.getenv("AUTH") or "CLI").strip().upper()
+auth_mode = (os.getenv("AUTH") or "INTERACTIVE").strip().upper()
 
 if not workspace_name:
     raise ValueError("Set WORKSPACE_NAME in the environment or root .env file")

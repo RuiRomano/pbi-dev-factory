@@ -1,3 +1,4 @@
 fabric-cicd==1.4.0
 azure-identity==1.27.0
 python-dotenv==1.2.4
+ms-fabric-cli==1.8.0

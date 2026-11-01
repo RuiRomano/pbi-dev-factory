@@ -36,9 +36,9 @@ Install the project requirements and the Fabric CLI, then authenticate with `fab
 python scripts\test-data.py
 ```
 
-The [test script](../../scripts/test-data.py) finds semantic models under `src`, reads their display names from `.platform`, resolves their deployed IDs with `fab get`, and runs `EVALUATE Tests.Run()` through the Power BI API. It prints the query results as an aligned table and stops on a CLI or query error. After testing all models, it raises one error listing every test whose `[Passed]` value is not JSON `true`, including the model name and test details, and exits with a nonzero status.
+The [test data script](../../scripts/test-data.py) finds semantic models under `src`, reads their display names from `.platform`, resolves their deployed IDs with `fab get`, and runs `EVALUATE Tests.Run()` through the Power BI API. It prints the query results as an aligned table and stops on a CLI or query error. After testing all models, it raises one error listing every test whose `[Passed]` value is not JSON `true`, including the model name and test details, and exits with a nonzero status.
 
-The [test workflow](../../.github/workflows/test.yml) runs manually from GitHub Actions or through the [PR validation workflow](../../.github/workflows/pr-validation.yml) against the DEV workspace. It uses the DEV environment's `AZURE_CREDENTIALS` secret to sign in to Azure, authenticates Fabric CLI with `fab auth login --azure-cli`, and runs the same script. A failed test fails the workflow.
+The [test data workflow](../../.github/workflows/test-data.yml) runs manually from GitHub Actions or through the [PR validation workflow](../../.github/workflows/pr-validation.yml) against the DEV workspace. It uses the DEV environment's `AZURE_CREDENTIALS` secret to sign in to Azure, authenticates Fabric CLI with `fab auth login --azure-cli`, and runs the same script. A failed test fails the workflow.
 
 PR validation runs for pull requests targeting `main` that change `src/**`, or manually. It calls BPA, then deploys and refreshes the DEV workspace only if BPA succeeds, then runs the data tests only if deployment and refresh succeed. Each called workflow also supports manual execution. Deployment and tests retain the DEV environment's secrets and approval rules. Matching PRs share the same DEV workspace; fork PRs cannot access deployment secrets.
 
