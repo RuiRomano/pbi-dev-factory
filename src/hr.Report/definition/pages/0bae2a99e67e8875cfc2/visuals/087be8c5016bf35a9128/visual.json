@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "087be8c5016bf35a9128",
   "position": {
     "x": 24,
     "y": 472,
-    "width": 600,
-    "height": 208,
     "z": 5000,
+    "height": 208,
+    "width": 600,
     "tabOrder": 5000
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Department.Department",
-              "nativeQueryRef": "Department"
+              "nativeQueryRef": "Department",
+              "active": true
             }
           ]
         },

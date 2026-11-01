@@ -1,5 +1,6 @@
 /// Monthly snapshot: one row per employed employee at each month end, January 2023 through December 2025.
 table Headcount
+	lineageTag: 95719664-7c8d-4a10-bf32-f8d480dc2d71
 
 	/// Distinct employed people at the latest snapshot inside the selected dates; blank when no snapshot is selected.
 	measure HEADCOUNT =
@@ -10,6 +11,7 @@ table Headcount
 			        CALCULATE ( DISTINCTCOUNT ( 'Headcount'[Employee Key] ), 'Headcount'[Snapshot Date] = _snapshot )
 			    )
 		formatString: #,##0
+		lineageTag: 991064d4-fbb0-42bf-8015-8df80753462d
 
 	/// Full-time equivalents at the latest selected month-end snapshot, not a sum across months.
 	measure FTE =
@@ -20,6 +22,7 @@ table Headcount
 			        CALCULATE ( SUM ( 'Headcount'[FTE Value] ), 'Headcount'[Snapshot Date] = _snapshot )
 			    )
 		formatString: #,##0.0
+		lineageTag: bbcf3801-02be-46bb-bdd8-b006dba990f5
 
 	/// Mean monthly headcount across available month ends in the selected calendar period.
 	measure 'AVERAGE HEADCOUNT' =
@@ -34,6 +37,7 @@ table Headcount
 			        )
 			)
 		formatString: #,##0.0
+		lineageTag: cc92d07d-6fab-4317-b835-0b8566a47154
 
 	/// Illustrative monthly base-salary cost in synthetic currency units: annual salary times FTE divided by 12 at the latest selected snapshot.
 	measure 'SALARY COST' =
@@ -50,6 +54,7 @@ table Headcount
 			        )
 			    )
 		formatString: #,##0.00
+		lineageTag: ffdbdf42-8e3b-454c-9acf-787e37bd8f60
 
 	/// Month-end headcount at the corresponding month end one year before the last date selected.
 	measure 'HEADCOUNT LY' =
@@ -65,22 +70,26 @@ table Headcount
 			        )
 			    )
 		formatString: #,##0
+		lineageTag: 2f8344b1-d36b-4900-9e3e-bc67fd694077
 
 	column 'Employee Key'
 		dataType: int64
 		isHidden
+		lineageTag: 3775d177-416f-42de-89b9-0df161d10207
 		summarizeBy: none
 		sourceColumn: Employee Key
 
 	column 'Department Key'
 		dataType: int64
 		isHidden
+		lineageTag: ecd0dae8-8166-4c6e-ad5b-9554ae85f1c2
 		summarizeBy: none
 		sourceColumn: Department Key
 
 	column 'Location Key'
 		dataType: int64
 		isHidden
+		lineageTag: eb614098-725f-4b67-bd39-20b7bea5f7a8
 		summarizeBy: none
 		sourceColumn: Location Key
 
@@ -88,18 +97,23 @@ table Headcount
 		dataType: dateTime
 		isHidden
 		formatString: yyyy-mm-dd
+		lineageTag: 3f1dc552-42df-49c2-86f1-4ebda3ca78ba
 		summarizeBy: none
 		sourceColumn: Snapshot Date
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column 'FTE Value'
 		dataType: double
 		isHidden
+		lineageTag: 896e821c-fc47-42f7-ae45-e0f3ca8791e6
 		sourceColumn: FTE
 
 	/// Fictional annual base salary in synthetic currency units; not payroll or actual compensation.
 	column 'Annual Base Salary'
 		dataType: decimal
 		isHidden
+		lineageTag: c23cf62c-f8df-4bb1-9efc-4b6a0dc726c0
 		sourceColumn: Annual Base Salary
 
 	partition Headcount = m
@@ -127,3 +141,4 @@ table Headcount
 				        {"FTE", type number}, {"Annual Base Salary", Currency.Type}})
 				in
 				    Typed
+

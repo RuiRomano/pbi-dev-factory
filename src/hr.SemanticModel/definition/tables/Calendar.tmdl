@@ -1,22 +1,30 @@
 /// Daily, contiguous calendar from 2019 through 2025. Fiscal years end in January (FY25 ends January 2025).
 table Calendar
+	lineageTag: 119a9d89-4a5d-4160-8874-6167f38adcd6
 	dataCategory: Time
 
 	column Date
 		dataType: dateTime
 		isKey
 		formatString: yyyy-mm-dd
+		lineageTag: 3f6f13e5-65cf-4b80-bad3-6881f7383357
 		summarizeBy: none
 		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column 'Month End'
 		dataType: dateTime
 		formatString: mmm yyyy
+		lineageTag: e9b6d2c1-413a-4a3d-915e-d10b1dceb25b
 		summarizeBy: none
 		sourceColumn: Month End
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Month Label'
 		dataType: string
+		lineageTag: cb6ed92e-ad8d-409e-a034-6190ac0528e5
 		summarizeBy: none
 		sourceColumn: Month Label
 		sortByColumn: 'Year Month Key'
@@ -24,11 +32,13 @@ table Calendar
 	column 'Year Month Key'
 		dataType: int64
 		isHidden
+		lineageTag: 44d8cff1-ad0d-414f-88d6-9c32272cfca8
 		summarizeBy: none
 		sourceColumn: Year Month Key
 
 	column 'Month Name'
 		dataType: string
+		lineageTag: 99fe8006-ce84-43d7-bde8-a641a265c704
 		summarizeBy: none
 		sourceColumn: Month Name
 		sortByColumn: 'Month Number'
@@ -36,17 +46,20 @@ table Calendar
 	column 'Month Number'
 		dataType: int64
 		isHidden
+		lineageTag: 99f881ce-8b22-4da9-abb2-e97b47a07470
 		summarizeBy: none
 		sourceColumn: Month Number
 
 	column 'Fiscal Year'
 		dataType: string
+		lineageTag: 2760fcb0-a42d-47e4-982d-79e7eee9cd4b
 		summarizeBy: none
 		sourceColumn: Fiscal Year
 
 	column 'Fiscal Month'
 		dataType: int64
 		isHidden
+		lineageTag: 8ecc5d0f-cb84-43fc-91f6-8ea80d918186
 		summarizeBy: none
 		sourceColumn: Fiscal Month
 
@@ -67,3 +80,4 @@ table Calendar
 				    FiscalMonth = Table.AddColumn(FiscalYear, "Fiscal Month", each Number.Mod(Date.Month([Date]) + 10, 12) + 1, Int64.Type)
 				in
 				    Table.TransformColumnTypes(FiscalMonth, {{"Date", type date}})
+

@@ -38,3 +38,5 @@ expression EmployeeRows =
 		        {"Annual Base Salary", Currency.Type}, {"Exit Reason", type text}})
 		in
 		    Typed
+	lineageTag: 8e6d79c2-3291-49b0-80e8-97e06701a673
+

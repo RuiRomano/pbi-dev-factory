@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "365127a6516304f1b91b",
   "position": {
     "x": 24,
     "y": 472,
-    "width": 600,
-    "height": 208,
     "z": 5000,
+    "height": 208,
+    "width": 600,
     "tabOrder": 5000
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Employee.Gender",
-              "nativeQueryRef": "Gender"
+              "nativeQueryRef": "Gender",
+              "active": true
             }
           ]
         },

@@ -1,51 +1,64 @@
 /// Fictional employees, one row per employee. Organizational assignments are fixed for this demo.
 table Employee
+	lineageTag: b7e3996c-3f8a-4ac9-885c-83c9625612a0
 
 	column 'Employee Key'
 		dataType: int64
 		isHidden
+		lineageTag: 8007267f-8ee3-4289-9d42-087b6a25ab68
 		summarizeBy: none
 		sourceColumn: Employee Key
 
 	column Employee
 		dataType: string
+		lineageTag: 0c800c1f-4c71-4ace-804d-c8a02e52156b
 		isDefaultLabel
 		summarizeBy: none
 		sourceColumn: Employee
 
 	column 'Job Title'
 		dataType: string
+		lineageTag: 827b9208-e64d-44ec-86d7-4a8208c3c283
 		summarizeBy: none
 		sourceColumn: Job Title
 
 	column Level
 		dataType: string
+		lineageTag: bf3de7bf-b401-4229-9e6f-d23b9a35f5ca
 		summarizeBy: none
 		sourceColumn: Level
 
 	column Gender
 		dataType: string
+		lineageTag: c18b2ca1-9785-4ec8-be0d-2e9f98a8753b
 		summarizeBy: none
 		sourceColumn: Gender
 
 	column 'Hire Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
+		lineageTag: 9bbaca21-2cf4-4e18-8067-7d8a3253fbf3
 		summarizeBy: none
 		sourceColumn: Hire Date
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column 'Termination Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
+		lineageTag: 2a004c9f-758a-41f6-a5ae-afbf427bf9b6
 		summarizeBy: none
 		sourceColumn: Termination Date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Manager Flag'
 		dataType: boolean
+		lineageTag: 8fc51d1b-03b7-407a-bf37-675923797709
 		summarizeBy: none
 		sourceColumn: Manager Flag
 
 	partition Employee = m
 		mode: import
-		source =
-				Table.SelectColumns(EmployeeRows, {"Employee Key", "Employee", "Job Title", "Level", "Gender", "Hire Date", "Termination Date", "Manager Flag"})
+		source = Table.SelectColumns(EmployeeRows, {"Employee Key", "Employee", "Job Title", "Level", "Gender", "Hire Date", "Termination Date", "Manager Flag"})
+

@@ -3,8 +3,15 @@ model Model
 	defaultPowerBIDataSourceVersion: powerBI_V3
 	discourageImplicitMeasures
 	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
 
 annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["Employee","Department","Location","Calendar","Headcount","Movements","EmployeeRows"]
+
+annotation PBI_ProTooling = ["DevMode"]
 
 ref table Employee
 ref table Department
@@ -12,3 +19,4 @@ ref table Location
 ref table Calendar
 ref table Headcount
 ref table Movements
+

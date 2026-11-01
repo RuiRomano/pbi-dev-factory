@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "a3d29ba9c772ddfe01ae",
   "position": {
     "x": 640,
     "y": 472,
-    "width": 600,
-    "height": 208,
     "z": 6000,
+    "height": 208,
+    "width": 600,
     "tabOrder": 6000
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Movements.Tenure Band",
-              "nativeQueryRef": "Tenure Band"
+              "nativeQueryRef": "Tenure Band",
+              "active": true
             }
           ]
         },

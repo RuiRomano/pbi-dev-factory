@@ -1,25 +1,30 @@
 /// Five fictional workforce hubs, one row per location.
 table Location
+	lineageTag: 93d1a036-5a3d-4a37-ab7d-caaa58c38760
 
 	column 'Location Key'
 		dataType: int64
 		isHidden
+		lineageTag: cdc77813-5606-45f7-b4fd-d18d26c62960
 		summarizeBy: none
 		sourceColumn: Location Key
 
 	column City
 		dataType: string
+		lineageTag: 7e593d03-d086-411b-9859-f1ce5fcd5b80
 		isDefaultLabel
 		summarizeBy: none
 		sourceColumn: City
 
 	column Country
 		dataType: string
+		lineageTag: 8f815b92-a06d-4d1e-8906-2f167fa5ac55
 		summarizeBy: none
 		sourceColumn: Country
 
 	column Region
 		dataType: string
+		lineageTag: f3b785b8-c94c-482e-8969-dcb1905ca3d3
 		summarizeBy: none
 		sourceColumn: Region
 
@@ -35,3 +40,4 @@ table Location
 				        {4, "Singapore", "Singapore", "Asia-Pacific"},
 				        {5, "Berlin", "Germany", "Europe"}
 				    })
+

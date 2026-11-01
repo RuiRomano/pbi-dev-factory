@@ -12,6 +12,7 @@ function 'Tests.Equal' =
 			            ABS ( expected - actual ) < 0.00001
 			        )
 			)
+	lineageTag: 69c3ee12-21b8-4cf7-8493-62b6bfac5c05
 
 /// Independent fixture checks for all nine measures, plus empty periods and monthly movement reconciliation.
 function 'Tests.Run' =
@@ -161,3 +162,5 @@ function 'Tests.Run' =
 			            CALCULATE ( [EXITS], TREATAS ( { 1 }, 'Location'[Location Key] ), DATESBETWEEN ( 'Calendar'[Date], DATE ( 2025, 1, 1 ), _last ) ) ),
 			        Tests.Equal ( "Monthly headcount = prior headcount + hires - exits (35 months)", 0, _reconciliationErrors )
 			    )
+	lineageTag: df3e1baa-dcc4-47c0-86bb-47469f94188b
+

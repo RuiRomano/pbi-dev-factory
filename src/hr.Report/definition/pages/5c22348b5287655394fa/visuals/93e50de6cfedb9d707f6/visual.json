@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "93e50de6cfedb9d707f6",
   "position": {
     "x": 848,
     "y": 24,
-    "width": 392,
-    "height": 80,
     "z": 1000,
+    "height": 80,
+    "width": 392,
     "tabOrder": 1000
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Calendar.Fiscal Year",
-              "nativeQueryRef": "Fiscal Year"
+              "nativeQueryRef": "Fiscal Year",
+              "active": true
             }
           ]
         }

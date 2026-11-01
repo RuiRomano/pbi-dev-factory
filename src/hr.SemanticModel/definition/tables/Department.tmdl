@@ -1,25 +1,30 @@
 /// Six fictional organizational departments, one row per department.
 table Department
+	lineageTag: 79630a60-b946-4b0b-b230-3d2fcef32a3c
 
 	column 'Department Key'
 		dataType: int64
 		isHidden
+		lineageTag: 028f29a1-31e4-42f5-83e7-f13bc1766088
 		summarizeBy: none
 		sourceColumn: Department Key
 
 	column Department
 		dataType: string
+		lineageTag: b72ca1f3-7620-490f-8453-f58d16adfaef
 		isDefaultLabel
 		summarizeBy: none
 		sourceColumn: Department
 
 	column Division
 		dataType: string
+		lineageTag: bc24e834-bc65-4dff-bad2-f55024086ace
 		summarizeBy: none
 		sourceColumn: Division
 
 	column 'Cost Center'
 		dataType: string
+		lineageTag: bef8dd49-fbf8-4989-9fd4-22d3884efc4b
 		summarizeBy: none
 		sourceColumn: Cost Center
 
@@ -36,3 +41,4 @@ table Department
 				        {5, "Finance", "Corporate", "NRG-105"},
 				        {6, "People", "Corporate", "NRG-106"}
 				    })
+

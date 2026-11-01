@@ -1,5 +1,6 @@
 /// One row per hire or exit, dated at the event, for the fictional workforce through December 2025.
 table Movements
+	lineageTag: 0dd00a15-1a26-450c-8050-3352409caae5
 
 	/// Number of fictional hire events in the selected dates; returns blank when none exist.
 	measure HIRES =
@@ -8,6 +9,7 @@ table Movements
 			    KEEPFILTERS ( 'Movements'[Movement Type] = "Hire" )
 			)
 		formatString: #,##0
+		lineageTag: 607a57b4-c77a-476a-86d9-3ea43d1d6635
 
 	/// Number of fictional employee exit events in the selected dates; returns blank when none exist.
 	measure EXITS =
@@ -16,6 +18,7 @@ table Movements
 			    KEEPFILTERS ( 'Movements'[Movement Type] = "Exit" )
 			)
 		formatString: #,##0
+		lineageTag: 87c2ec71-52e4-464c-a58b-b9de02c13485
 
 	/// Exits in the trailing 12 complete months divided by average monthly headcount in those same months. Blank without 12 snapshots or a positive denominator.
 	measure 'ATTRITION RATE' =
@@ -54,6 +57,7 @@ table Movements
 			RETURN
 			    IF ( NOT ISBLANK ( _selectedDate ) && _snapshots = 12, DIVIDE ( _exits, _average ) )
 		formatString: 0.0%
+		lineageTag: 79ea57a7-3970-4e68-8b27-567a9d245ffc
 
 	/// Trailing twelve-complete-month attrition rate as of the corresponding month end one year earlier.
 	measure 'ATTRITION RATE LY' =
@@ -69,22 +73,26 @@ table Movements
 			        )
 			    )
 		formatString: 0.0%
+		lineageTag: 10f354cf-3686-4d1f-a4ce-05d7be478be6
 
 	column 'Employee Key'
 		dataType: int64
 		isHidden
+		lineageTag: d3167394-417a-42b2-a3ef-95baf34fdf5c
 		summarizeBy: none
 		sourceColumn: Employee Key
 
 	column 'Department Key'
 		dataType: int64
 		isHidden
+		lineageTag: 3dbb87c7-32d0-4df2-8537-ff9cb1ec6093
 		summarizeBy: none
 		sourceColumn: Department Key
 
 	column 'Location Key'
 		dataType: int64
 		isHidden
+		lineageTag: 9fc4c884-7936-4412-83c1-ef090f97caa3
 		summarizeBy: none
 		sourceColumn: Location Key
 
@@ -92,21 +100,27 @@ table Movements
 		dataType: dateTime
 		isHidden
 		formatString: yyyy-mm-dd
+		lineageTag: 9636859d-f378-47e4-8560-eeaef3e9eb9e
 		summarizeBy: none
 		sourceColumn: Event Date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Movement Type'
 		dataType: string
+		lineageTag: ccf281a2-2341-4ca4-a5e3-d5c6c15055c9
 		summarizeBy: none
 		sourceColumn: Movement Type
 
 	column 'Exit Reason'
 		dataType: string
+		lineageTag: 41f73715-0601-4ef8-b59a-809135d6c7f1
 		summarizeBy: none
 		sourceColumn: Exit Reason
 
 	column 'Tenure Band'
 		dataType: string
+		lineageTag: 51130d83-4c6f-4137-a0a1-bb480401854c
 		summarizeBy: none
 		sourceColumn: Tenure Band
 		sortByColumn: 'Tenure Order'
@@ -114,6 +128,7 @@ table Movements
 	column 'Tenure Order'
 		dataType: int64
 		isHidden
+		lineageTag: 156bae42-f8a1-4afc-a7c3-f0d2b189fdde
 		summarizeBy: none
 		sourceColumn: Tenure Order
 
@@ -158,3 +173,4 @@ table Movements
 				        {"Tenure Order", Int64.Type}})
 				in
 				    Typed
+
