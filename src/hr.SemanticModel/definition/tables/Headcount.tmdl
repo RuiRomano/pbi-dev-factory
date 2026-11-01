@@ -1,0 +1,129 @@
+/// Monthly snapshot: one row per employed employee at each month end, January 2023 through December 2025.
+table Headcount
+
+	/// Distinct employed people at the latest snapshot inside the selected dates; blank when no snapshot is selected.
+	measure HEADCOUNT =
+			VAR _snapshot = MAX ( 'Headcount'[Snapshot Date] )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _snapshot ),
+			        CALCULATE ( DISTINCTCOUNT ( 'Headcount'[Employee Key] ), 'Headcount'[Snapshot Date] = _snapshot )
+			    )
+		formatString: #,##0
+
+	/// Full-time equivalents at the latest selected month-end snapshot, not a sum across months.
+	measure FTE =
+			VAR _snapshot = MAX ( 'Headcount'[Snapshot Date] )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _snapshot ),
+			        CALCULATE ( SUM ( 'Headcount'[FTE Value] ), 'Headcount'[Snapshot Date] = _snapshot )
+			    )
+		formatString: #,##0.0
+
+	/// Mean monthly headcount across available month ends in the selected calendar period.
+	measure 'AVERAGE HEADCOUNT' =
+			AVERAGEX (
+			    VALUES ( 'Calendar'[Month End] ),
+			    VAR _monthEnd = 'Calendar'[Month End]
+			    RETURN
+			        CALCULATE (
+			            [HEADCOUNT],
+			            REMOVEFILTERS ( 'Calendar' ),
+			            TREATAS ( { _monthEnd }, 'Calendar'[Date] )
+			        )
+			)
+		formatString: #,##0.0
+
+	/// Illustrative monthly base-salary cost in synthetic currency units: annual salary times FTE divided by 12 at the latest selected snapshot.
+	measure 'SALARY COST' =
+			VAR _snapshot = MAX ( 'Headcount'[Snapshot Date] )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _snapshot ),
+			        CALCULATE (
+			            DIVIDE (
+			                SUMX ( 'Headcount', 'Headcount'[Annual Base Salary] * 'Headcount'[FTE Value] ),
+			                12
+			            ),
+			            'Headcount'[Snapshot Date] = _snapshot
+			        )
+			    )
+		formatString: #,##0.00
+
+	/// Month-end headcount at the corresponding month end one year before the last date selected.
+	measure 'HEADCOUNT LY' =
+			VAR _date = MAX ( 'Calendar'[Date] )
+			VAR _lastYear = EOMONTH ( _date, -12 )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _date ),
+			        CALCULATE (
+			            [HEADCOUNT],
+			            REMOVEFILTERS ( 'Calendar' ),
+			            TREATAS ( { _lastYear }, 'Calendar'[Date] )
+			        )
+			    )
+		formatString: #,##0
+
+	column 'Employee Key'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Employee Key
+
+	column 'Department Key'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Department Key
+
+	column 'Location Key'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Location Key
+
+	column 'Snapshot Date'
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Snapshot Date
+
+	column 'FTE Value'
+		dataType: double
+		isHidden
+		sourceColumn: FTE
+
+	/// Fictional annual base salary in synthetic currency units; not payroll or actual compensation.
+	column 'Annual Base Salary'
+		dataType: decimal
+		isHidden
+		sourceColumn: Annual Base Salary
+
+	partition Headcount = m
+		mode: import
+		source =
+				let
+				    Months = List.Transform({0..35}, each Date.EndOfMonth(Date.AddMonths(#date(2023, 1, 1), _))),
+				    Roster = Table.ToRecords(EmployeeRows),
+				    Snapshots = List.Combine(List.Transform(Months, (monthEnd) =>
+				        List.Transform(
+				            List.Select(Roster, (person) => person[Hire Date] <= monthEnd
+				                and (person[Termination Date] = null or person[Termination Date] >= monthEnd)),
+				            (person) => [
+				                #"Employee Key" = person[Employee Key],
+				                #"Department Key" = person[Department Key],
+				                #"Location Key" = person[Location Key],
+				                #"Snapshot Date" = monthEnd,
+				                FTE = person[FTE],
+				                #"Annual Base Salary" = person[Annual Base Salary]
+				            ]))),
+				    Rows = Table.FromRecords(Snapshots),
+				    Typed = Table.TransformColumnTypes(Rows, {
+				        {"Employee Key", Int64.Type}, {"Department Key", Int64.Type},
+				        {"Location Key", Int64.Type}, {"Snapshot Date", type date},
+				        {"FTE", type number}, {"Annual Base Salary", Currency.Type}})
+				in
+				    Typed
