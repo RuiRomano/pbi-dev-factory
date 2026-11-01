@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project presents Northwind Retail Group sales analysis using sample retail data. One Import semantic model connects sales lines to calendar, product, customer and store dimensions. The sales-overview report provides an interactive sales summary and a category-by-year financial matrix. The customer-comparison report compares new and existing customers by month.
+This project presents Northwind Retail Group sales analysis using sample retail data and a separate, fictional HR demo semantic model and local report. The sales Import model connects sales lines to calendar, product, customer and store dimensions. The sales-overview report provides an interactive sales summary and a category-by-year financial matrix. The customer-comparison report compares new and existing customers by month. The HR report has been authored locally, but its rendered pages have not been verified.
 
 The source queries can randomize sales quantities and net prices at refresh. Treat the results as sample analysis, not certified company revenue. Currency conversion, returns and company fiscal-calendar compliance are not established by the definitions.
 
@@ -11,6 +11,8 @@ The source queries can randomize sales quantities and net prices at refresh. Tre
 | Artifact | Type | Source | Connected artifact(s) | Purpose | Documentation |
 |---|---|---|---|---|---|
 | sales | Semantic model | `src/sales.SemanticModel` | sales-overview and customer-comparison reports | Sales amounts, cost, margin, quantities, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
+| hr | Semantic model | `src/hr.SemanticModel` | hr report | Synthetic employee snapshots and movements for headcount, FTE, salary cost and attrition demonstrations. | [Open](hr.semantic-model.md) |
+| hr | Report | `src/hr.Report` | hr semantic model, bound by relative path | Three-page fictional HR demo: workforce trends, exits and workforce mix. Local only; rendering not yet verified. | [Open](hr.report.md) |
 | sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, and annual category KPIs. | [Open](sales-overview.report.md) |
 | customer-comparison | Report | `src/customer-comparison.Report` | sales semantic model, bound by relative path | Monthly comparison and detail for new, existing and total customers with sales. | [Source](../../src/customer-comparison.Report/definition/pages/2b3f5f9676144f1e9f79/page.json) |
 
