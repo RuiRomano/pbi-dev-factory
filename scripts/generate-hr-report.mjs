@@ -16,7 +16,7 @@ const id = (value) => createHash('sha256').update(`hr-demo:${value}`).digest('he
 const schema = 'https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json';
 const literal = (value) => ({ expr: { Literal: { Value: value } } });
 const text = (value) => literal(`'${value.replaceAll("'", "''")}'`);
-const fill = (color) => ({ solid: { color: text(color) } });
+const fill = (colorId) => ({ solid: { color: { expr: { ThemeDataColor: { ColorId: colorId, Percent: 0 } } } } });
 const object = (properties, selector) => [{ properties, ...(selector ? { selector } : {}) }];
 const field = (reference) => {
   const [, table, property] = /^([^\[]+)\[([^\]]+)\]$/.exec(reference);
@@ -29,13 +29,13 @@ const field = (reference) => {
   };
 };
 const colors = {
-  'Headcount.HEADCOUNT': '#536CE5',
-  'Headcount.FTE': '#536CE5',
-  'Headcount.SALARY COST': '#20283F',
-  'Movements.HIRES': '#38796F',
-  'Movements.EXITS': '#7862AD',
-  'Movements.ATTRITION RATE': '#7862AD',
-  'Movements.ATTRITION RATE LY': '#7862AD',
+  'Headcount.HEADCOUNT': 2,
+  'Headcount.FTE': 2,
+  'Headcount.SALARY COST': 6,
+  'Movements.HIRES': 4,
+  'Movements.EXITS': 3,
+  'Movements.ATTRITION RATE': 3,
+  'Movements.ATTRITION RATE LY': 3,
 };
 
 const template = read(path.join(pagesDir, read(path.join(pagesDir, 'pages.json')).activePageName, 'page.json'));
@@ -63,8 +63,8 @@ const projection = (references) => ({ projections: references.map(field) });
 const title = (name, pos, caption) => {
   const v = visual(name, pos, 'textbox', null, {
     general: object({ paragraphs: [
-    { textRuns: [{ value: caption, textStyle: { fontFamily: 'Segoe UI Semibold', fontSize: '40px', color: '#20283F' } }] },
-    { textRuns: [{ value: 'CONTOSO / FICTIONAL HR DEMO  |  Workforce: latest snapshot  |  Events: selected dates  |  Attrition: trailing 12 months', textStyle: { fontFamily: 'Segoe UI', fontSize: '16px', color: '#20283F' } }] },
+    { textRuns: [{ value: caption, textStyle: { fontFamily: 'Segoe UI Semibold', fontSize: '26px', color: '#20283F' } }] },
+    { textRuns: [{ value: 'CONTOSO / FICTIONAL HR DEMO | Workforce: latest snapshot | Events: selected dates | Attrition: trailing 12 months', textStyle: { fontFamily: 'Segoe UI', fontSize: '14px', color: '#20283F' } }] },
     ] }),
   });
   v.visual.visualContainerObjects = {
@@ -79,8 +79,8 @@ const slicer = (name, pos) => visual(name, pos, 'slicer', { Values: projection([
 });
 const cards = (name, pos, measures) => {
   const v = visual(name, pos, 'cardVisual', { Data: projection(measures) }, {
-    value: object({ fontSize: literal('28D') }, { id: 'default' }),
-    label: object({ fontSize: literal('14D') }, { id: 'default' }),
+    value: object({ fontSize: literal('20D') }, { id: 'default' }),
+    label: object({ fontSize: literal('11D') }, { id: 'default' }),
     padding: object({ paddingUniform: literal('8D') }, { id: 'default' }),
   }, 'Key workforce indicators');
   v.visual.visualContainerObjects.title = object({ show: literal('false') });
@@ -101,7 +101,7 @@ const chart = (name, pos, kind, category, measures, label, sort = 'Ascending') =
   };
   return v;
 };
-const canvas = { width: 1920, height: 1080, margin: 32, gutter: 24 };
+const canvas = { width: 1280, height: 720, margin: 24, gutter: 16 };
 const slot = (region, index = 0, count = 1) => {
   const [col1, row1, col2, row2] = region;
   const cellW = (canvas.width - 2 * canvas.margin) / 12;
@@ -118,11 +118,11 @@ const slot = (region, index = 0, count = 1) => {
     height: snap(h) - canvas.gutter,
   };
 };
-const top = { header: [1, 1, 9, 2], filters: [9, 1, 13, 2], kpis: [1, 2, 13, 4] };
+const top = { header: [1, 1, 9, 3], filters: [9, 1, 13, 3], kpis: [1, 3, 13, 5] };
 const pageConfigs = [
   {
     name: 'Workforce size and movement over time',
-    regions: { ...top, trend: [1, 4, 8, 9], department: [8, 4, 13, 9], movement: [1, 9, 7, 13], attrition: [7, 9, 13, 13] },
+    regions: { ...top, trend: [1, 5, 8, 9], department: [8, 5, 13, 9], movement: [1, 9, 7, 13], attrition: [7, 9, 13, 13] },
     metrics: ['Headcount[HEADCOUNT]', 'Headcount[FTE]', 'Movements[HIRES]', 'Movements[EXITS]', 'Movements[ATTRITION RATE]'],
     charts: [
       ['trend', 'lineChart', 'Calendar[Month End]', ['Headcount[HEADCOUNT]'], 'Month-end headcount over time', 'Ascending'],
@@ -133,7 +133,7 @@ const pageConfigs = [
   },
   {
     name: 'Where employee exits occur',
-    regions: { ...top, trend: [1, 4, 8, 9], reason: [8, 4, 13, 9], department: [1, 9, 7, 13], tenure: [7, 9, 13, 13] },
+    regions: { ...top, trend: [1, 5, 8, 9], reason: [8, 5, 13, 9], department: [1, 9, 7, 13], tenure: [7, 9, 13, 13] },
     metrics: ['Movements[EXITS]', 'Movements[ATTRITION RATE]', 'Movements[ATTRITION RATE LY]'],
     charts: [
       ['trend', 'lineChart', 'Calendar[Month End]', ['Movements[ATTRITION RATE]'], 'Trailing twelve-month attrition rate', 'Ascending'],
@@ -144,7 +144,7 @@ const pageConfigs = [
   },
   {
     name: 'Workforce mix across locations and roles',
-    regions: { ...top, location: [1, 4, 8, 9], level: [8, 4, 13, 9], gender: [1, 9, 7, 13], department: [7, 9, 13, 13] },
+    regions: { ...top, location: [1, 5, 8, 9], level: [8, 5, 13, 9], gender: [1, 9, 7, 13], department: [7, 9, 13, 13] },
     metrics: ['Headcount[HEADCOUNT]', 'Headcount[FTE]', 'Headcount[SALARY COST]'],
     charts: [
       ['location', 'barChart', 'Location[City]', ['Headcount[HEADCOUNT]'], 'Headcount by location', 'Descending'],

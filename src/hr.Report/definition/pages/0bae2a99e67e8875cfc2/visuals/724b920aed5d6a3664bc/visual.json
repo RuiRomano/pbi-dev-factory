@@ -2,9 +2,9 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "724b920aed5d6a3664bc",
   "position": {
-    "x": 32,
-    "y": 32,
-    "width": 1216,
+    "x": 24,
+    "y": 24,
+    "width": 808,
     "height": 80,
     "z": 0,
     "tabOrder": 0
@@ -22,7 +22,7 @@
                     "value": "Where employee exits occur",
                     "textStyle": {
                       "fontFamily": "Segoe UI Semibold",
-                      "fontSize": "40px",
+                      "fontSize": "26px",
                       "color": "#20283F"
                     }
                   }
@@ -31,10 +31,10 @@
               {
                 "textRuns": [
                   {
-                    "value": "CONTOSO / FICTIONAL HR DEMO  |  Workforce: latest snapshot  |  Events: selected dates  |  Attrition: trailing 12 months",
+                    "value": "CONTOSO / FICTIONAL HR DEMO | Workforce: latest snapshot | Events: selected dates | Attrition: trailing 12 months",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
-                      "fontSize": "16px",
+                      "fontSize": "14px",
                       "color": "#20283F"
                     }
                   }

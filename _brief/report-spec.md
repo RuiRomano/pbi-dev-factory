@@ -48,7 +48,7 @@
 - Theme: [Contoso](../.agents/skills/team-practices/references/rules/contoso-theme.json), indigo `#536CE5`, mint `#9CCDC6`, lilac `#C8BCF4`, ink `#20283F`, off-white `#F6F7FB`.
 - Color semantics: Headcount and FTE indigo, hires mint, exits and attrition lilac; same measure uses the same color on every page.
 - Typography: Segoe UI Semibold titles and Segoe UI body, per theme.
-- Layout: 1920 x 1080; 12-column grid, 32-pixel margins and 24-pixel gutters.
+- Layout: 1280 x 720; 12-column grid, 24-pixel margins and 16-pixel gutters. The 2026-11-01 BPA correction supersedes the original FHD sizing.
 - Accessibility: Alt text, text labels on categorical charts, WCAG AA text contrast.
 
 ## Model requirements
@@ -74,9 +74,9 @@ Design Brief:
     - { measure: "Headcount[HEADCOUNT]", color: "#536CE5", tint: "#E6EAFC" }
     - { measure: "Headcount[FTE]", color: "#536CE5", tint: "#E6EAFC" }
     - { measure: "Headcount[SALARY COST]", color: "#20283F", tint: "#F6F7FB" }
-    - { measure: "Movements[HIRES]", color: "#38796F", tint: "#DDF0EC" }
-    - { measure: "Movements[EXITS]", color: "#7862AD", tint: "#EEE9F8" }
-    - { measure: "Movements[ATTRITION RATE]", color: "#7862AD", tint: "#EEE9F8" }
+    - { measure: "Movements[HIRES]", color: "#9CCDC6", theme_color_id: 4 }
+    - { measure: "Movements[EXITS]", color: "#C8BCF4", theme_color_id: 3 }
+    - { measure: "Movements[ATTRITION RATE]", color: "#C8BCF4", theme_color_id: 3 }
   pages:
     - name: Workforce size and movement over time
       role: landing
@@ -86,16 +86,16 @@ Design Brief:
       page_background: "#F6F7FB"
       layout_summary: KPI strip, paired trend and department chart, and two lower time series.
       layout_contract:
-        canvas: { width: 1920, height: 1080, margin: 32, gutter: 24, snap: 8 }
+        canvas: { width: 1280, height: 720, margin: 24, gutter: 16, snap: 8 }
         grid:
           columns: 12
           rows: 12
           regions:
-            header: [1, 1, 9, 2]
-            filters: [9, 1, 13, 2]
-            kpis: [1, 2, 13, 4]
-            trend: [1, 4, 8, 9]
-            department: [8, 4, 13, 9]
+            header: [1, 1, 9, 3]
+            filters: [9, 1, 13, 3]
+            kpis: [1, 3, 13, 5]
+            trend: [1, 5, 8, 9]
+            department: [8, 5, 13, 9]
             movement: [1, 9, 7, 13]
             attrition: [7, 9, 13, 13]
         placements:
@@ -111,11 +111,11 @@ Design Brief:
           - { id: hires_exits_trend, region: movement, kind: lineChart, purpose: "How do hires and exits compare over time?", field_bindings: { Category: "Calendar[Month End]", Y: ["Movements[HIRES]", "Movements[EXITS]"] }, color_strategy: semantic }
           - { id: attrition_trend, region: attrition, kind: lineChart, purpose: "How has trailing attrition changed?", field_bindings: { Category: "Calendar[Month End]", Y: "Movements[ATTRITION RATE]" }, color_strategy: measure_match }
         space_audit:
-          content_cell_count: 132
-          placed_cell_count: 132
+          content_cell_count: 120
+          placed_cell_count: 120
           empty_cell_pct: 0
           unplaced_regions: []
-          largest_region: { name: trend, pct_of_content: 26.5 }
+          largest_region: { name: trend, pct_of_content: 23.3 }
           balance_rationale: "The trend has room for 36 months; department and lower comparisons remain readable."
     - name: Where employee exits occur
       role: detail
@@ -125,16 +125,16 @@ Design Brief:
       page_background: "#F6F7FB"
       layout_summary: KPI strip, trailing attrition trend, reason ranking, department and tenure comparisons.
       layout_contract:
-        canvas: { width: 1920, height: 1080, margin: 32, gutter: 24, snap: 8 }
+        canvas: { width: 1280, height: 720, margin: 24, gutter: 16, snap: 8 }
         grid:
           columns: 12
           rows: 12
           regions:
-            header: [1, 1, 9, 2]
-            filters: [9, 1, 13, 2]
-            kpis: [1, 2, 13, 4]
-            trend: [1, 4, 8, 9]
-            reason: [8, 4, 13, 9]
+            header: [1, 1, 9, 3]
+            filters: [9, 1, 13, 3]
+            kpis: [1, 3, 13, 5]
+            trend: [1, 5, 8, 9]
+            reason: [8, 5, 13, 9]
             department: [1, 9, 7, 13]
             tenure: [7, 9, 13, 13]
         placements:
@@ -148,11 +148,11 @@ Design Brief:
           - { id: exits_by_department, region: department, kind: barChart, purpose: "Which departments have the most exits?", field_bindings: { Category: "Department[Department]", Y: "Movements[EXITS]" }, sort_policy: value_desc, color_strategy: measure_match }
           - { id: exits_by_tenure, region: tenure, kind: barChart, purpose: "At what tenure do exits occur?", field_bindings: { Category: "Movements[Tenure Band]", Y: "Movements[EXITS]" }, sort_policy: natural_order, color_strategy: measure_match }
         space_audit:
-          content_cell_count: 132
-          placed_cell_count: 132
+          content_cell_count: 120
+          placed_cell_count: 120
           empty_cell_pct: 0
           unplaced_regions: []
-          largest_region: { name: trend, pct_of_content: 26.5 }
+          largest_region: { name: trend, pct_of_content: 23.3 }
           balance_rationale: "The rate trend leads; reasons, department and tenure have substantial balanced chart space."
     - name: Workforce mix across locations and roles
       role: detail
@@ -162,16 +162,16 @@ Design Brief:
       page_background: "#F6F7FB"
       layout_summary: KPI strip with location, level, gender and department headcount comparisons.
       layout_contract:
-        canvas: { width: 1920, height: 1080, margin: 32, gutter: 24, snap: 8 }
+        canvas: { width: 1280, height: 720, margin: 24, gutter: 16, snap: 8 }
         grid:
           columns: 12
           rows: 12
           regions:
-            header: [1, 1, 9, 2]
-            filters: [9, 1, 13, 2]
-            kpis: [1, 2, 13, 4]
-            location: [1, 4, 8, 9]
-            level: [8, 4, 13, 9]
+            header: [1, 1, 9, 3]
+            filters: [9, 1, 13, 3]
+            kpis: [1, 3, 13, 5]
+            location: [1, 5, 8, 9]
+            level: [8, 5, 13, 9]
             gender: [1, 9, 7, 13]
             department: [7, 9, 13, 13]
         placements:
@@ -185,11 +185,11 @@ Design Brief:
           - { id: by_gender, region: gender, kind: barChart, purpose: "How is headcount distributed by gender?", field_bindings: { Category: "Employee[Gender]", Y: "Headcount[HEADCOUNT]" }, sort_policy: value_desc, color_strategy: measure_match }
           - { id: by_department, region: department, kind: barChart, purpose: "How is headcount distributed by department?", field_bindings: { Category: "Department[Department]", Y: "Headcount[HEADCOUNT]" }, sort_policy: value_desc, color_strategy: measure_match }
         space_audit:
-          content_cell_count: 132
-          placed_cell_count: 132
+          content_cell_count: 120
+          placed_cell_count: 120
           empty_cell_pct: 0
           unplaced_regions: []
-          largest_region: { name: location, pct_of_content: 26.5 }
+          largest_region: { name: location, pct_of_content: 23.3 }
           balance_rationale: "The large location comparison leads while level, gender and department each retain readable space."
   interaction_pattern:
     drill_targets: []

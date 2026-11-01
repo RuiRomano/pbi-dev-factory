@@ -4,7 +4,7 @@
 
 The local [`hr.pbip`](../../src/hr.pbip) opens the [`hr.Report`](../../src/hr.Report) project against the co-located [`hr.SemanticModel`](../../src/hr.SemanticModel). It is designed to introduce a fictional workforce example to HR colleagues. It is not a view of actual employees, salaries or attrition policy.
 
-The report uses the [Contoso theme](../../src/hr.Report/StaticResources/RegisteredResources/Contoso.json) on three 1920 x 1080 pages. Each page has one fiscal-year dropdown slicer. Department and location are available in the filter pane. Charts cross-filter other visuals on the page.
+The report uses the [Contoso theme](../../src/hr.Report/StaticResources/RegisteredResources/Contoso.json) on three 1280 x 720 pages. Charts reference theme colors rather than hard-coded hex colors. Each page has one fiscal-year dropdown slicer. Department and location are available in the filter pane. Charts cross-filter other visuals on the page.
 
 ## Pages
 
