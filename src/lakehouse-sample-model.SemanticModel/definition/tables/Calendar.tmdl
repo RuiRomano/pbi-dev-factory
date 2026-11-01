@@ -1,0 +1,98 @@
+/// Delivered daily calendar for invoice dates. Fiscal attributes are retained as supplied, not inferred from Northwind company rules. Full calendar years 2024-2025.
+table Calendar
+	lineageTag: 890d064d-609a-45b9-aa43-8f39046be83e
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isUnique
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: cfc8171e-ce6e-42c7-8113-2cf53457c08b
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 471806b8-029f-4439-aa5c-91bb6f3fc5c0
+		summarizeBy: none
+		sourceColumn: CalendarYear
+
+	column 'Year Label'
+		dataType: string
+		lineageTag: 58087c33-ad38-40b3-8ca6-c123f53cc6b2
+		summarizeBy: none
+		sourceColumn: CalendarYearLabel
+		sortByColumn: Year
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		lineageTag: 25345037-bacf-4b9a-9b39-0cdf0a234641
+		summarizeBy: none
+		sourceColumn: CalendarMonthNumber
+
+	column Month
+		dataType: string
+		lineageTag: 29affadf-7826-4c25-bbee-8b6be657208a
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+	column 'Short Month'
+		dataType: string
+		lineageTag: 4a78e13d-8f38-4c67-9b28-6af221861117
+		summarizeBy: none
+		sourceColumn: ShortMonth
+		sortByColumn: 'Month Number'
+
+	column 'Fiscal Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 76568c05-9960-4b57-a131-96844cf1c3c4
+		summarizeBy: none
+		sourceColumn: FiscalYear
+
+	column 'Fiscal Year Label'
+		dataType: string
+		lineageTag: e27065e4-7a3d-4925-ac4d-b8bb31fd8594
+		summarizeBy: none
+		sourceColumn: FiscalYearLabel
+		sortByColumn: 'Fiscal Year'
+
+	column 'Fiscal Month Number'
+		dataType: int64
+		isHidden
+		lineageTag: 384985b8-53a4-41f9-8531-f03bee254e93
+		summarizeBy: none
+		sourceColumn: FiscalMonthNumber
+
+	/// Month label ordered by delivered fiscal-month number.
+	column 'Fiscal Month'
+		dataType: string
+		lineageTag: 86c4c89b-1bdf-4c55-8bfb-70abc4a6c5ab
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Fiscal Month Number'
+
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: de06c33a-11f6-4bea-a132-8d67e480b4dc
+		summarizeBy: none
+		sourceColumn: Day
+
+	column 'ISO Week Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 832b27f1-c0d9-4470-b778-52734775816b
+		summarizeBy: none
+		sourceColumn: ISOWeekNumber
+
+	partition Calendar = entity
+		mode: directLake
+		source
+			entityName: dimension_date
+			expressionSource: OneLake
+

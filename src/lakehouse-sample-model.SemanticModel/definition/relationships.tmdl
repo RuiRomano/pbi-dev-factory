@@ -1,0 +1,28 @@
+relationship 'Sales to City'
+	fromColumn: Sales.'City Key'
+	toColumn: City.'City Key'
+
+relationship 'Sales to Customer'
+	fromColumn: Sales.'Customer Key'
+	toColumn: Customer.'Customer Key'
+
+relationship 'Sales to Bill To Customer'
+	fromColumn: Sales.'Bill To Customer Key'
+	toColumn: 'Bill To Customer'.'Customer Key'
+
+relationship 'Sales to Product'
+	fromColumn: Sales.'Product Key'
+	toColumn: Product.'Product Key'
+
+relationship 'Sales to Employee'
+	fromColumn: Sales.'Employee Key'
+	toColumn: Employee.'Employee Key'
+
+relationship 'Sales to Calendar'
+	fromColumn: Sales.'Invoice Date'
+	toColumn: Calendar.Date
+
+relationship 'Sales to Delivery Calendar'
+	fromColumn: Sales.'Delivery Date'
+	toColumn: 'Delivery Calendar'.Date
+

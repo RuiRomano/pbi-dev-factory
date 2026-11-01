@@ -1,0 +1,164 @@
+/// Delivered sale records: one row per unique source SaleKey, without regrouping or deduplication. WWIInvoiceID is not a verified business-grain key.
+table Sales
+	lineageTag: d3869505-f460-4059-a082-3f25be6249af
+
+	/// Sum of delivered sale Quantity in its source package units. Additive over source records; blank when no sales match.
+	measure 'SALES QUANTITY' = SUM ( 'Sales'[Quantity] )
+		formatString: #,##0
+		lineageTag: 28390372-3347-4e49-8a2b-c807f69e9a9a
+
+	/// Sum of delivered TotalExcludingTax, before tax. Dollar display is approved without inferring a currency code; source doubles are not rounded in DAX. Blank when no sales match.
+	measure 'SALES AMOUNT EXCLUDING TAX' = SUM ( 'Sales'[Total Excluding Tax] )
+		formatString: $#,##0.00;($#,##0.00);$0.00
+		lineageTag: 77f8ad7e-315a-4b28-9cbc-24032fd224f4
+
+	/// Sum of stored tax amounts, not a sum of tax rates or a recomputation. Dollar display; delivered floating-point values retained. Blank when no sales match.
+	measure 'TAX AMOUNT' = SUM ( 'Sales'[Tax Amount Base] )
+		formatString: $#,##0.00;($#,##0.00);$0.00
+		lineageTag: b81ae500-82bb-4811-bd6c-2035886c8cf6
+
+	/// Sum of delivered TotalIncludingTax. Compare to excluding-tax amount plus tax within the documented one-cent tolerance. Dollar display; blank when no sales match.
+	measure 'SALES AMOUNT INCLUDING TAX' = SUM ( 'Sales'[Total Including Tax] )
+		formatString: $#,##0.00;($#,##0.00);$0.00
+		lineageTag: 98fd5e8c-7aa4-4244-bfe9-7c5e3975972d
+
+	/// Sum of profit stored on delivered sale records, not an inferred company net-income definition. Dollar display; floating-point values retained. Blank when no sales match.
+	measure PROFIT = SUM ( 'Sales'[Profit Base] )
+		formatString: $#,##0.00;($#,##0.00);$0.00
+		lineageTag: e928b365-5527-4869-8f68-3a27efc9f729
+
+	/// Sum of delivered dry-item counts. Retains source classification and units; blank when no sales match.
+	measure 'TOTAL DRY ITEMS' = SUM ( 'Sales'[Total Dry Items Base] )
+		formatString: #,##0
+		lineageTag: d1f0f994-2a5f-415a-9448-58cc17beb745
+
+	/// Sum of delivered chiller-item counts. Retains source classification and units; blank when no sales match.
+	measure 'TOTAL CHILLER ITEMS' = SUM ( 'Sales'[Total Chiller Items Base] )
+		formatString: #,##0
+		lineageTag: bab88beb-3b1a-4450-9ebf-592608dc5e46
+
+	/// Number of delivered source sale records at SaleKey grain, not distinct invoices or customers. Blank when no sales match.
+	measure '# SALES' = COUNTROWS ( 'Sales' )
+		formatString: #,##0
+		lineageTag: 39105855-2791-4f23-b2ce-1bf9981cf0cd
+
+	column 'Sale Key'
+		dataType: int64
+		isHidden
+		lineageTag: 8102d3fa-e644-4f96-918c-2a44883e12b2
+		summarizeBy: none
+		sourceColumn: SaleKey
+
+	column 'City Key'
+		dataType: int64
+		isHidden
+		lineageTag: c2d369c1-019a-4a69-ade6-5c96c3feb36e
+		summarizeBy: none
+		sourceColumn: CityKey
+
+	column 'Customer Key'
+		dataType: int64
+		isHidden
+		lineageTag: 347b8710-195c-448a-8168-20bb0c7a8cae
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+	column 'Bill To Customer Key'
+		dataType: int64
+		isHidden
+		lineageTag: fd783b17-c0d1-4ff0-9a8b-c6bd50aab738
+		summarizeBy: none
+		sourceColumn: BillToCustomerKey
+
+	column 'Product Key'
+		dataType: int64
+		isHidden
+		lineageTag: f1ffba9e-7489-47b9-833f-cb31d565c4a2
+		summarizeBy: none
+		sourceColumn: StockItemKey
+
+	column 'Employee Key'
+		dataType: int64
+		isHidden
+		lineageTag: 4ccf04b7-1c1b-4a19-95dc-ae26950af866
+		summarizeBy: none
+		sourceColumn: SalespersonKey
+
+	column 'Invoice Date'
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 5540f742-7425-4fca-afda-df8493f1d7df
+		summarizeBy: none
+		sourceColumn: InvoiceDateKey
+
+	column 'Delivery Date'
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: b6bba36b-27ed-44c6-907d-2bf6d4347c82
+		summarizeBy: none
+		sourceColumn: DeliveryDateKey
+
+	/// Delivered selling-package label; quantities and item counts retain their source units.
+	column Package
+		dataType: string
+		lineageTag: 71cd3026-ee90-4b15-88aa-b97a55a7d43c
+		summarizeBy: none
+		sourceColumn: Package
+
+	column Quantity
+		dataType: int64
+		isHidden
+		lineageTag: 2c80065e-efff-4809-87e1-ecb64f278928
+		summarizeBy: none
+		sourceColumn: Quantity
+
+	column 'Total Excluding Tax'
+		dataType: double
+		isHidden
+		lineageTag: 2c0ade32-cd90-46fa-bdd5-92685cde758f
+		summarizeBy: none
+		sourceColumn: TotalExcludingTax
+
+	column 'Tax Amount Base'
+		dataType: double
+		isHidden
+		lineageTag: 71340fb3-ecfd-4ff8-a1fd-924bf74748c3
+		summarizeBy: none
+		sourceColumn: TaxAmount
+
+	column 'Total Including Tax'
+		dataType: double
+		isHidden
+		lineageTag: f28ac327-187c-4773-af36-127d6c744e17
+		summarizeBy: none
+		sourceColumn: TotalIncludingTax
+
+	column 'Profit Base'
+		dataType: double
+		isHidden
+		lineageTag: 533ebf71-1875-4ec8-91e9-2ee8a30baa23
+		summarizeBy: none
+		sourceColumn: Profit
+
+	column 'Total Dry Items Base'
+		dataType: int64
+		isHidden
+		lineageTag: 0d0ea104-2db9-4e9c-bc4b-e026591809e0
+		summarizeBy: none
+		sourceColumn: TotalDryItems
+
+	column 'Total Chiller Items Base'
+		dataType: int64
+		isHidden
+		lineageTag: 5f1eea22-0419-46e0-b101-103484487e60
+		summarizeBy: none
+		sourceColumn: TotalChillerItems
+
+	partition Sales = entity
+		mode: directLake
+		source
+			entityName: fact_sale
+			expressionSource: OneLake
+

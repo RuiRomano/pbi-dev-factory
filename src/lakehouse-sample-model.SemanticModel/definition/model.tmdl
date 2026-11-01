@@ -1,0 +1,22 @@
+/// Delivered lakehouse_sample sales at the source SaleKey grain, with purchasing, billing, invoice and delivery roles. Dollar display does not assert a currency code. Fiscal attributes and floating-point amounts are retained as delivered.
+model lakehouse-sample-model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-US
+	directLakeBehavior: directLakeOnly
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table Sales
+ref table City
+ref table Customer
+ref table 'Bill To Customer'
+ref table Product
+ref table Employee
+ref table Calendar
+ref table 'Delivery Calendar'
+

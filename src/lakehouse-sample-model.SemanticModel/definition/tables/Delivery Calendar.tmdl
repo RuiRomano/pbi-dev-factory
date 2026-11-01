@@ -1,0 +1,98 @@
+/// Delivered daily calendar for delivery dates, independently active alongside invoice Calendar. Source ends 2025-12-31; 67 sales have unmatched 2026 delivery dates. No invented dates or masking.
+table 'Delivery Calendar'
+	lineageTag: 8e236cb8-3262-4930-b462-816d728d82af
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isUnique
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 2e9a8327-6751-4283-af67-e22273403533
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 2c4f43c3-edc6-4d6e-86fe-65e06b658a60
+		summarizeBy: none
+		sourceColumn: CalendarYear
+
+	column 'Year Label'
+		dataType: string
+		lineageTag: 2fafb4db-5a18-46b6-b18c-0663c0827998
+		summarizeBy: none
+		sourceColumn: CalendarYearLabel
+		sortByColumn: Year
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		lineageTag: 2c0179c2-9ce4-42ad-8a4e-f8390fb180e5
+		summarizeBy: none
+		sourceColumn: CalendarMonthNumber
+
+	column Month
+		dataType: string
+		lineageTag: 169547f9-93d1-41d1-85ca-9e26df53d351
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+	column 'Short Month'
+		dataType: string
+		lineageTag: 1e699615-7972-4cfe-8acb-6da2da853c97
+		summarizeBy: none
+		sourceColumn: ShortMonth
+		sortByColumn: 'Month Number'
+
+	column 'Fiscal Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 38962621-e8c7-4f53-a2bc-c58e14b7b54d
+		summarizeBy: none
+		sourceColumn: FiscalYear
+
+	column 'Fiscal Year Label'
+		dataType: string
+		lineageTag: d6e829ab-db87-4cc4-b01e-fa5cfa250cf3
+		summarizeBy: none
+		sourceColumn: FiscalYearLabel
+		sortByColumn: 'Fiscal Year'
+
+	column 'Fiscal Month Number'
+		dataType: int64
+		isHidden
+		lineageTag: b1e338eb-1c6d-4843-a815-22513aac5e7d
+		summarizeBy: none
+		sourceColumn: FiscalMonthNumber
+
+	/// Month label ordered by delivered fiscal-month number.
+	column 'Fiscal Month'
+		dataType: string
+		lineageTag: 0b65ef8d-b7fb-4cf2-9394-2d03d8fff5da
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Fiscal Month Number'
+
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: 73e20969-3a35-44c8-92a3-d602898f6004
+		summarizeBy: none
+		sourceColumn: Day
+
+	column 'ISO Week Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5ff19485-9471-4145-8c9c-a01bd332f481
+		summarizeBy: none
+		sourceColumn: ISOWeekNumber
+
+	partition 'Delivery Calendar' = entity
+		mode: directLake
+		source
+			entityName: dimension_date
+			expressionSource: OneLake
+

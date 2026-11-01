@@ -1,0 +1,8 @@
+/// DEV lakehouse_sample OneLake source; no SQL connector or credential values.
+expression OneLake =
+		let
+		    Source = AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/0a6ed388-8f6e-40a0-a9ac-df7d1522ba38/d3065cfd-ff4d-4bb0-aa89-d27d97c8e011", [HierarchicalNavigation=true])
+		in
+		    Source
+	lineageTag: 3ed97c17-1b81-4ff4-8f42-295aaece7e7b
+

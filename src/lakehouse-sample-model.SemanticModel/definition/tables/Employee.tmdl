@@ -1,0 +1,36 @@
+/// Delivered employee dimension at EmployeeKey grain, used for the salesperson recorded on a sale.
+table Employee
+	lineageTag: d39e5974-535e-4ed2-a0bd-1142705c92ec
+
+	column 'Employee Key'
+		dataType: int64
+		isHidden
+		lineageTag: 204978c7-33e6-461d-a2d8-b3c88ca2433d
+		summarizeBy: none
+		sourceColumn: EmployeeKey
+
+	column Employee
+		dataType: string
+		lineageTag: eaffc64d-72f9-4fa2-a123-a3cf5806116d
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: Employee
+
+	column 'Preferred Name'
+		dataType: string
+		lineageTag: d4c37c0b-6e01-42ed-b3a5-e24d939fda92
+		summarizeBy: none
+		sourceColumn: PreferredName
+
+	column 'Is Salesperson'
+		dataType: boolean
+		lineageTag: 57dcb6eb-3bb3-41af-9cd9-5d94fe2a0962
+		summarizeBy: none
+		sourceColumn: IsSalesperson
+
+	partition Employee = entity
+		mode: directLake
+		source
+			entityName: dimension_employee
+			expressionSource: OneLake
+
