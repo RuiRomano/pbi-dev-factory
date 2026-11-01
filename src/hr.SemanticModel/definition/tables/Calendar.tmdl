@@ -1,0 +1,69 @@
+/// Daily, contiguous calendar from 2019 through 2025. Fiscal years end in January (FY25 ends January 2025).
+table Calendar
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Date
+
+	column 'Month End'
+		dataType: dateTime
+		formatString: mmm yyyy
+		summarizeBy: none
+		sourceColumn: Month End
+
+	column 'Month Label'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Month Label
+		sortByColumn: 'Year Month Key'
+
+	column 'Year Month Key'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Year Month Key
+
+	column 'Month Name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Month Name
+		sortByColumn: 'Month Number'
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Month Number
+
+	column 'Fiscal Year'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Fiscal Year
+
+	column 'Fiscal Month'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Fiscal Month
+
+	partition Calendar = m
+		mode: import
+		source =
+				let
+				    StartDate = #date(2019, 1, 1),
+				    EndDate = #date(2025, 12, 31),
+				    Dates = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),
+				    Base = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}),
+				    MonthEnd = Table.AddColumn(Base, "Month End", each Date.EndOfMonth([Date]), type date),
+				    Label = Table.AddColumn(MonthEnd, "Month Label", each Date.ToText([Date], "MMM yyyy", "en-US"), type text),
+				    YearMonth = Table.AddColumn(Label, "Year Month Key", each Date.Year([Date]) * 100 + Date.Month([Date]), Int64.Type),
+				    MonthName = Table.AddColumn(YearMonth, "Month Name", each Date.ToText([Date], "MMMM", "en-US"), type text),
+				    MonthNumber = Table.AddColumn(MonthName, "Month Number", each Date.Month([Date]), Int64.Type),
+				    FiscalYear = Table.AddColumn(MonthNumber, "Fiscal Year", each "FY" & Text.End(Text.From(Date.Year([Date]) + (if Date.Month([Date]) >= 2 then 1 else 0)), 2), type text),
+				    FiscalMonth = Table.AddColumn(FiscalYear, "Fiscal Month", each Number.Mod(Date.Month([Date]) + 10, 12) + 1, Int64.Type)
+				in
+				    Table.TransformColumnTypes(FiscalMonth, {{"Date", type date}})

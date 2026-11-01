@@ -1,0 +1,37 @@
+/// Five fictional workforce hubs, one row per location.
+table Location
+
+	column 'Location Key'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Location Key
+
+	column City
+		dataType: string
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: City
+
+	column Country
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Country
+
+	column Region
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Region
+
+	partition Location = m
+		mode: import
+		source =
+				#table(
+				    type table [#"Location Key" = Int64.Type, City = text, Country = text, Region = text],
+				    {
+				        {1, "Amsterdam", "Netherlands", "Europe"},
+				        {2, "Toronto", "Canada", "North America"},
+				        {3, "Austin", "United States", "North America"},
+				        {4, "Singapore", "Singapore", "Asia-Pacific"},
+				        {5, "Berlin", "Germany", "Europe"}
+				    })

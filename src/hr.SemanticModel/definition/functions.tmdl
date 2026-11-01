@@ -1,0 +1,163 @@
+/// Returns one test row, preserving BLANK as distinct from zero.
+function 'Tests.Equal' =
+		(testName : STRING, expected : DOUBLE, actual : DOUBLE) =>
+			ROW (
+			    "TestName", testName,
+			    "Expected", expected,
+			    "Actual", actual,
+			    "Passed",
+			        IF (
+			            ISBLANK ( expected ) || ISBLANK ( actual ),
+			            ISBLANK ( expected ) && ISBLANK ( actual ),
+			            ABS ( expected - actual ) < 0.00001
+			        )
+			)
+
+/// Independent fixture checks for all nine measures, plus empty periods and monthly movement reconciliation.
+function 'Tests.Run' =
+		() =>
+			VAR _last = DATE ( 2025, 12, 31 )
+			VAR _priorYear = DATE ( 2024, 12, 31 )
+			VAR _activeLast =
+			    FILTER (
+			        'Employee',
+			        'Employee'[Hire Date] <= _last
+			            && ( ISBLANK ( 'Employee'[Termination Date] ) || 'Employee'[Termination Date] >= _last )
+			    )
+			VAR _activeLY =
+			    FILTER (
+			        'Employee',
+			        'Employee'[Hire Date] <= _priorYear
+			            && ( ISBLANK ( 'Employee'[Termination Date] ) || 'Employee'[Termination Date] >= _priorYear )
+			    )
+			VAR _countLast = COUNTROWS ( _activeLast )
+			VAR _countLY = COUNTROWS ( _activeLY )
+			VAR _fteLast =
+			    SUMX ( _activeLast, IF ( MOD ( 'Employee'[Employee Key], 8 ) = 0, 0.8, 1 ) )
+			VAR _salaryLast =
+			    ROUND ( DIVIDE (
+			        SUMX (
+			            _activeLast,
+			            (
+			                34000
+			                    + SWITCH ( 'Employee'[Level], "L1", 1, "L2", 2, "L3", 3, "L4", 4 ) * 15500
+			                    + MOD ( 'Employee'[Employee Key] * 23 + 271828, 19 ) * 950
+			            ) * IF ( MOD ( 'Employee'[Employee Key], 8 ) = 0, 0.8, 1 )
+			        ),
+			        12
+			    ), 4 )
+			VAR _months2025 =
+			    CALCULATETABLE (
+			        VALUES ( 'Calendar'[Month End] ),
+			        DATESBETWEEN ( 'Calendar'[Date], DATE ( 2025, 1, 1 ), _last )
+			    )
+			VAR _months2024 =
+			    CALCULATETABLE (
+			        VALUES ( 'Calendar'[Month End] ),
+			        DATESBETWEEN ( 'Calendar'[Date], DATE ( 2024, 1, 1 ), _priorYear )
+			    )
+			VAR _average2025 =
+			    AVERAGEX (
+			        _months2025,
+			        VAR _month = 'Calendar'[Month End]
+			        RETURN
+			            COUNTROWS (
+			                FILTER (
+			                    'Employee',
+			                    'Employee'[Hire Date] <= _month
+			                        && ( ISBLANK ( 'Employee'[Termination Date] ) || 'Employee'[Termination Date] >= _month )
+			                )
+			            )
+			    )
+			VAR _average2024 =
+			    AVERAGEX (
+			        _months2024,
+			        VAR _month = 'Calendar'[Month End]
+			        RETURN
+			            COUNTROWS (
+			                FILTER (
+			                    'Employee',
+			                    'Employee'[Hire Date] <= _month
+			                        && ( ISBLANK ( 'Employee'[Termination Date] ) || 'Employee'[Termination Date] >= _month )
+			                )
+			            )
+			    )
+			VAR _hires2025 =
+			    COUNTROWS (
+			        FILTER ( 'Employee', 'Employee'[Hire Date] >= DATE ( 2025, 1, 1 ) && 'Employee'[Hire Date] <= _last )
+			    )
+			VAR _exits2025 =
+			    COUNTROWS (
+			        FILTER ( 'Employee', 'Employee'[Termination Date] >= DATE ( 2025, 1, 1 ) && 'Employee'[Termination Date] <= _last )
+			    )
+			VAR _exits2024 =
+			    COUNTROWS (
+			        FILTER ( 'Employee', 'Employee'[Termination Date] >= DATE ( 2024, 1, 1 ) && 'Employee'[Termination Date] <= _priorYear )
+			    )
+			VAR _storesLast =
+			    COUNTROWS (
+			        FILTER (
+			            _activeLast,
+			            MOD ( 'Employee'[Employee Key] * 7 + 271828, 6 ) + 1 = 1
+			        )
+			    )
+			VAR _amsterdamExits2025 =
+			    COUNTROWS (
+			        FILTER (
+			            'Employee',
+			            'Employee'[Termination Date] >= DATE ( 2025, 1, 1 )
+			                && 'Employee'[Termination Date] <= _last
+			                && MOD ( 'Employee'[Employee Key] * 13 + 271828, 5 ) + 1 = 1
+			        )
+			    )
+			VAR _reconciliationErrors =
+			    SUMX (
+			        FILTER (
+			            VALUES ( 'Calendar'[Month End] ),
+			            'Calendar'[Month End] > DATE ( 2023, 1, 31 ) && 'Calendar'[Month End] <= _last
+			        ),
+			        VAR _month = 'Calendar'[Month End]
+			        VAR _previous = EOMONTH ( _month, -1 )
+			        VAR _currentCount =
+			            CALCULATE ( [HEADCOUNT], REMOVEFILTERS ( 'Calendar' ), TREATAS ( { _month }, 'Calendar'[Date] ) )
+			        VAR _priorCount =
+			            CALCULATE ( [HEADCOUNT], REMOVEFILTERS ( 'Calendar' ), TREATAS ( { _previous }, 'Calendar'[Date] ) )
+			        VAR _hires =
+			            CALCULATE ( [HIRES], REMOVEFILTERS ( 'Calendar' ), DATESBETWEEN ( 'Calendar'[Date], _previous + 1, _month ) )
+			        VAR _exits =
+			            CALCULATE ( [EXITS], REMOVEFILTERS ( 'Calendar' ), DATESBETWEEN ( 'Calendar'[Date], _previous + 1, _month ) )
+			        RETURN
+			            IF ( _currentCount = _priorCount + COALESCE ( _hires, 0 ) - COALESCE ( _exits, 0 ), 0, 1 )
+			    )
+			RETURN
+			    UNION (
+			        Tests.Equal ( "HEADCOUNT: final snapshot versus active roster", _countLast,
+			            CALCULATE ( [HEADCOUNT], TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
+			        Tests.Equal ( "FTE: final snapshot versus roster weights", _fteLast,
+			            CALCULATE ( [FTE], TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
+			        Tests.Equal ( "AVERAGE HEADCOUNT: 2025 monthly roster mean", _average2025,
+			            CALCULATE ( [AVERAGE HEADCOUNT], DATESBETWEEN ( 'Calendar'[Date], DATE ( 2025, 1, 1 ), _last ) ) ),
+			        Tests.Equal ( "SALARY COST: final snapshot versus roster salary and FTE", _salaryLast,
+			            CALCULATE ( [SALARY COST], TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
+			        Tests.Equal ( "HEADCOUNT LY: previous year versus active roster", _countLY,
+			            CALCULATE ( [HEADCOUNT LY], TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
+			        Tests.Equal ( "HIRES: 2025 versus roster hire dates", _hires2025,
+			            CALCULATE ( [HIRES], DATESBETWEEN ( 'Calendar'[Date], DATE ( 2025, 1, 1 ), _last ) ) ),
+			        Tests.Equal ( "EXITS: 2025 versus roster termination dates", _exits2025,
+			            CALCULATE ( [EXITS], DATESBETWEEN ( 'Calendar'[Date], DATE ( 2025, 1, 1 ), _last ) ) ),
+			        Tests.Equal ( "ATTRITION RATE: 2025 exits / monthly roster mean",
+			            DIVIDE ( _exits2025, _average2025 ),
+			            CALCULATE ( [ATTRITION RATE], TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
+			        Tests.Equal ( "ATTRITION RATE LY: 2024 exits / monthly roster mean",
+			            DIVIDE ( _exits2024, _average2024 ),
+			            CALCULATE ( [ATTRITION RATE LY], TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
+			        Tests.Equal ( "ATTRITION RATE: incomplete history is blank", BLANK (),
+			            CALCULATE ( [ATTRITION RATE], TREATAS ( { DATE ( 2023, 1, 31 ) }, 'Calendar'[Date] ) ) ),
+			        Tests.Equal ( "ATTRITION RATE: no headcount is blank", BLANK (),
+			            CALCULATE ( [ATTRITION RATE], TREATAS ( { -1 }, 'Employee'[Employee Key] ), TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
+			        Tests.Equal ( "HEADCOUNT: Stores department filters snapshot", _storesLast,
+			            CALCULATE ( [HEADCOUNT], TREATAS ( { 1 }, 'Department'[Department Key] ), TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
+			        Tests.Equal ( "EXITS: Amsterdam location filters movement", _amsterdamExits2025,
+			            CALCULATE ( [EXITS], TREATAS ( { 1 }, 'Location'[Location Key] ), DATESBETWEEN ( 'Calendar'[Date], DATE ( 2025, 1, 1 ), _last ) ) ),
+			        Tests.Equal ( "Monthly headcount = prior headcount + hires - exits (35 months)", 0, _reconciliationErrors )
+			    )

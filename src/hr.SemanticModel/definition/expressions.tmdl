@@ -1,0 +1,40 @@
+/// Deterministic fictional roster. The numeric seed is fixed; no real HR data or network source is used.
+expression EmployeeRows =
+		let
+		    Seed = 271828,
+		    EndDate = #date(2025, 12, 31),
+		    Ids = {1..1200},
+		    Records = List.Transform(Ids, (id) =>
+		        let
+		            hire = if id <= 720
+		                then Date.AddDays(#date(2019, 1, 1), Number.Mod(id * 37 + Seed, 1461))
+		                else Date.AddDays(#date(2023, 1, 1), Number.Mod(id * 37 + Seed, 1095)),
+		            proposedExit = Date.AddDays(Date.StartOfMonth(Date.AddMonths(hire, 6 + Number.Mod(id * 11 + Seed, 18))), 14),
+		            exitDate = if (Number.Mod(id, 5) = 0 or Number.Mod(id, 7) = 0) and proposedExit <= EndDate
+		                then proposedExit else null,
+		            department = Number.Mod(id * 7 + Seed, 6) + 1,
+		            location = Number.Mod(id * 13 + Seed, 5) + 1,
+		            level = Number.Mod(id * 17 + Seed, 4) + 1
+		        in
+		            [#"Employee Key" = id,
+		             Employee = "Demo Employee " & Text.PadStart(Text.From(id), 4, "0"),
+		             #"Job Title" = {"Associate", "Specialist", "Lead", "Manager"}{level - 1},
+		             Level = {"L1", "L2", "L3", "L4"}{level - 1},
+		             Gender = {"Woman", "Man", "Nonbinary", "Not specified"}{Number.Mod(id * 19 + Seed, 4)},
+		             #"Hire Date" = hire, #"Termination Date" = exitDate,
+		             #"Manager Flag" = level = 4,
+		             #"Department Key" = department, #"Location Key" = location,
+		             FTE = if Number.Mod(id, 8) = 0 then 0.8 else 1.0,
+		             #"Annual Base Salary" = 34000 + level * 15500 + Number.Mod(id * 23 + Seed, 19) * 950,
+		             #"Exit Reason" = if exitDate = null then null
+		                 else {"Voluntary", "Retirement", "Other"}{Number.Mod(id * 29 + Seed, 3)}]),
+		    Rows = Table.FromRecords(Records),
+		    Typed = Table.TransformColumnTypes(Rows, {
+		        {"Employee Key", Int64.Type}, {"Employee", type text},
+		        {"Job Title", type text}, {"Level", type text}, {"Gender", type text},
+		        {"Hire Date", type date}, {"Termination Date", type date},
+		        {"Manager Flag", type logical}, {"Department Key", Int64.Type},
+		        {"Location Key", Int64.Type}, {"FTE", type number},
+		        {"Annual Base Salary", Currency.Type}, {"Exit Reason", type text}})
+		in
+		    Typed

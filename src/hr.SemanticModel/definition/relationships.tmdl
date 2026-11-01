@@ -1,0 +1,31 @@
+relationship 'Headcount Employee'
+	fromColumn: Headcount.'Employee Key'
+	toColumn: Employee.'Employee Key'
+
+relationship 'Headcount Department'
+	fromColumn: Headcount.'Department Key'
+	toColumn: Department.'Department Key'
+
+relationship 'Headcount Location'
+	fromColumn: Headcount.'Location Key'
+	toColumn: Location.'Location Key'
+
+relationship 'Headcount Calendar'
+	fromColumn: Headcount.'Snapshot Date'
+	toColumn: Calendar.Date
+
+relationship 'Movements Employee'
+	fromColumn: Movements.'Employee Key'
+	toColumn: Employee.'Employee Key'
+
+relationship 'Movements Department'
+	fromColumn: Movements.'Department Key'
+	toColumn: Department.'Department Key'
+
+relationship 'Movements Location'
+	fromColumn: Movements.'Location Key'
+	toColumn: Location.'Location Key'
+
+relationship 'Movements Calendar'
+	fromColumn: Movements.'Event Date'
+	toColumn: Calendar.Date

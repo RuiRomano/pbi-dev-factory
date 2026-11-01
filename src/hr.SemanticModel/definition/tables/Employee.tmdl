@@ -1,0 +1,51 @@
+/// Fictional employees, one row per employee. Organizational assignments are fixed for this demo.
+table Employee
+
+	column 'Employee Key'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: Employee Key
+
+	column Employee
+		dataType: string
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: Employee
+
+	column 'Job Title'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Job Title
+
+	column Level
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Level
+
+	column Gender
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Gender
+
+	column 'Hire Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Hire Date
+
+	column 'Termination Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Termination Date
+
+	column 'Manager Flag'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: Manager Flag
+
+	partition Employee = m
+		mode: import
+		source =
+				Table.SelectColumns(EmployeeRows, {"Employee Key", "Employee", "Job Title", "Level", "Gender", "Hire Date", "Termination Date", "Manager Flag"})
