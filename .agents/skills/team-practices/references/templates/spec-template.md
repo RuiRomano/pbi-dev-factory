@@ -23,6 +23,7 @@
 
 ## Open questions
 <Unresolved questions or unverified assumptions. Write "None" if there are none.>
+<Index the open questions so its easy to reference them in comments. E.g. O1 - [question]>
 
 ## Change log
 - <yyyy-mm-dd>: <What changed in the spec or implementation, and why.>
