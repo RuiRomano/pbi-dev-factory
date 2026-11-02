@@ -326,6 +326,8 @@ Workspace permissions, service role assignments and deployed security were not i
 
 ## Data Sources and Refresh
 
+See the [consolidated data-source inventory](data-sources.md) for all semantic-model sources.
+
 There are five Import partitions, each using Power Query M. The four CSV imports use Web.Contents, UTF-8 comma-delimited parsing, promoted headers and explicit type conversions.
 
 | Table | Partition | Source / behavior |

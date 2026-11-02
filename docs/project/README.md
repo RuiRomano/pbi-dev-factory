@@ -16,6 +16,10 @@ The source queries can randomize sales quantities and net prices at refresh. Tre
 | sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, and annual category KPIs. | [Open](sales-overview.report.md) |
 | customer-comparison | Report | `src/customer-comparison.Report` | sales semantic model, bound by relative path | Monthly comparison and detail for new, existing and total customers with sales. | [Source](../../src/customer-comparison.Report/definition/pages/2b3f5f9676144f1e9f79/page.json) |
 
+## Semantic model data sources
+
+See the [consolidated data-source inventory](data-sources.md) for all sources and generated data in the semantic models.
+
 ## Project Entry Point and Shared Resources
 
 Open [sales-overview.pbip](../../src/sales-overview.pbip) in Power BI Desktop. Its report definition binds to `../sales.SemanticModel`; no published workspace binding is specified.
