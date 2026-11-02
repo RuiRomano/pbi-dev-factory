@@ -5,7 +5,10 @@
 - Always load `team-practices` skill. Its rules take precedence over conflicting development guidance in other skills, including skills loaded later.
 - Unless explicitly asked, always follow the implementation plan in `team-practices` skill: spec > review > implement > test 
 - Development should be made against the code in `src/`. After development, you can test (run DAX queries, refresh) against a live Fabric development workspace by running `scripts\deploy.py`.
-- For new developments in GitHub, make sure you commit the spec for review in the PR. In case of open questions in the spec, edit the PR description and append the open questions to facilitate developer review.
+- GitHub PR instructions:
+    - Make sure you commit the spec for review in the PR. 
+    - Update the PR description or comment with open questions of the spec
+    - Include a note in the PR calling out the PR originated from AI    
 
 
 ## Tool routing
