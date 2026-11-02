@@ -4,7 +4,7 @@ description: "Apply this repository's Power BI team practices: write and maintai
 argument-hint: "Describe what you want to spec, implement, document or test"
 ---
 
-# Power BI Team Practices
+# Team Practices
 
 **Deliver Power BI work the way this team does it**: start from a reviewed spec, build within the team rules, prove the result with the project tests, and keep the documentation current. This skill adds team process and rules on top of the domain skills. It does not replace them.
 
