@@ -3,6 +3,7 @@ table Calendar
 	lineageTag: 119a9d89-4a5d-4160-8874-6167f38adcd6
 	dataCategory: Time
 
+	/// Daily date for filtering demo hire, exit and headcount snapshot records.
 	column Date
 		dataType: dateTime
 		isKey
@@ -13,6 +14,7 @@ table Calendar
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Calendar month-end date used to identify monthly headcount snapshots.
 	column 'Month End'
 		dataType: dateTime
 		formatString: mmm yyyy
@@ -22,6 +24,7 @@ table Calendar
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Display label for the calendar month; use Month End for date-based filtering.
 	column 'Month Label'
 		dataType: string
 		lineageTag: cb6ed92e-ad8d-409e-a034-6190ac0528e5
@@ -36,6 +39,7 @@ table Calendar
 		summarizeBy: none
 		sourceColumn: Year Month Key
 
+	/// Month name for calendar grouping, sorted by its month number.
 	column 'Month Name'
 		dataType: string
 		lineageTag: 99fe8006-ce84-43d7-bde8-a641a265c704
@@ -50,6 +54,7 @@ table Calendar
 		summarizeBy: none
 		sourceColumn: Month Number
 
+	/// Demo fiscal year running February through January; FY25 ends in January 2025. This is not confirmed HR policy.
 	column 'Fiscal Year'
 		dataType: string
 		lineageTag: 2760fcb0-a42d-47e4-982d-79e7eee9cd4b

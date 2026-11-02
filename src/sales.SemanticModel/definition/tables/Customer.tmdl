@@ -1,6 +1,8 @@
+/// Customer dimension. City, State, Country and Continent describe the customer, not the store or sales location. Use Store fields for store geography.
 table Customer
 	lineageTag: 04227f5a-0aeb-4448-b5c5-dbf3e276da85
 
+	/// Count of customer records in the current Customer filter context, whether or not they have sales. Use # Customers (w/ Sales) for purchasers.
 	measure '# Customers' = COUNTROWS('Customer')
 		formatString: #,##0
 		lineageTag: a8dc565a-aa9b-40dc-902c-1ba2596b0977
@@ -17,6 +19,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Gender category recorded for the customer; use only for descriptive customer analysis.
 	column Gender
 		dataType: string
 		lineageTag: 7e0ce5eb-3e63-4870-b30a-032f5186375d
@@ -25,6 +28,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Customer display name used to identify customer records.
 	column Customer
 		dataType: string
 		lineageTag: 8845f8b5-b069-41a0-8af8-12e402b113e9
@@ -34,6 +38,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Customer mailing address; this describes the customer, not the store or sales location.
 	column Address
 		dataType: string
 		lineageTag: adbeb074-7c67-40ee-be2d-d46775ce5e17
@@ -42,6 +47,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// City where the customer is based; distinct from the city or state of a store.
 	column City
 		dataType: string
 		lineageTag: a791eb8c-7fab-418d-844a-f8b094453037
@@ -51,6 +57,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Customer state or province code; distinct from Store[State].
 	column 'State Code'
 		dataType: string
 		lineageTag: 29de3d16-fffa-4f61-8c39-c1a2a36d737a
@@ -60,6 +67,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// State or province where the customer is based; distinct from Store[State].
 	column State
 		dataType: string
 		lineageTag: 923b4cc1-6137-4bb4-bcb2-3a90c5f76c5e
@@ -69,6 +77,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Customer postal code; this describes customer geography, not store geography.
 	column 'Zip Code'
 		dataType: string
 		lineageTag: 439ce0ee-437e-4770-90c4-c4d53ebfb35b
@@ -78,6 +87,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Country code for the customer's country; use Country for its readable name.
 	column 'Country Code'
 		dataType: string
 		lineageTag: f3eea279-4255-446b-9f83-f40f66abf6d1
@@ -87,6 +97,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Country where the customer is based; distinct from Store[Country].
 	column Country
 		dataType: string
 		lineageTag: 99af44ae-86e9-4b75-98a3-e4b6e53fe806
@@ -96,6 +107,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Continent associated with the customer's country.
 	column Continent
 		dataType: string
 		lineageTag: 53b840d2-962c-44c4-8733-6cc003fb9a83
@@ -105,6 +117,7 @@ table Customer
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Customer date of birth. Age is recalculated from this date and today's date.
 	column Birthday
 		dataType: dateTime
 		formatString: Long Date
@@ -116,6 +129,7 @@ table Customer
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Age calculated as year boundaries between Birthday and today, not exact completed years or age at order. It changes after processing.
 	column Age =
 			
 			DATEDIFF(

@@ -2,7 +2,7 @@
 table Headcount
 	lineageTag: 95719664-7c8d-4a10-bf32-f8d480dc2d71
 
-	/// Distinct employed people at the latest snapshot inside the selected dates; blank when no snapshot is selected.
+	/// Distinct fictional employees at the latest selected month-end snapshot; a period total is the closing snapshot, not a sum of months. Blank without a snapshot.
 	measure HEADCOUNT =
 			VAR _snapshot = MAX ( 'Headcount'[Snapshot Date] )
 			RETURN
@@ -13,7 +13,7 @@ table Headcount
 		formatString: #,##0
 		lineageTag: 991064d4-fbb0-42bf-8015-8df80753462d
 
-	/// Full-time equivalents at the latest selected month-end snapshot, not a sum across months.
+	/// Fictional full-time equivalents at the latest selected month-end snapshot; not a sum across snapshots.
 	measure FTE =
 			VAR _snapshot = MAX ( 'Headcount'[Snapshot Date] )
 			RETURN
@@ -24,7 +24,7 @@ table Headcount
 		formatString: #,##0.0
 		lineageTag: bbcf3801-02be-46bb-bdd8-b006dba990f5
 
-	/// Mean monthly headcount across available month ends in the selected calendar period.
+	/// Mean of available month-end headcounts in the selected Calendar period; this is an average of snapshots, not a period total.
 	measure 'AVERAGE HEADCOUNT' =
 			AVERAGEX (
 			    VALUES ( 'Calendar'[Month End] ),
@@ -39,7 +39,7 @@ table Headcount
 		formatString: #,##0.0
 		lineageTag: cc92d07d-6fab-4317-b835-0b8566a47154
 
-	/// Illustrative monthly base-salary cost in synthetic currency units: annual salary times FTE divided by 12 at the latest selected snapshot.
+	/// Synthetic monthly base-salary cost at the latest selected snapshot: annual base salary times FTE divided by 12. Not payroll or actual compensation.
 	measure 'SALARY COST' =
 			VAR _snapshot = MAX ( 'Headcount'[Snapshot Date] )
 			RETURN
@@ -56,7 +56,7 @@ table Headcount
 		formatString: #,##0.00
 		lineageTag: ffdbdf42-8e3b-454c-9acf-787e37bd8f60
 
-	/// Month-end headcount at the corresponding month end one year before the last date selected.
+	/// Headcount at the corresponding month end one year before the last selected date; this is a point-in-time comparison.
 	measure 'HEADCOUNT LY' =
 			VAR _date = MAX ( 'Calendar'[Date] )
 			VAR _lastYear = EOMONTH ( _date, -12 )

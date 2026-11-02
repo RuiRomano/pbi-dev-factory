@@ -2,7 +2,7 @@
 table Movements
 	lineageTag: 0dd00a15-1a26-450c-8050-3352409caae5
 
-	/// Number of fictional hire events in the selected dates; returns blank when none exist.
+	/// Count of fictional hire events in the selected dates; blank when none exist.
 	measure HIRES =
 			CALCULATE (
 			    COUNTROWS ( 'Movements' ),
@@ -11,7 +11,7 @@ table Movements
 		formatString: #,##0
 		lineageTag: 607a57b4-c77a-476a-86d9-3ea43d1d6635
 
-	/// Number of fictional employee exit events in the selected dates; returns blank when none exist.
+	/// Count of fictional exit events in the selected dates; blank when none exist.
 	measure EXITS =
 			CALCULATE (
 			    COUNTROWS ( 'Movements' ),
@@ -20,7 +20,7 @@ table Movements
 		formatString: #,##0
 		lineageTag: 87c2ec71-52e4-464c-a58b-b9de02c13485
 
-	/// Exits in the trailing 12 complete months divided by average monthly headcount in those same months. Blank without 12 snapshots or a positive denominator.
+	/// Exits in the trailing 12 complete months divided by average monthly headcount for those months. Blank without 12 snapshots or positive headcount; synthetic demo only.
 	measure 'ATTRITION RATE' =
 			VAR _selectedDate = MAX ( 'Calendar'[Date] )
 			VAR _end = IF ( _selectedDate = EOMONTH ( _selectedDate, 0 ), _selectedDate, EOMONTH ( _selectedDate, -1 ) )
@@ -59,7 +59,7 @@ table Movements
 		formatString: 0.0%
 		lineageTag: 79ea57a7-3970-4e68-8b27-567a9d245ffc
 
-	/// Trailing twelve-complete-month attrition rate as of the corresponding month end one year earlier.
+	/// Trailing-12-complete-month attrition rate as of the corresponding month end one year earlier; synthetic demo only, not verified HR policy.
 	measure 'ATTRITION RATE LY' =
 			VAR _date = MAX ( 'Calendar'[Date] )
 			VAR _priorMonthEnd = EOMONTH ( _date, -12 )
@@ -106,18 +106,21 @@ table Movements
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Type of fictional workforce event: Hire or Exit. HIRES and EXITS count these event types.
 	column 'Movement Type'
 		dataType: string
 		lineageTag: ccf281a2-2341-4ca4-a5e3-d5c6c15055c9
 		summarizeBy: none
 		sourceColumn: Movement Type
 
+	/// Synthetic reason recorded for a demo exit; blank for hire events and not verified HR policy.
 	column 'Exit Reason'
 		dataType: string
 		lineageTag: 41f73715-0601-4ef8-b59a-809135d6c7f1
 		summarizeBy: none
 		sourceColumn: Exit Reason
 
+	/// Tenure-at-exit group for fictional exit events; blank for hire events.
 	column 'Tenure Band'
 		dataType: string
 		lineageTag: 51130d83-4c6f-4137-a0a1-bb480401854c

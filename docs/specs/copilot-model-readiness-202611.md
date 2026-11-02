@@ -1,6 +1,6 @@
 # Copilot readiness for sales and HR
 
-**Status:** Approved
+**Status:** In progress
 **Updated:** 2026-11-02
 
 ## Goal
@@ -24,9 +24,13 @@ Power BI's Prep data for AI instructions, data schema and verified answers are u
 - No measure expression, object name, relationship, hidden flag, source, report, test assertion or Q&A setting changes.
 - Preserve the existing `Tests.Run` functions and assertions. Compare model objects before and after to confirm descriptions and approved geographic categories are the only metadata changes.
 - Document representative Copilot questions with the expected measure, grouping and date basis. Clearly identify unresolved sales currency and customer-versus-store geography choices instead of encoding guesses as instructions.
+- After the model owner applies or declines the user-configured Prep data for AI recommendations, verify the representative questions in Copilot before claiming improved answer quality.
 
 ## Open questions
-None. The user authorized best-judgment changes following recommended AI-readiness practices. Workspace Prep data for AI settings and live Copilot answers are not available in the local TMDL project and will remain unmodified and unverified.
+- O1 - Existing workspace Prep data for AI settings and live Copilot answers are not available in the local TMDL project. They remain unmodified and require owner review.
+- O2 - The model owner must verify the documented questions in Copilot after reviewing the draft instructions; answer quality is not verified by metadata tests.
 
 ## Change log
 - 2026-11-02: Approved scope based on the user's direction to use best judgment. Keep model behavior fixed; improve metadata and provide owner-applied AI setup recommendations grounded in repository evidence.
+- 2026-11-02: Added descriptions to visible fields and measures in both models, table descriptions to sales, and geographic data categories for store and HR location fields. The sales Fiscal Quarter formula remains unchanged and is explicitly flagged because its mapping to the July-start fiscal year is not validated.
+- 2026-11-02: Deployed the metadata-only changes to DEV. All 14 HR and 36 sales `Tests.Run` assertions passed without a data refresh. Live Copilot questions and workspace Prep data for AI settings remain unverified.

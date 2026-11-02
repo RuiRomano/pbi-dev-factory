@@ -9,6 +9,7 @@ table Department
 		summarizeBy: none
 		sourceColumn: Department Key
 
+	/// Name of one of the six fictional departments in this demo.
 	column Department
 		dataType: string
 		lineageTag: b72ca1f3-7620-490f-8453-f58d16adfaef
@@ -16,12 +17,14 @@ table Department
 		summarizeBy: none
 		sourceColumn: Department
 
+	/// Fictional organizational division containing the department.
 	column Division
 		dataType: string
 		lineageTag: bc24e834-bc65-4dff-bad2-f55024086ace
 		summarizeBy: none
 		sourceColumn: Division
 
+	/// Synthetic demo cost-center label associated with the department; not a verified finance code.
 	column 'Cost Center'
 		dataType: string
 		lineageTag: bef8dd49-fbf8-4989-9fd4-22d3884efc4b

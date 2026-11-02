@@ -9,19 +9,24 @@ table Location
 		summarizeBy: none
 		sourceColumn: Location Key
 
+	/// City of a fictional workforce hub in this demo.
 	column City
 		dataType: string
 		lineageTag: 7e593d03-d086-411b-9859-f1ce5fcd5b80
+		dataCategory: City
 		isDefaultLabel
 		summarizeBy: none
 		sourceColumn: City
 
+	/// Country of a fictional workforce hub in this demo.
 	column Country
 		dataType: string
 		lineageTag: 8f815b92-a06d-4d1e-8906-2f167fa5ac55
+		dataCategory: Country
 		summarizeBy: none
 		sourceColumn: Country
 
+	/// Region assigned to the fictional workforce hub; use for demo location groupings.
 	column Region
 		dataType: string
 		lineageTag: f3b785b8-c94c-482e-8969-dcb1905ca3d3
