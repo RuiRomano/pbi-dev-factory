@@ -48,4 +48,3 @@ table Currency
 		dataType: string
 
 	partition Partition_Currency = calculationGroup
-
