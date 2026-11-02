@@ -47,7 +47,7 @@ docs/project/
         └── <page-name>.png
 ```
 
-- `README.md` is the catalog of every artifact. Use the [catalog template](./templates/docs-catalog.md).
+- `README.md` is the catalog of every artifact. Use the [catalog template](./templates/docs-catalog.md). Keep it simple, is essentially a index to the other doc files.
 - One file per semantic model, named `<name>.semantic-model.md`. Use the [semantic model template](./templates/docs-semantic-model.md).
 - One file per report, named `<name>.report.md`. Use the [report template](./templates/docs-report.md).
 - Normalize file names to lowercase and use hyphens for spaces or unsupported characters. The type suffix keeps a report and model with the same name apart.

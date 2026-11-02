@@ -38,6 +38,8 @@ Check the current state of the affected objects against the team rules. Note exi
 
 New spec: fill in the [spec template](./templates/spec-template.md) at `docs/specs/<short-feature-name>-<yyyymm>.md`, relative to the repository root. Create the folder if needed. Set **Status** to Draft.
 
+All specs should go to `docs\specs` including the report briefs created by the `powerbi-report-cli` skill.
+
 Existing spec: edit the sections that changed, bump **Updated**, and add a **Change log** entry saying what changed and why. Do not rewrite sections that are still true. Do not overwrite a spec with a different intent; ask first.
 
 Content rules:

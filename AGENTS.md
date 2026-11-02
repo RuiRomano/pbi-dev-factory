@@ -1,10 +1,14 @@
 # AGENTS.md
 
-## Important
+## Start here
 
 - Always load `team-practices` skill. Its rules take precedence over conflicting development guidance in other skills, including skills loaded later.
 - Unless explicitly asked, always follow the implementation plan in `team-practices` skill: spec > review > implement > test 
-- Development should be made against the code in `src/`. After development, you can test (run DAX queries, refresh) against a live Fabric development workspace by running `scripts\deploy.py`.
+- Development should be made against the code in `src/`. 
+    - The MCP Server can connect to TMDL folder. After development, you can test the development (e.g. run DAX queries, refresh) against a live Fabric development workspace.    
+- Deploy to the Fabric workspace using running the script `scripts\deploy.py`.     
+    - It's ok to overwrite the version in development workspace. Consider the version in `src` the source of truth.
+    - Preview the report against the semantic model in workspace.
 - GitHub PR instructions:
     - Use [the pull request template](.github/pull_request_template.md) for every PR description, including PRs created by GitHub Copilot cloud agent.
     - Make sure you commit the spec for review in the PR. 

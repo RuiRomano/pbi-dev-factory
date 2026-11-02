@@ -11,8 +11,8 @@ Development is done offline against `src/` but there is a development environmen
 - [ ] 2. Load skills and rules
 - [ ] 3. Build and persist the source
 - [ ] 4. Run local checks and repair
-- [ ] 5. Test (autopilot or explicitly requested)
-- [ ] 6. Document (autopilot or explicitly requested)
+- [ ] 5. Test
+- [ ] 6. Document
 - [ ] 7. Update the spec and report
 ```
 
@@ -31,7 +31,7 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
 
 - Follow the implementation workflows from the skills
 - Enforce the team rules whenever applicable
-- Execute the development against the local code in `src/` but use available tools. E.g. Use Power BI authoring MCP server against the TMDL folder.
+- Execute the development against the local code in `src/`. Whenever applicable use available tools to edit the code. E.g. Use Power BI authoring MCP server against the TMDL folder.
 - Persist model and report changes to `src/` before running repository scripts.
 - When the work needs to differ from the spec (a better approach, a blocker, a new business rule), stop and agree the change with the developer, then update the spec before building it.
 - When developing reports, if Power BI Desktop is not opened, develop agains the semantic model in dev workspace.
