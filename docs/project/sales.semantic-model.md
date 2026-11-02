@@ -12,7 +12,7 @@ The dependent [sales-overview report](sales-overview.report.md) uses these measu
 | Storage mode(s) | Import |
 | Tables | 5 |
 | Columns | 63: 53 visible, 10 hidden |
-| Measures | 15 |
+| Measures | 17 |
 | Relationships | 4 |
 | Hierarchies | 1, with 3 levels |
 | Calculation groups | None |
@@ -233,6 +233,31 @@ SUMX (
     Sales,
     Sales[Quantity]
         * ( Sales[Net Price] - Sales[Unit Cost] )
+)
+```
+
+### Margin (LY)
+
+Evaluates Margin for the selected date period one calendar year earlier. Like Sales Amount (LY), it returns blank unless current-period Sales Amount is positive. The comparison uses the selected date period, not necessarily a full year.
+
+```dax
+IF (
+    [Sales Amount] > 0,
+    CALCULATE (
+        [Margin],
+        SAMEPERIODLASTYEAR ( 'Calendar'[Date] )
+    )
+)
+```
+
+### Margin (YTD)
+
+Accumulates Margin from January 1 through the last selected date in the calendar year and retains non-date filters. It is not fiscal-year-to-date. With no date filter, the current calendar ends on 2021-12-31, so the measure returns the full 2021 margin.
+
+```dax
+CALCULATE (
+    [Margin],
+    DATESYTD ( 'Calendar'[Date] )
 )
 ```
 

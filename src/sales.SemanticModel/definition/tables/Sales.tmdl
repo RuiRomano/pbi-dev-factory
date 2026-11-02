@@ -118,6 +118,27 @@ table Sales
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Margin for the same selected date period one calendar year earlier. Returns blank unless current-period Sales Amount is positive, matching Sales Amount (LY).
+	measure 'Margin (LY)' =
+			IF (
+			    [Sales Amount] > 0,
+			    CALCULATE (
+			        [Margin],
+			        SAMEPERIODLASTYEAR ( 'Calendar'[Date] )
+			    )
+			)
+		formatString: $ #,##0
+		lineageTag: c9ca4885-7f55-465e-bd8d-2517b62b8d30
+
+	/// Margin from January 1 through the last selected date in the calendar year. Respects non-date filters.
+	measure 'Margin (YTD)' =
+			CALCULATE (
+			    [Margin],
+			    DATESYTD ( 'Calendar'[Date] )
+			)
+		formatString: $ #,##0
+		lineageTag: bd514cb2-7130-4751-83e6-2bcf03eb42fd
+
 	column 'Order Number'
 		dataType: int64
 		formatString: 0

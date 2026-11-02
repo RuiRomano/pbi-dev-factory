@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project presents Northwind Retail Group sales analysis using sample retail data and a separate, fictional HR demo semantic model and local report. The sales Import model connects sales lines to calendar, product, customer and store dimensions. The sales-overview report provides an interactive sales summary and a category-by-year financial matrix. The customer-comparison report compares new and existing customers by month. All three HR pages have Desktop screenshots; agreement with the latest saved definitions and interactive behavior remain unverified.
+This project presents Northwind Retail Group sales analysis using sample retail data and a separate, fictional HR demo semantic model and local report. The sales Import model connects sales lines to calendar, product, customer and store dimensions. The sales-overview report provides an interactive sales summary, margin time-intelligence cards and a category-by-year financial matrix. The customer-comparison report compares new and existing customers by month. All three HR pages have Desktop screenshots; agreement with the latest saved definitions and interactive behavior remain unverified.
 
 The source queries can randomize sales quantities and net prices at refresh. Treat the results as sample analysis, not certified company revenue. Currency conversion, returns and company fiscal-calendar compliance are not established by the definitions.
 
@@ -13,7 +13,7 @@ The source queries can randomize sales quantities and net prices at refresh. Tre
 | sales | Semantic model | `src/sales.SemanticModel` | sales-overview and customer-comparison reports | Sales amounts, cost, margin, quantities, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
 | hr | Semantic model | `src/hr.SemanticModel` | hr report | Synthetic employee snapshots and movements for headcount, FTE, salary cost and attrition demonstrations. | [Open](hr.semantic-model.md) |
 | hr | Report | `src/hr.Report` | hr semantic model, bound by relative path | Three-page fictional HR demo: workforce trends, exits and workforce mix. Local only; current Desktop screenshots documented. | [Open](hr.report.md) |
-| sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, and annual category KPIs. | [Open](sales-overview.report.md) |
+| sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, margin time comparisons and annual category KPIs. | [Open](sales-overview.report.md) |
 | customer-comparison | Report | `src/customer-comparison.Report` | sales semantic model, bound by relative path | Monthly comparison and detail for new, existing and total customers with sales. | [Source](../../src/customer-comparison.Report/definition/pages/2b3f5f9676144f1e9f79/page.json) |
 
 ## Project Entry Point and Shared Resources
@@ -57,6 +57,8 @@ The [refresh script](../../scripts/refresh.py) discovers models under `src` usin
 Updated HR screenshot documentation on 2026-11-01. All three current Desktop pages were captured and reviewed, with populated charts and no visible visual error messages. The window was not reloaded from disk. See [HR screenshot inspection](hr.report.md#screenshot-inspection-2026-11-01) for capture scope and unverified behavior. Unrelated artifact documentation and screenshots were preserved; the existing customer-comparison document and screenshot coverage gap remains.
 
 The customer-comparison report was added on 2026-10-31 following approval of a separate, one-page monthly comparison using returning customers as existing customers. Report-authoring CLI validation passed with zero errors and warnings. All 36 existing live `Tests.Run` assertions passed against the development sales model. A monthly query returned 34 months with sales, including 22 with existing customers, with zero reconciliation failures and zero negative counts. Local BPA could not run because its Tabular Editor executable requires Windows. Service preview failed with `RENDER_FAILED: CreateReportFailed`, code `401`, request ID `afb450aa-b832-4156-a1c8-02f141e026cb`. No screenshots were captured, so rendering, layout and interactive filtering remain unverified. The report has not been published.
+
+Updated on 2026-11-02 for [margin time-intelligence measures](../specs/margin-time-intelligence-202611.md). The sales model now has 17 measures and the report has 10 visuals, including two new margin cards on KPI. The existing screenshots predate this change; rendered review is blocked because Desktop preview is unsupported on Linux and service preview requires workspace and model GUIDs.
 
 Updated on 2026-10-30 for [returning customers](../specs/returning-customers-202610.md). Coverage includes one model and one report, with five tables, 63 columns, 15 measures, four relationships, one hierarchy, two report pages and nine visuals. Report documentation and screenshots were preserved because no report definitions changed.
 
