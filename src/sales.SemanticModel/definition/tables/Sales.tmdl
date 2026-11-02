@@ -11,7 +11,15 @@ table Sales
 		formatString: #,##0
 		lineageTag: c2ff8d96-2f03-4005-84df-91458625b73b
 
-	measure 'Sales Amount' = SUMX('Sales', 'Sales'[Quantity] * 'Sales'[Net Price])
+	/// Sales quantity times local net price, converted at each sales row's source currency and applicable rate date when one Currency item is selected. No selection or multiple selections retain native amounts. Invalid or missing rates raise an error.
+	measure 'Sales Amount' =
+			VAR targetCurrency = SELECTEDVALUE ( 'Currency'[Currency] )
+			RETURN
+			    SUMX (
+			        'Sales',
+			        CONVERT ( 'Sales'[Quantity] * 'Sales'[Net Price], DOUBLE )
+			            * Currency.Rate ( 'Sales'[Order Date], 'Sales'[Currency Code], targetCurrency )
+			    )
 		formatString: $ #,##0
 		lineageTag: a8e95485-02a2-4525-b02a-b2418fbdbe4c
 
@@ -25,12 +33,15 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: 65842ce7-7176-4106-868e-2e83aaa62b4c
 
+	/// Sales quantity times the difference between local net price and local unit cost, converted at each sales row's source currency and applicable rate date when one Currency item is selected. No selection or multiple selections retain native amounts. Invalid or missing rates raise an error.
 	measure Margin =
-			SUMX (
-			    Sales,
-			    Sales[Quantity]
-			        * ( Sales[Net Price] - Sales[Unit Cost] )
-			)
+			VAR targetCurrency = SELECTEDVALUE ( 'Currency'[Currency] )
+			RETURN
+			    SUMX (
+			        'Sales',
+			        CONVERT ( 'Sales'[Quantity] * ( 'Sales'[Net Price] - 'Sales'[Unit Cost] ), DOUBLE )
+			            * Currency.Rate ( 'Sales'[Order Date], 'Sales'[Currency Code], targetCurrency )
+			    )
 		formatString: $ #,##0
 		lineageTag: d22a262b-b776-4ccd-b9bd-7ef9c90eba51
 
@@ -73,7 +84,15 @@ table Sales
 		formatString: $ #,##0
 		lineageTag: 9a48bea0-e5fb-40fa-9e81-f61288e31a02
 
-	measure Cost = SUMX ( Sales, Sales[Quantity] * Sales[Unit Cost] )
+	/// Sales quantity times local unit cost, converted at each sales row's source currency and applicable rate date when one Currency item is selected. No selection or multiple selections retain native amounts. Invalid or missing rates raise an error.
+	measure Cost =
+			VAR targetCurrency = SELECTEDVALUE ( 'Currency'[Currency] )
+			RETURN
+			    SUMX (
+			        'Sales',
+			        CONVERT ( 'Sales'[Quantity] * 'Sales'[Unit Cost], DOUBLE )
+			            * Currency.Rate ( 'Sales'[Order Date], 'Sales'[Currency Code], targetCurrency )
+			    )
 		formatString: $ #,##0
 		lineageTag: 3e5cb67e-a411-476f-ad34-7ec10dfd084d
 

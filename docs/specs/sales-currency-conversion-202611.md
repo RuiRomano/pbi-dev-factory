@@ -1,6 +1,6 @@
 # Sales currency conversion
 
-**Status:** Draft
+**Status:** In progress
 **Updated:** 2026-11-02
 
 ## Goal
@@ -11,15 +11,15 @@ Allow analysts to select EUR, USD or GBP and see the sales model's monetary meas
 - Keep unchanged: Report layouts, existing object names and lineage, customer classifications, randomization parameters, unrelated models and existing assertions. A report slicer is outside scope; the calculation group column will be available for filters and slicers.
 
 ## Approach
-The current [Sales measures](../../src/sales.SemanticModel/definition/tables/Sales.tmdl) sum Quantity times Net Price or Unit Cost without conversion. Sales contains USD, EUR, GBP, CAD and AUD source currency codes. Its amounts appear to be local-currency amounts, but dollar measure formats and the euro Net Price format are not evidence of currency semantics. Confirm the interpretation in O1 before building.
+The original [Sales measures](../../src/sales.SemanticModel/definition/tables/Sales.tmdl) sum Quantity times Net Price or Unit Cost without conversion. Sales contains USD, EUR, GBP, CAD and AUD source currency codes. The developer confirmed that Net Price and Unit Cost are local-currency amounts. Existing dollar measure formats and the euro Net Price format do not establish currency semantics.
 
-Reuse `HttpSource` to import [RAW-CurrencyExchange.csv](https://raw.githubusercontent.com/RuiRomano/workshop-fabcon-26-bcn/main/resources/sample-data/RAW-CurrencyExchange.csv) into a hidden `Exchange Rates` table. Inspection found 1,425 rows, five source currencies, three target currencies and no duplicate Date/FromCurrency/ToCurrency keys. Every pair has 95 observations: month-end dates from May 2017 through December 2019, followed by daily dates from January 1 through March 3, 2020. Sales starts May 18, 2017, before the first observation. Multiplication by Exchange is the proposed FromCurrency-to-ToCurrency convention.
+Reuse `HttpSource` to import [RAW-CurrencyExchange.csv](https://raw.githubusercontent.com/RuiRomano/workshop-fabcon-26-bcn/main/resources/sample-data/RAW-CurrencyExchange.csv) into a hidden `Exchange Rates` table. Inspection found 1,425 rows, five source currencies, three target currencies and no duplicate Date/FromCurrency/ToCurrency keys. Every pair has 95 observations: month-end dates from May 2017 through December 2019, followed by daily dates from January 1 through March 3, 2020. Sales starts May 18, 2017, before the first observation. Multiply local amounts by Exchange to convert FromCurrency to ToCurrency; do not also apply Sales[Exchange Rate].
 
-Prefer a `Currency` calculation group with EUR, USD and GBP items over separate currency measures: one selection can cover all monetary measures while retaining existing measure names and report bindings. Keep the selector disconnected from Sales. Use an explicit allowlist for monetary conversion and dynamic format strings showing the selected currency. Preserve native values and existing formats when no currency is selected; propose the same behavior for multiple selections, pending O3.
+Use a `Currency` calculation group with EUR, USD and GBP items rather than separate currency measures: one selection covers all monetary measures while retaining existing measure names and report bindings. Keep the selector disconnected from Sales. Conversion is limited to the three additive base measures; a seven-measure allowlist controls dynamic formats. Preserve native values and existing formats when no currency or multiple currencies are selected.
 
 Convert additive Sales Amount, Cost and Margin at source-currency and applicable rate-date grain before summing. Never multiply a mixed-currency grand total by one rate. Apply the conversion to the base monetary expressions used by Sales Amount (LY), Sales Amount Avg per Day and the 6M/12M averages so those measures retain their existing date-shift, blank and averaging semantics. Do not iterate an already calculated average or apply current-period rates to last year's sales. Isolate conversion so it is applied exactly once, including nested measure references.
 
-Propose applying each pre-2020 month-end observation to its entire calendar month, and exact daily rates from January 2020 onward, pending O2. Keep rate resolution separate from the Calendar filters needed by sales calculations. Reject missing, duplicate, non-positive or unsupported rates for contributing sales rather than silently dropping amounts, substituting 1 or carrying a stale rate forward. Preserve blanks for empty sales contexts. Hide technical rate columns, use no implicit aggregations and leave existing relationships intact.
+Apply each pre-2020 month-end observation to its entire calendar month, and exact daily rates from January 2020 onward. Keep rate resolution separate from the Calendar filters needed by sales calculations. Reject missing, duplicate, non-positive or unsupported rates for contributing sales rather than silently dropping amounts, substituting 1 or carrying a stale rate forward. Preserve blanks for empty sales contexts. Hide technical rate columns, use no implicit aggregations and leave existing relationships intact.
 
 ## Team rules
 - Applies: [Semantic model rules](../../.agents/skills/team-practices/references/rules/semantic-model-rules.md). Preserve the star schema, keep measures in Sales, hide helper columns, use explicit measures with descriptions and formats, and add at least one Tests.Run assertion for every new measure. New measures use uppercase readable names; existing measures are not renamed.
@@ -34,11 +34,8 @@ Propose applying each pre-2020 month-end observation to its entire calendar mont
 - Preserve and run all existing Tests.Run assertions, adding focused conversion assertions and tests for each new measure. Validate metadata locally; run Windows BPA when available. After deployment authorization, use the existing deploy, refresh and test-data scripts and live DAX queries against the configured development workspace. Record skipped checks rather than claiming success.
 
 ## Open questions
-O1 - Confirm that Net Price and Unit Cost are amounts in Sales[Currency Code], and that Exchange is multiplied to convert FromCurrency to ToCurrency. The existing sales Exchange Rate must not also be applied unless its role requires it.
-
-O2 - Approve using month-end rates for every day in that month before 2020, then exact daily rates from 2020 onward. Alternatively, use the latest prior observation, which needs a separate policy for sales before May 31, 2017.
-
-O3 - Approve native, unconverted values for no selection and multiple selections, and a visible error for invalid or missing rates. Alternatively, choose a default reporting currency and reject multiple selections. Native totals retain the existing mixed-currency limitation.
+None. O1, O2 and O3 were approved in [PR comment 6576191666](https://github.com/RuiRomano/pbi-dev-factory/pull/27#issuecomment-6576191666). Native totals intentionally retain the existing mixed-currency limitation.
 
 ## Change log
 - 2026-11-02: Inspected the sales definitions, existing assertions and supplied exchange-rate data. Proposed a calculation group and documented currency and date-policy decisions for review. No model changes, deployment or refresh performed.
+- 2026-11-02: Developer approved O1, O2 and O3 and requested implementation. Started offline tool-mode authoring against the source TMDL. Conversion in the three additive base measures preserves the existing date-shift and averaging definitions; calculation items retain the selected expression and provide currency-specific formats.

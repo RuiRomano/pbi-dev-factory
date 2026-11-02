@@ -20,6 +20,8 @@ ref table Sales
 ref table Product
 ref table Customer
 ref table Store
+ref table 'Exchange Rates'
+ref table Currency
 
 ref cultureInfo en-US
 
