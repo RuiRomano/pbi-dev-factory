@@ -1,5 +1,17 @@
 # General guidance
 
+## Important
+
+- Always load `team-practices` skill. Its rules take precedence over conflicting development guidance in other skills, including skills loaded later.
+- Unless explicitly asked, always follow the implementation plan in `team-practices` skill: spec > review > implement > test 
+- Development should be made against the code in `src/`. After development, you can test (run DAX queries, refresh) against a live Fabric development workspace by running `scripts\deploy.py`.
+- For new developments in GitHub, make sure you commit the spec for review in the PR.
+
+## Tool routing
+
+- Use `powerbi-authoring-remote` when authoring against semantic models in Fabric workspaces
+- Use `powerbi-authoring-local` when authoring against semantic models in Power BI Desktop or PBIP tmdl folder
+
 ## Repository layout
 
 | Path | Contents |
@@ -10,17 +22,6 @@
 | `scripts/bpa/bpa.ps1` | Windows-only local Best Practice Analyzer for models and reports |
 | `scripts/deploy.py`, `scripts/refresh.py`, `scripts/test-data.py` | Fabric deployment, refresh and data tests |
 | `.env` | Target Fabric environment. Never print its contents. |
-
-## Important
-
-- For all Power BI tasks, load `team-practices` skill after the applicable domain skills. Its rules take precedence over conflicting development guidance in other skills, including skills loaded later. 
-- Development should be made against the code in `src/` bu testing measures, testing refresh should be done against a live Fabric development workspace you can configure running `scripts\deploy.py`.
-- Implementation asks should follow the guidance in `team-practices` skill: spec > review > implement > test > deploy to dev > repeat
-
-## Tool routing
-
-- Use `powerbi-authoring-remote` when authoring against semantic models in Fabric workspaces
-- Use `powerbi-authoring-local` when authoring against semantic models in Power BI Desktop or PBIP tmdl folder
 
 ## Code review
 
