@@ -6,8 +6,9 @@
 - Unless explicitly asked, always follow the implementation plan in `team-practices` skill: spec > review > implement > test 
 - Development should be made against the code in `src/`. After development, you can test (run DAX queries, refresh) against a live Fabric development workspace by running `scripts\deploy.py`.
 - GitHub PR instructions:
+    - Use [the pull request template](.github/pull_request_template.md) for every PR description, including PRs created by GitHub Copilot cloud agent.
     - Make sure you commit the spec for review in the PR. 
-    - Update the PR description or comment with open questions of the spec
+    - Keep the PR description's Open questions section current with unresolved spec questions. Write "None." if there are no open questions.
     - Include a note in the PR calling out the PR originated from AI    
 
 
