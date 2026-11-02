@@ -52,9 +52,9 @@ Content rules:
 
 ## 5. Hand off
 
-Link to the spec and summarize the proposed change and open questions. State that it is ready for review and has not been implemented. Stop. Implementation needs a separate request and follows [implement](./implement.md).
+Link to the spec and summarize the proposed change and open questions. State that it is ready for review and has not been implemented. Stop. Implementation needs a separate request and follows [implement](./implement.md) unless told otherwise by the developer.
 
-Add to the report: a **Spec** check with the path and status, and a **Team rules** row listing the rules applied and any proposed deviation.
+Add to the report: a **Spec** check with the path and status.
 
 ## When to update a spec
 

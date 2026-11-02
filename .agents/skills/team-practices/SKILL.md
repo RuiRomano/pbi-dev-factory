@@ -38,13 +38,6 @@ The rule files in `references/rules/` are the repository's authority for develop
 | [contoso-design-standards.png](./references/rules/contoso-design-standards.png) | Brand reference image for new reports |
 | [company-context.md](./references/rules/company-context.md) | Use this as general background when building reports, writing descriptions, or documenting any data model at Northwind Retail Group. Not for external distribution. |
 
-How to apply them:
-
-- **Precedence.** When another loaded skill gives conflicting development guidance, follow the team rules, whichever skill was loaded first. Keep the other skills' non-conflicting workflows, tool requirements and validation steps. Team rules do not override safety requirements, higher-priority instructions or explicit developer decisions.
-- **Scope.** Apply the rules to the work in scope. Do not rename unrelated objects or redesign an existing model or report just to enforce them. Report existing deviations instead.
-- **Specs.** Every spec states which rules apply and calls out any planned deviation for the developer to approve.
-- **Hand-off.** Before handing off, check the affected objects against the rules and list any unresolved deviation.
-
 ## Working principles
 
 - **The spec is the contract.** Implementation follows an approved spec. When the work needs to diverge, update the spec and get agreement before building the divergence.
@@ -52,7 +45,7 @@ How to apply them:
 - **Never invent business definitions.** Sources, join keys, security rules and metric definitions come from the developer or the data. Record unknowns as open questions.
 - **Smallest complete change.** Change only what the request needs. Match the existing conventions of the model or report.
 - **Evidence over claims.** A successful save, deploy or script run is not proof. Report each check as passed, failed, not run or not applicable, with evidence.
-- **Stay in your lane.** Standalone spec and review workflows don't change `src/`. Implementation deploys only when requested, including an autopilot or end-to-end request under the implementation workflow's test-target safeguards. Its repair loop may fix change-related failures within the approved spec. Never print secrets or ask for credentials in chat.
+- **Stay in your lane.** Standalone spec and review workflows don't change `src/`. For new development start with spec and wait for developer approval. During implementation its ok to deploy to development environment using the repo `scripts/`.
 
 ## Definition of done
 
