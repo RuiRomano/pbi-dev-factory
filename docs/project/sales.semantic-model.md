@@ -10,12 +10,12 @@ The dependent [sales-overview report](sales-overview.report.md) uses these measu
 |---|---|
 | Source | `src/sales.SemanticModel` |
 | Storage mode(s) | Import |
-| Tables | 5 |
-| Columns | 63: 53 visible, 10 hidden |
+| Tables | 7 |
+| Columns | 68: 54 visible, 14 hidden |
 | Measures | 15 |
 | Relationships | 4 |
 | Hierarchies | 1, with 3 levels |
-| Calculation groups | None |
+| Calculation groups | Currency: EUR, USD, GBP |
 | Compatibility level | 1702 |
 | Culture / source query culture | en-US / en-GB |
 
@@ -40,7 +40,7 @@ erDiagram
 
 Because filters do not flow back from sales into dimensions, a date or store selection does not automatically reduce `# Customers` or `# Products`. Use `# Customers (w/ Sales)` for the customer count represented in filtered sales. Key uniqueness and unmatched fact keys were not checked against data.
 
-`Calendar` is marked as a time table with `Date` as its key. Auto date/time is disabled, and implicit measures are discouraged. No calculation groups or perspectives are defined. DAX user-defined functions provide the PQL assertions and `Tests.Run` test suite. One en-US culture is defined.
+`Calendar` is marked as a time table with `Date` as its key. Auto date/time is disabled, and implicit measures are discouraged. `Currency` and the hidden `Exchange Rates` lookup are disconnected from the star schema. No perspectives are defined. DAX user-defined functions provide conversion, PQL assertions and the `Tests.Run` test suite. One en-US culture is defined.
 
 ## Tables and Columns
 
@@ -84,7 +84,7 @@ Intended grain: one order line, identified by Order Number and Line Number. Uniq
 | StoreKey | Whole number | Hidden | Foreign key to Store. |
 | ProductKey | Whole number | Hidden | Foreign key to Product. |
 | Unit Cost | Decimal | Hidden | Cost per unit used by Cost and Margin. |
-| Currency Code | Text | Visible | Source currency code; measures do not apply currency conversion. |
+| Currency Code | Text | Visible | Local currency of the sales-line net price and unit cost: USD, EUR, GBP, CAD or AUD. |
 | Exchange Rate | Decimal | Visible | Source exchange-rate value; direction and basis are unverified and no measure uses it. |
 | Environment | Text | Visible | Value copied from the Environment refresh parameter. |
 | Time | Date/time | Visible | Random hour and minute generated at refresh, displayed as time; not a verified transaction timestamp. |
@@ -166,7 +166,17 @@ Intended grain: one store record per StoreKey. Store geography and operating att
 
 All measures retain the current filter context unless stated otherwise. Sales measures respond to related dimension filters. Dimension row counts respond to filters reaching their own table, not sales-only filters.
 
-Monetary measures use the display format `$ #,##0`; counts use `#,##0`. A display symbol does not establish a common reporting currency. No measure uses Exchange Rate, and Sales.Net Price has a euro display format. Cross-currency aggregation and the treatment of returns and discounts need confirmation.
+Monetary measures retain `$ #,##0` without a single currency selection; counts use `#,##0`. Select exactly one `Currency[Currency]` item to convert all seven monetary measures and apply EUR, USD or GBP formats. No measure uses the original Sales.Exchange Rate column. No selection or multiple selections retain native, potentially mixed-currency totals, so their dollar display symbol does not establish a common currency. Returns and discounts are not separately modeled.
+
+### Currency and Exchange Rates
+
+Use the `Currency[Currency]` calculation-group column in a report filter or slicer. Its EUR, USD and GBP items retain the selected expression and change only monetary formats. Existing report layouts have no currency slicer and remain unchanged. Counts and quantities retain their values and formats.
+
+The hidden `Exchange Rates` table imports `RAW-CurrencyExchange.csv` through `HttpSource`. Its four hidden columns are Date (Date/time), FromCurrency (Text), ToCurrency (Text) and Exchange (Double). Each row is one date/source/target observation. It is not related to Calendar or Sales, and Exchange has no implicit aggregation.
+
+`Currency.Rate` resolves the sales row's source currency to the selected target. It uses that month's month-end observation before 2020 and the exact sales date from January 2020 onward. Multiply local amounts by Exchange; do not also apply Sales.Exchange Rate. `Currency.RequireRate` requires exactly one positive, nonblank observation. Missing, duplicate, non-positive or unsupported rates raise an error instead of returning partial totals or carrying rates forward. No single target returns a multiplier of one without requiring a rate.
+
+Conversion occurs only in Sales Amount, Cost and Margin, before summation. Double-precision intermediates avoid fixed-decimal rounding on each converted line. The four time-based measures continue to reuse Sales Amount, preserving their date shifts, daily-average denominators and blank behavior without double conversion. Currency formats cover those seven monetary measures only.
 
 ### # Customers (w/ Sales)
 
@@ -202,10 +212,16 @@ sum('Sales'[Quantity])
 
 ### Sales Amount
 
-Sums quantity multiplied by net unit price for each filtered sales line. It uses randomized quantity and net price, with no explicit exchange-rate conversion or separate returns adjustment. Do not equate it with certified net revenue.
+Sums quantity multiplied by local net unit price for each filtered sales line, applying the selected reporting currency at that line's rate date. It uses randomized quantity and net price, with no separate returns adjustment. Do not equate it with certified net revenue.
 
 ```dax
-SUMX('Sales', 'Sales'[Quantity] * 'Sales'[Net Price])
+VAR targetCurrency = SELECTEDVALUE ( 'Currency'[Currency] )
+RETURN
+    SUMX (
+        'Sales',
+        CONVERT ( 'Sales'[Quantity] * 'Sales'[Net Price], DOUBLE )
+            * Currency.Rate ( 'Sales'[Order Date], 'Sales'[Currency Code], targetCurrency )
+    )
 ```
 
 ### Sales Amount (LY)
@@ -226,14 +242,16 @@ AVERAGEX(VALUES('Calendar'[Date]), [Sales Amount])
 
 ### Margin
 
-Sums quantity multiplied by the difference between net unit price and sales-line unit cost. This is a monetary margin, not a margin percentage or net profit after operating expenses. It uses sales-line values, not the current product cost.
+Sums quantity multiplied by the difference between local net unit price and sales-line unit cost, applying the selected reporting currency before summation. This is a monetary margin, not a margin percentage or net profit after operating expenses. It uses sales-line values, not the current product cost.
 
 ```dax
-SUMX (
-    Sales,
-    Sales[Quantity]
-        * ( Sales[Net Price] - Sales[Unit Cost] )
-)
+VAR targetCurrency = SELECTEDVALUE ( 'Currency'[Currency] )
+RETURN
+    SUMX (
+        'Sales',
+        CONVERT ( 'Sales'[Quantity] * ( 'Sales'[Net Price] - 'Sales'[Unit Cost] ), DOUBLE )
+            * Currency.Rate ( 'Sales'[Order Date], 'Sales'[Currency Code], targetCurrency )
+    )
 ```
 
 ### # Sales
@@ -288,10 +306,16 @@ Neither rolling model measure is used by the current report. Its trend instead c
 
 ### Cost
 
-Sums filtered sales-line quantity multiplied by sales-line unit cost. It is a product cost amount, not all operating costs. Randomized quantity affects the result.
+Sums filtered sales-line quantity multiplied by local sales-line unit cost, applying the selected reporting currency before summation. It is a product cost amount, not all operating costs. Randomized quantity affects the result.
 
 ```dax
-SUMX ( Sales, Sales[Quantity] * Sales[Unit Cost] )
+VAR targetCurrency = SELECTEDVALUE ( 'Currency'[Currency] )
+RETURN
+    SUMX (
+        'Sales',
+        CONVERT ( 'Sales'[Quantity] * 'Sales'[Unit Cost], DOUBLE )
+            * Currency.Rate ( 'Sales'[Order Date], 'Sales'[Currency Code], targetCurrency )
+    )
 ```
 
 ### # Products
@@ -326,7 +350,7 @@ Workspace permissions, service role assignments and deployed security were not i
 
 ## Data Sources and Refresh
 
-There are five Import partitions, each using Power Query M. The four CSV imports use Web.Contents, UTF-8 comma-delimited parsing, promoted headers and explicit type conversions.
+There are six Import partitions using Power Query M and one calculation-group partition. The five CSV imports use Web.Contents, UTF-8 comma-delimited parsing, promoted headers and explicit type conversions.
 
 | Table | Partition | Source / behavior |
 |---|---|---|
@@ -335,12 +359,14 @@ There are five Import partitions, each using Power Query M. The four CSV imports
 | Product | Product-171f48b3-e0ea-4ea3-b9a0-c8c673eb0648 | `RAW-Product.csv`; renames Product Name to Product. |
 | Customer | Customer-3757b886-e26c-4cec-a550-cdeea37b94d4 | `RAW-Customer.csv`; renames Name to Customer and removes source Age. |
 | Store | Store-c0e5ba98-f95a-4712-91ec-71c7dc35e177 | `RAW-Store.csv`; renames Name to Store. |
+| Exchange Rates | Exchange Rates | `RAW-CurrencyExchange.csv`; explicitly parses dates and decimal rates using en-US culture. |
+| Currency | Partition_Currency | Calculation-group items EUR, USD and GBP. |
 
 ### Shared Parameters
 
 | Parameter | Current definition | Effect |
 |---|---|---|
-| HttpSource | `https://raw.githubusercontent.com/RuiRomano/workshop-fabcon-26-bcn/main/resources/sample-data/` | Required text base URL for all four CSV imports. |
+| HttpSource | `https://raw.githubusercontent.com/RuiRomano/workshop-fabcon-26-bcn/main/resources/sample-data/` | Required text base URL for all five CSV imports. |
 | Environment | `DEV`, with suggested values DEV, QUAL and PRD | Adds an environment label to Sales; the query does not use it to switch the source URL. |
 | Randomizer | `0.6` | Required numeric input controlling sales quantity and net-price randomization. |
 
@@ -358,10 +384,20 @@ The original documentation inspection was offline. The returning-customer implem
 
 ## Customer Classification Tests
 
-The [returning-customer spec](../specs/returning-customers-202610.md) defines the approved behavior. [Tests.Run](../../src/sales.SemanticModel/definition/functions.tmdl) now has 36 assertions: the original four remain unchanged and 32 cover returning customers, supporting fixtures and reconciliation.
+The [returning-customer spec](../specs/returning-customers-202610.md) defines the approved behavior. [Tests.Run](../../src/sales.SemanticModel/definition/functions.tmdl) retains all 36 existing assertions: the original four remain unchanged and 32 cover returning customers, supporting fixtures and reconciliation. The suite also calls the 73 currency assertions described below, for 109 sales assertions in total.
 
 Run `python scripts\test-data.py` from the repository root against the configured development workspace. All 36 assertions returned boolean true after deployment and refresh. Coverage includes single-brand first and repeat purchases, selected and excluded brands/categories, multiple same-day rows, periods containing first and later purchases, non-contiguous date selections, blank versus zero, and date/month/customer/category-brand rows and totals.
 
 An independent per-customer first-sale calculation matched the returning measure across 2,815 grouped results, including totals: 725 date rows, 1,974 customer rows, five year rows and 111 year/category/brand rows. Both reused measures matched their pre-change baseline in all five year/total rows and eight fixture scopes.
 
 Local BPA ran with `& .\scripts\bpa\bpa.ps1 -src @('.\src')` against the model and report using the repository rule files. It exited zero with 72 existing severity-2 `PROVIDE_DESCRIPTIONS_FOR_TABLES_MEASURES_AND_COLUMNS` warnings across five tables, 14 existing measures and 53 visible columns. The returning measure had no violations. Report definitions were unchanged; the repository deployment script republished the existing report alongside the model.
+
+## Currency Conversion Validation
+
+On 2026-11-02, the [approved currency spec](../specs/sales-currency-conversion-202611.md) was saved to TMDL, reloaded with the offline model tools, deployed to `RR - PBI Factory {dev}` and refreshed using the existing scripts. All 109 sales assertions and 14 HR assertions passed through `python scripts/test-data.py`. The deploy and refresh scripts operate on every artifact/model in `src`, so unchanged artifacts were republished and both development models were refreshed.
+
+The 73 currency assertions cover all three targets and five source currencies, daily/source-currency rows and totals, yearly totals, monthly time-comparison contexts, both rolling averages, cost/margin reconciliation, product/customer filters, non-contiguous dates, blank contexts, no/multiple selections, rate direction, month boundaries, leap day and invalid rates. Numeric comparisons use an absolute tolerance of 0.0001 reporting-currency units. No existing assertion or derived-measure definition changed.
+
+An independent Python Decimal calculation used the same 2,999 refreshed sales rows and source CSV rates. All 12,717 sales/cost/margin comparisons passed across 1,413 daily/source-currency, monthly, yearly and total groups per target. The largest absolute difference was 0.00000000045. Pre-change year/total sales-row and customer counts were unchanged. Refresh intentionally rerandomized quantities and net prices; monetary comparisons used the same refreshed snapshot rather than treating those data changes as a regression.
+
+Currency format expressions and their seven-measure allowlist were inspected in metadata. Desktop rendering and slicer interaction were not tested. Local BPA was not run because this environment is Linux and the repository analyzer is Windows-only. CodeQL reported no supported analyzable language changes; secret scanning found no secrets. A separate read-only code review found no significant issues.

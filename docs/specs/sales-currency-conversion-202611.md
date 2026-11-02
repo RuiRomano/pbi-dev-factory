@@ -1,6 +1,6 @@
 # Sales currency conversion
 
-**Status:** In progress
+**Status:** Implemented
 **Updated:** 2026-11-02
 
 ## Goal
@@ -39,3 +39,6 @@ None. O1, O2 and O3 were approved in [PR comment 6576191666](https://github.com/
 ## Change log
 - 2026-11-02: Inspected the sales definitions, existing assertions and supplied exchange-rate data. Proposed a calculation group and documented currency and date-policy decisions for review. No model changes, deployment or refresh performed.
 - 2026-11-02: Developer approved O1, O2 and O3 and requested implementation. Started offline tool-mode authoring against the source TMDL. Conversion in the three additive base measures preserves the existing date-shift and averaging definitions; calculation items retain the selected expression and provide currency-specific formats.
+- 2026-11-02: Added the disconnected Currency calculation group and hidden Exchange Rates import, shared rate validation and conversion in Sales Amount, Cost and Margin. Preserved all existing lineage, relationships, derived measures and assertions. Used double-precision conversion intermediates to avoid per-line fixed-decimal rounding. Saved and reloaded the TMDL, deployed with `python scripts/deploy.py` to `RR - PBI Factory {dev}`, model `sales` (`7bcdd4c9-3584-4dd7-9268-c5b15cbba485`), and refreshed with `python scripts/refresh.py`. The existing scripts also republished unchanged artifacts and refreshed HR.
+- 2026-11-02: All 73 new currency assertions passed, followed by all 109 sales and 14 HR assertions through `python scripts/test-data.py`. Independent Python Decimal calculations matched 12,717 daily/source-currency, monthly, yearly and total monetary comparisons from the same 2,999 refreshed sales rows, with maximum difference 0.00000000045 against tolerance 0.0001. Existing year/total sales-row and customer counts matched their baseline; refresh intentionally rerandomized prices and quantities. Format allowlists were inspected in metadata, and the changed model passed read-only review. Updated affected model, catalog and report caveats. No approved design deviations or unresolved business questions.
+- 2026-11-02: Windows-only local BPA and Desktop rendering were not run in this Linux environment; no report layout changes were requested. Secret scanning passed. CodeQL found no supported analyzable language changes.

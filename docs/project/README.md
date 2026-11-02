@@ -4,13 +4,13 @@
 
 This project presents Northwind Retail Group sales analysis using sample retail data and a separate, fictional HR demo semantic model and local report. The sales Import model connects sales lines to calendar, product, customer and store dimensions. The sales-overview report provides an interactive sales summary and a category-by-year financial matrix. The customer-comparison report compares new and existing customers by month. All three HR pages have Desktop screenshots; agreement with the latest saved definitions and interactive behavior remain unverified.
 
-The source queries can randomize sales quantities and net prices at refresh. Treat the results as sample analysis, not certified company revenue. Currency conversion, returns and company fiscal-calendar compliance are not established by the definitions.
+The source queries can randomize sales quantities and net prices at refresh. Treat the results as sample analysis, not certified company revenue. The sales model supports EUR, USD and GBP through its Currency calculation group. Without one selected currency, amounts remain native and potentially mixed-currency. Returns and company fiscal-calendar compliance are not established by the definitions.
 
 ## Artifacts
 
 | Artifact | Type | Source | Connected artifact(s) | Purpose | Documentation |
 |---|---|---|---|---|---|
-| sales | Semantic model | `src/sales.SemanticModel` | sales-overview and customer-comparison reports | Sales amounts, cost, margin, quantities, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
+| sales | Semantic model | `src/sales.SemanticModel` | sales-overview and customer-comparison reports | Sales amounts, cost and margin in EUR, USD or GBP; quantities, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
 | hr | Semantic model | `src/hr.SemanticModel` | hr report | Synthetic employee snapshots and movements for headcount, FTE, salary cost and attrition demonstrations. | [Open](hr.semantic-model.md) |
 | hr | Report | `src/hr.Report` | hr semantic model, bound by relative path | Three-page fictional HR demo: workforce trends, exits and workforce mix. Local only; current Desktop screenshots documented. | [Open](hr.report.md) |
 | sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, and annual category KPIs. | [Open](sales-overview.report.md) |
@@ -53,6 +53,8 @@ python scripts\refresh.py
 The [refresh script](../../scripts/refresh.py) discovers models under `src` using their `.platform` display names and requests a full refresh for each deployed model, one at a time. It polls the specific refresh every five seconds for up to 600 seconds per model. It prints success only when the refresh completes. A CLI error, API error, unsuccessful refresh or timeout raises an error and stops the script. Timing out does not cancel the refresh in the service.
 
 ## Inspection and Validation
+
+Updated on 2026-11-02 for [sales currency conversion](../specs/sales-currency-conversion-202611.md). The sales model now has seven tables, 68 columns, 15 measures and four unchanged relationships. All 109 sales assertions, including 73 currency checks, and 14 HR assertions passed in Fabric DEV after deployment and refresh. An independent Decimal calculation matched 12,717 monetary comparisons across all three reporting currencies. No report definitions or screenshots changed. The existing deploy script republished all artifacts and the refresh script refreshed both models. See [currency validation](sales.semantic-model.md#currency-conversion-validation) for evidence and limits.
 
 Updated HR screenshot documentation on 2026-11-01. All three current Desktop pages were captured and reviewed, with populated charts and no visible visual error messages. The window was not reloaded from disk. See [HR screenshot inspection](hr.report.md#screenshot-inspection-2026-11-01) for capture scope and unverified behavior. Unrelated artifact documentation and screenshots were preserved; the existing customer-comparison document and screenshot coverage gap remains.
 
