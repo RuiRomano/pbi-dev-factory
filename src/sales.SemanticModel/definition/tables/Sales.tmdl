@@ -244,10 +244,8 @@ table Sales
 
 	column Quantity
 		dataType: int64
-		isHidden
 		formatString: 0
-		isAvailableInMdx: false
-		lineageTag: 3a3256d8-5094-4a3a-9109-8ce85813f62c
+		lineageTag: 534e4360-b978-4bfe-b601-89f99036e664
 		summarizeBy: sum
 		sourceColumn: Quantity
 
@@ -255,14 +253,14 @@ table Sales
 
 	column 'Net Price'
 		dataType: decimal
-		isHidden
-		formatString: "€"#,0.###############;("€"#,0.###############);"€"#,0.###############
-		isAvailableInMdx: false
-		lineageTag: a190bb72-9254-4740-b536-2c016eef5c07
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 1e74aeb2-0cad-4f36-a2dd-b5bc9dd93e33
 		summarizeBy: sum
 		sourceColumn: Net Price
 
 		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
 
 	partition Sales-ddb4c40b-46fd-49ea-9a19-16e7e640a21a = m
 		mode: import
@@ -303,37 +301,7 @@ table Sales
 							each #time(Number.RoundDown(Number.RandomBetween(0, 23), 0), Number.RoundDown(Number.RandomBetween(0, 59), 0), 0),
 							type time
 						),
-						#"Added [NewQuantity]" = Table.AddColumn(
-							#"Added 'Time'",
-							"NewQuantity",
-							each
-								Number.RoundDown(
-									Number.RandomBetween(
-										List.Max({1, [Quantity] - ([Quantity] * Randomizer)}), List.Min(
-											{[Quantity], [Quantity] + ([Quantity] * Randomizer)}
-										)
-									)
-								),
-							Int64.Type
-						),
-						#"Added [NewNetPrice]" = Table.AddColumn(
-							#"Added [NewQuantity]",
-							"NewNetPrice",
-							each
-								Number.Round(
-									Number.RandomBetween(
-										List.Max({1, [Net Price] - ([Net Price] * Randomizer)}),
-										List.Min({[Net Price], [Net Price] + ([Net Price] * Randomizer)})
-									),
-									3
-								),
-							Currency.Type
-						),
-						#"Removed Columns" = Table.RemoveColumns(#"Added [NewNetPrice]", {"Quantity", "Net Price"}),
-						#"Renamed Columns" = Table.RenameColumns(
-							#"Removed Columns", {{"NewQuantity", "Quantity"}, {"NewNetPrice", "Net Price"}}
-						),
-						#"Removed Columns2" = Table.RemoveColumns(#"Renamed Columns", {"Unit Price"}),
+						#"Removed Columns2" = Table.RemoveColumns(#"Added 'Time'", {"Unit Price"}),
 						#"Changed Type1" = Table.TransformColumnTypes(
 							#"Removed Columns2", {{"Delivery Date", type datetime}, {"Order Date", type datetime}}
 						),

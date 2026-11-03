@@ -9,7 +9,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_QueryOrder = ["HttpSource","Environment","Randomizer","Calendar","Sales","Product","Customer","Store"]
+annotation PBI_QueryOrder = ["HttpSource","Environment","Calendar","Sales","Product","Customer","Store"]
 
 annotation __TEdtr = 1
 
