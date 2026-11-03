@@ -1,4 +1,7 @@
+import argparse
 import os
+import subprocess
+import sys
 from pathlib import Path
 from azure.identity import InteractiveBrowserCredential, AzureCliCredential, EnvironmentCredential
 from dotenv import load_dotenv
@@ -6,12 +9,24 @@ from fabric_cicd import FabricWorkspace, publish_all_items
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--app-only", action="store_true", help="Deploy only the executive Fabric Data app using Rayfin")
+args = parser.parse_args()
+
 environment = (os.getenv("ENVIRONMENT") or "").strip().upper() or "DEV"
 workspace_name = os.getenv("WORKSPACE_NAME")
 auth_mode = (os.getenv("AUTH") or "INTERACTIVE").strip().upper()
 
 if not workspace_name:
     raise ValueError("Set WORKSPACE_NAME in the environment or root .env file")
+
+if args.app_only:
+    subprocess.run(
+        ["npx.cmd" if os.name == "nt" else "npx", "--no-install", "rayfin", "up", "--workspace", workspace_name, "--yes"],
+        cwd=Path(__file__).resolve().parents[1] / "src" / "executive-overview",
+        check=True,
+    )
+    sys.exit(0)
 
 print(f"Auth Mode: {auth_mode}", flush=True)
 

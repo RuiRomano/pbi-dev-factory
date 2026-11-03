@@ -1,0 +1,15 @@
+EVALUATE
+VAR Latest = MAX ( Headcount[Snapshot Date] )
+VAR PeriodStart = IF ( NOT ISBLANK ( Latest ), DATE ( YEAR ( Latest ), MONTH ( Latest ), 1 ) )
+RETURN
+    CALCULATETABLE (
+        ROW (
+            "periodStart", IF ( NOT ISBLANK ( Latest ), FORMAT ( PeriodStart, "yyyy-MM-dd" ) ),
+            "periodEnd", IF ( NOT ISBLANK ( Latest ), FORMAT ( Latest, "yyyy-MM-dd" ) ),
+            "hr-headcount", [HEADCOUNT],
+            "hr-fte", [FTE],
+            "hr-attrition", [ATTRITION RATE],
+            "hr-salary", [SALARY COST]
+        ),
+        DATESBETWEEN ( 'Calendar'[Date], PeriodStart, Latest )
+    )

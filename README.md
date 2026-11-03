@@ -9,6 +9,7 @@ This sample repository demonstrates a Power BI project including CI/CD and agent
 | [.github/](.github/) | GitHub Actions workflows for CI/CD, pull request validation and Copilot cloud agent setup. |
 | [.agents/skills/](.agents/skills/) | Domain skills and project-specific team practices used by AI agents. |
 | [src/](src/) | Power BI project source, organized into semantic model (`.SemanticModel`) and report (`.Report`) folders. |
+| [Executive overview](src/executive-overview/README.md) | Fabric Data app prototype with Sales and HR KPIs and private, persistent KPI comments. |
 | [docs/specs/](docs/specs/) | Development specs describing the goal, scope, approach and acceptance checks for each feature or refactor. |
 | [docs/project/](docs/project/) | Documentation for the semantic models and reports. |
 | [scripts/](scripts/) | Scripts to deploy, refresh and test artifacts in Fabric. The `bpa/` subfolder provides local Best Practice Analyzer checks. |
@@ -35,7 +36,7 @@ The Fabric scripts target a development environment configured in a root `.env` 
 
 | Script | Description |
 | --- | --- |
-| [deploy.py](scripts/deploy.py) | Deploys semantic models and reports from `src/` to the configured Fabric workspace using [fabric-cicd](https://github.com/microsoft/fabric-cicd). |
+| [deploy.py](scripts/deploy.py) | Deploys semantic models and reports from `src/` to the configured Fabric workspace using [fabric-cicd](https://github.com/microsoft/fabric-cicd). Pass `--app-only` to deploy only the executive Fabric Data app using Rayfin. |
 | [refresh.py](scripts/refresh.py) | Refreshes deployed semantic models using the Fabric CLI and waits for completion, reporting failures or timeouts. |
 | [test-data.py](scripts/test-data.py) | Runs `Tests.Run()` against deployed semantic models using the Fabric CLI and fails if any assertion does not pass. Assumes each model defines a `Tests.Run()` function that runs assertion tests using [PQL.Assert - DAX Lib](https://daxlib.org/package/PQL.Assert). |
 | [bpa.ps1](scripts/bpa/bpa.ps1) | Runs local Best Practice Analyzer checks for semantic models with [Tabular Editor](https://github.com/tabulareditor/tabulareditor) and reports with [FAB Inspector](https://github.com/NatVanG/fab-inspector).| 

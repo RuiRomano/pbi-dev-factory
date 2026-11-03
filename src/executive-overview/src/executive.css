@@ -1,0 +1,62 @@
+.executive-app {
+    --midnight: #20283F;
+    --cloud: #F6F7FB;
+    --cornflower: #536CE5;
+    --lilac: #C8BCF4;
+    --sea-glass: #9CCDC6;
+    --surface: #FFFFFF;
+    --line: #D7DCEC;
+    background: var(--cloud);
+    color: var(--midnight);
+    min-height: 100vh;
+    font: 400 16px/1.5 "Segoe UI", Arial, sans-serif;
+}
+.executive-app * { box-sizing: border-box; }
+.executive-app .brand, .executive-app main, .executive-app footer { max-width: 1600px; margin: auto; padding: 28px 48px; }
+.executive-app .brand { display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--line); }
+.brand > span:first-of-type { font-size: 32px; font-weight: 600; }
+.brand-divider { margin-left: auto; font-size: 14px; }
+.executive-app .intro { padding: 24px 0 36px; max-width: 780px; }
+.executive-app h1 { font-size: 48px; font-weight: 300; line-height: 1.15; margin: 14px 0 20px; letter-spacing: -1px; }
+.executive-app h1 strong { font-weight: 600; }
+.executive-app h2 { font-size: 32px; line-height: 1.2; font-weight: 300; margin: 8px 0 16px; }
+.executive-app h3 { font-size: 18px; font-weight: 600; margin: 28px 0 8px; }
+.executive-app p { margin: 8px 0 16px; }
+.executive-app .eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 1.1px; margin: 0; }
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; align-items: start; }
+.domain { margin-bottom: 40px; }
+.section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.executive-app .period, .executive-app .supporting { font-size: 14px; }
+.kpi-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.executive-app button { font: inherit; cursor: pointer; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--midnight); padding: 8px 16px; }
+.executive-app button:hover:not(:disabled) { border-color: var(--cornflower); }
+.executive-app :focus-visible { outline: 3px solid var(--cornflower); outline-offset: 3px; }
+.executive-app button:disabled { cursor: default; opacity: .65; }
+.executive-app .kpi-card { display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 24px; min-height: 200px; gap: 6px; }
+.executive-app .kpi-card[aria-pressed="true"] { border: 2px solid var(--cornflower); padding: 23px; background: color-mix(in srgb, var(--lilac) 14%, var(--surface)); }
+.kpi-label { font-weight: 600; }
+.kpi-value { font-size: clamp(24px, 2.4vw, 36px); font-weight: 300; overflow-wrap: anywhere; }
+.card-action { margin-top: auto; padding-top: 12px; font-size: 14px; color: var(--cornflower); }
+.comment-panel { padding: 28px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); min-width: 0; }
+.empty-panel { border-top: 6px solid var(--sea-glass); }
+.executive-app label { display: block; font-weight: 600; margin-top: 24px; }
+.executive-app textarea { width: 100%; resize: vertical; font: inherit; background: var(--cloud); border: 1px solid var(--line); border-radius: 12px; padding: 12px; color: var(--midnight); }
+.form-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.executive-app .primary { background: var(--cornflower); color: white; border-color: var(--cornflower); }
+.comments { list-style: none; padding: 0; }
+.comments li { padding: 16px 0; border-top: 1px solid var(--line); }
+.comments time { font-size: 12px; }
+.comments p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.executive-app [role="alert"] { border-left: 4px solid #EAC9C8; padding-left: 12px; }
+.executive-app footer { border-top: 1px solid var(--line); font-size: 14px; display: flex; justify-content: space-between; gap: 16px; }
+.dark .executive-app { --midnight: #F6F7FB; --cloud: #20283F; --surface: #29334F; --line: #58627C; --cornflower: #B5BFFF; }
+.dark .executive-app .primary { background: #536CE5; border-color: #536CE5; }
+@media (max-width: 1100px) { .workspace { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+    .executive-app .brand, .executive-app main, .executive-app footer { padding: 24px; }
+    .executive-app h1 { font-size: 36px; }
+    .executive-app h2 { font-size: 28px; }
+    .brand-divider { display: none; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .executive-app footer { flex-direction: column; }
+}
