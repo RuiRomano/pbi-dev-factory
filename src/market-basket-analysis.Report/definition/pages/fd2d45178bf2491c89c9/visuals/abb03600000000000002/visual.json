@@ -1,0 +1,14 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "abb03600000000000002",
+  "position": {"x": 32, "y": 104, "z": 1, "width": 1408, "height": 48, "tabOrder": 1},
+  "visual": {
+    "visualType": "textbox",
+    "objects": {"general": [{"properties": {"paragraphs": [
+      {"textRuns": [{"value": "Average distinct products per basket in the selected category, store and date scope", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "14pt", "color": "#58627A"}}], "horizontalTextAlignment": "left"}
+    ]}}]},
+    "visualContainerObjects": {
+      "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Basket size means distinct products, not quantity or sales value.'" }}}}}]
+    }
+  }
+}

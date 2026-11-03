@@ -10,11 +10,12 @@ The source queries can randomize sales quantities and net prices at refresh. Tre
 
 | Artifact | Type | Source | Connected artifact(s) | Purpose | Documentation |
 |---|---|---|---|---|---|
-| sales | Semantic model | `src/sales.SemanticModel` | sales-overview and customer-comparison reports | Sales amounts, cost, margin, quantities, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
+| sales | Semantic model | `src/sales.SemanticModel` | sales-overview, customer-comparison and market-basket-analysis reports | Sales amounts, cost, margin, quantities, new and returning customers, average distinct products per basket, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
 | hr | Semantic model | `src/hr.SemanticModel` | hr report | Synthetic employee snapshots and movements for headcount, FTE, salary cost and attrition demonstrations. | [Open](hr.semantic-model.md) |
 | hr | Report | `src/hr.Report` | hr semantic model, bound by relative path | Three-page fictional HR demo: workforce trends, exits and workforce mix. Local only; current Desktop screenshots documented. | [Open](hr.report.md) |
 | sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, and annual category KPIs. | [Open](sales-overview.report.md) |
 | customer-comparison | Report | `src/customer-comparison.Report` | sales semantic model, bound by relative path | Monthly comparison and detail for new, existing and total customers with sales. | [Source](../../src/customer-comparison.Report/definition/pages/2b3f5f9676144f1e9f79/page.json) |
+| market-basket-analysis | Report | `src/market-basket-analysis.Report` | sales semantic model, bound by relative path | Average distinct products per qualifying basket, ranked by store and category, with category-only scope and a store/category matrix. | [Open](market-basket-analysis.report.md) |
 
 ## Project Entry Point and Shared Resources
 
@@ -53,6 +54,8 @@ python scripts\refresh.py
 The [refresh script](../../scripts/refresh.py) discovers models under `src` using their `.platform` display names and requests a full refresh for each deployed model, one at a time. It polls the specific refresh every five seconds for up to 600 seconds per model. It prints success only when the refresh completes. A CLI error, API error, unsuccessful refresh or timeout raises an error and stops the script. Timing out does not cancel the refresh in the service.
 
 ## Inspection and Validation
+
+Added [market-basket analysis](market-basket-analysis.report.md) on 2026-11-03 following approval for issue #36. Open [market-basket-analysis.pbip](../../src/market-basket-analysis.pbip) for the separate one-page report. It uses `Sales[AVERAGE BASKET SIZE]`: average distinct products per basket in the current category/store/date scope, not units or a global distinct-products/order ratio. The model and report were deployed to DEV and refreshed. All 48 sales assertions (36 existing + 12 new) and 14 unchanged HR assertions passed; 1,505 independently calculated source groups and totals matched live DAX. The existing sales quantity/amount/row-count baseline was unchanged. Report schema validation passed with zero errors and warnings, but service preview failed with renderer code `401`. No live report screenshot or interactive selection verification is available; the spec remains In progress. Local BPA is not supported on this Linux runner. Existing unrelated documentation and screenshots were preserved, including the customer-comparison documentation gap.
 
 Updated HR screenshot documentation on 2026-11-01. All three current Desktop pages were captured and reviewed, with populated charts and no visible visual error messages. The window was not reloaded from disk. See [HR screenshot inspection](hr.report.md#screenshot-inspection-2026-11-01) for capture scope and unverified behavior. Unrelated artifact documentation and screenshots were preserved; the existing customer-comparison document and screenshot coverage gap remains.
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This model supports sample retail sales analysis for report consumers and self-service analysts. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, new and returning customers, customers with sales and time comparisons.
+This model supports sample retail sales analysis for report consumers and self-service analysts. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, new and returning customers, customers with sales, time comparisons and average distinct products per basket.
 
 The dependent [sales-overview report](sales-overview.report.md) uses these measures for summary cards, charts and an annual category matrix. The report names Northwind Retail Group, but the model sources workshop sample files and modifies some values during refresh. It is not evidence of certified company revenue.
 
@@ -12,7 +12,7 @@ The dependent [sales-overview report](sales-overview.report.md) uses these measu
 | Storage mode(s) | Import |
 | Tables | 5 |
 | Columns | 63: 53 visible, 10 hidden |
-| Measures | 15 |
+| Measures | 16 |
 | Relationships | 4 |
 | Hierarchies | 1, with 3 levels |
 | Calculation groups | None |
@@ -72,7 +72,7 @@ The calendar has fixed boundaries and does not extend at refresh. Sales outside 
 
 ### Sales
 
-Intended grain: one order line, identified by Order Number and Line Number. Uniqueness was not verified. Quantities, net prices and time-of-day values are generated or modified during refresh.
+Intended grain: one order line, identified by Order Number and Line Number. Basket profiling on 2026-11-03 found 2,029 orders and 2,029 distinct Order Number/StoreKey/Order Date/CustomerKey combinations across 2,999 source and DEV sales rows; no order number crossed that composite grain. Two basket/product combinations have repeated lines. This profile does not establish order-line-key uniqueness or general referential integrity.
 
 | Column | Data type | Visibility | Description |
 |---|---|---|---|
@@ -199,6 +199,30 @@ Sums individual product units from sales lines after refresh-time randomization.
 ```dax
 sum('Sales'[Quantity])
 ```
+
+### AVERAGE BASKET SIZE
+
+Average number of distinct products per qualifying basket in the current selection. Each basket is an **Order Number + StoreKey + Order Date + CustomerKey** combination, so reused order numbers at different stores, dates or customers are not merged. The sample currently has no such order-number reuse.
+
+```dax
+VAR v_baskets =
+    SUMMARIZE (
+        'Sales',
+        'Sales'[Order Number],
+        'Sales'[StoreKey],
+        'Sales'[Order Date],
+        'Sales'[CustomerKey]
+    )
+RETURN
+    AVERAGEX (
+        v_baskets,
+        CALCULATE ( DISTINCTCOUNT ( 'Sales'[ProductKey] ) )
+    )
+```
+
+Category selections count **only selected-category products** in baskets containing them; store, date and other filters remain applied. Repeated lines for the same product count once regardless of quantity. This is neither average units nor a global distinct-product count divided by order count. No quantity-based exclusion is introduced. Totals recalculate across qualifying baskets, not averages of category/store averages. No sales returns blank.
+
+The measure is visible in Sales, has a business description, uses format `#,##0.00`, and powers the separate [market-basket analysis report](market-basket-analysis.report.md). The [approved spec](../specs/market-basket-analysis-202611.md) records the definition and validation gates.
 
 ### Sales Amount
 
@@ -358,10 +382,20 @@ The original documentation inspection was offline. The returning-customer implem
 
 ## Customer Classification Tests
 
-The [returning-customer spec](../specs/returning-customers-202610.md) defines the approved behavior. [Tests.Run](../../src/sales.SemanticModel/definition/functions.tmdl) now has 36 assertions: the original four remain unchanged and 32 cover returning customers, supporting fixtures and reconciliation.
+The [returning-customer spec](../specs/returning-customers-202610.md) defines the approved behavior. [Tests.Run](../../src/sales.SemanticModel/definition/functions.tmdl) preserves the 36 existing assertions: the original four and 32 covering returning customers, supporting fixtures and reconciliation. The market-basket change adds 12 assertions, for 48 sales assertions in total.
 
 Run `python scripts\test-data.py` from the repository root against the configured development workspace. All 36 assertions returned boolean true after deployment and refresh. Coverage includes single-brand first and repeat purchases, selected and excluded brands/categories, multiple same-day rows, periods containing first and later purchases, non-contiguous date selections, blank versus zero, and date/month/customer/category-brand rows and totals.
 
 An independent per-customer first-sale calculation matched the returning measure across 2,815 grouped results, including totals: 725 date rows, 1,974 customer rows, five year rows and 111 year/category/brand rows. Both reused measures matched their pre-change baseline in all five year/total rows and eight fixture scopes.
 
 Local BPA ran with `& .\scripts\bpa\bpa.ps1 -src @('.\src')` against the model and report using the repository rule files. It exited zero with 72 existing severity-2 `PROVIDE_DESCRIPTIONS_FOR_TABLES_MEASURES_AND_COLUMNS` warnings across five tables, 14 existing measures and 53 visible columns. The returning measure had no violations. Report definitions were unchanged; the repository deployment script republished the existing report alongside the model.
+
+## Market Basket Validation — 2026-11-03
+
+The source folder loaded successfully through offline modeling tools with five tables, 16 measures and four relationships. `AUTH=CLI python scripts/deploy.py` published the source to the configured DEV workspace; `python scripts/refresh.py` completed for both models. `python scripts/test-data.py` then passed all 48 sales assertions and all 14 unchanged HR assertions, requiring JSON boolean `Passed: true`.
+
+The 12 new assertions cover repeated-product deduplication (two lines, six units, one distinct product), six products versus sixteen units, selected category/store/date (two products), weighted total (4.00 rather than 4.50), online subtotal (3.00), two blank no-sales cases, the exact source grand total, and store/category/year rows and all subtotals versus a separate distinct basket/product-pair reference.
+
+Independent Python sets over the source sales/product CSVs matched all 1,505 live store/category/year cube rows and totals, with no missing groups and zero differences over 1e-10. The full sample contains 2,997 distinct basket/product pairs and 2,029 baskets, averaging **1.4770823065549532**. The pre-change Sales Qty (9,339), Sales Amount (2,739,908.8958) and # Sales (2,999) were unchanged after deployment and refresh.
+
+DEV sales model ID: `3667483b-67dc-44a2-9056-7d01aa1e4fb9`; workspace ID: `0a6ed388-8f6e-40a0-a9ac-df7d1522ba38`. BPA was not run for this change because the repository analyzer is Windows-only and this runner is Linux. Report rendering and selection behavior require the separate [report verification](market-basket-analysis.report.md#validation-and-capture-limitations).

@@ -193,7 +193,81 @@ function 'Tests.Run' =
 		            "Returning", [# Returning Customers]
 		        )
 		    RETURN
-		        PQL.Assert.ShouldBeTrue ( "Returning - category brand rows and total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) )
+		        PQL.Assert.ShouldBeTrue ( "Returning - category brand rows and total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldEqual ( "Basket - repeated product counts once", 1, [AVERAGE BASKET SIZE] ),
+		            PQL.Assert.ShouldEqual ( "Basket - repeated product fixture has two lines", 2, [# Sales] ),
+		            PQL.Assert.ShouldEqual ( "Basket - repeated product fixture has six units", 6, [Sales Qty] )
+		        ),
+		        TREATAS ( { 318005 }, 'Sales'[Order Number] ),
+		        TREATAS ( { 999999 }, 'Store'[StoreKey] ),
+		        TREATAS ( { DATE ( 2018, 9, 15 ) }, 'Calendar'[Date] )
+		    ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldEqual ( "Basket - six distinct products, not units", 6, [AVERAGE BASKET SIZE] ),
+		            PQL.Assert.ShouldEqual ( "Basket - six product fixture has sixteen units", 16, [Sales Qty] )
+		        ),
+		        TREATAS ( { 309404 }, 'Sales'[Order Number] ),
+		        TREATAS ( { 560 }, 'Store'[StoreKey] ),
+		        TREATAS ( { DATE ( 2018, 6, 21 ) }, 'Calendar'[Date] )
+		    ),
+		    CALCULATETABLE (
+		        PQL.Assert.ShouldEqual ( "Basket - category store date intersection counts category only", 2, [AVERAGE BASKET SIZE] ),
+		        TREATAS ( { 309404 }, 'Sales'[Order Number] ),
+		        TREATAS ( { 560 }, 'Store'[StoreKey] ),
+		        TREATAS ( { DATE ( 2018, 6, 21 ) }, 'Calendar'[Date] ),
+		        TREATAS ( { "Computers" }, 'Product'[Category] )
+		    ),
+		    CALCULATETABLE (
+		        PQL.Assert.ShouldEqual ( "Basket - unequal store counts give weighted total", 4, [AVERAGE BASKET SIZE] ),
+		        TREATAS ( { 318005, 324103, 309404 }, 'Sales'[Order Number] )
+		    ),
+		    CALCULATETABLE (
+		        PQL.Assert.ShouldEqual ( "Basket - online subtotal recalculates across two baskets", 3, [AVERAGE BASKET SIZE] ),
+		        TREATAS ( { 318005, 324103, 309404 }, 'Sales'[Order Number] ),
+		        TREATAS ( { 999999 }, 'Store'[StoreKey] )
+		    ),
+		    CALCULATETABLE (
+		        PQL.Assert.ShouldBeNull ( "Basket - no sales returns blank", [AVERAGE BASKET SIZE] ),
+		        TREATAS ( { DATE ( 1900, 1, 1 ) }, 'Calendar'[Date] )
+		    ),
+		    CALCULATETABLE (
+		        PQL.Assert.ShouldBeNull ( "Basket - excluded category has no qualifying basket", [AVERAGE BASKET SIZE] ),
+		        TREATAS ( { 309404 }, 'Sales'[Order Number] ),
+		        TREATAS ( { "Games and Toys" }, 'Product'[Category] )
+		    ),
+		    VAR expected = DIVIDE ( 2997, 2029 )
+		    VAR actual = [AVERAGE BASKET SIZE]
+		    RETURN
+		        ROW ( "TestName", "Basket - source grand total distinct basket products",
+		              "Expected", expected, "Actual", actual,
+		              "Passed", NOT ISBLANK ( actual ) && ABS ( actual - expected ) < 0.0000000001 ),
+		    VAR results =
+		        SUMMARIZECOLUMNS (
+		            ROLLUPADDISSUBTOTAL ( 'Store'[Store], "IsStoreTotal" ),
+		            ROLLUPADDISSUBTOTAL ( 'Product'[Category], "IsCategoryTotal" ),
+		            ROLLUPADDISSUBTOTAL ( 'Calendar'[Year], "IsDateTotal" ),
+		            "Actual", [AVERAGE BASKET SIZE],
+		            "Expected",
+		                DIVIDE (
+		                    COUNTROWS ( SUMMARIZE ( 'Sales', 'Sales'[Order Number], 'Sales'[StoreKey], 'Sales'[Order Date], 'Sales'[CustomerKey], 'Sales'[ProductKey] ) ),
+		                    COUNTROWS ( SUMMARIZE ( 'Sales', 'Sales'[Order Number], 'Sales'[StoreKey], 'Sales'[Order Date], 'Sales'[CustomerKey] ) )
+		                )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldBeTrue (
+		            "Basket - store category date rows and all totals reconcile independently",
+		            COUNTROWS ( results ) > 1
+		                && ISEMPTY (
+		                    FILTER (
+		                        results,
+		                        ISBLANK ( [Actual] ) <> ISBLANK ( [Expected] )
+		                            || ABS ( [Actual] - [Expected] ) > 0.0000000001
+		                    )
+		                )
+		        )
 		)
 	lineageTag: ce15773d-5b5a-4708-8f2c-b3ae3575ab40
 
@@ -598,4 +672,3 @@ function 'PQL.Assert.Tbl.ShouldHaveColumns' =
 	annotation DAXLIB_PackageId = PQL.Assert
 
 	annotation DAXLIB_PackageVersion = 0.8.0
-

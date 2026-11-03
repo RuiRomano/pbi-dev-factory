@@ -1,0 +1,14 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "abb03600000000000003",
+  "position": {"x": 1584, "y": 40, "z": 2, "width": 288, "height": 80, "tabOrder": 2},
+  "visual": {
+    "visualType": "image",
+    "objects": {"general": [{"properties": {
+      "imageUrl": {"expr": {"ResourcePackageItem": {"PackageName": "RegisteredResources", "PackageType": 1, "ItemName": "contoso-fold20261103.svg"}}}
+    }}]},
+    "visualContainerObjects": {
+      "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Contoso Fold and wordmark'"}}}}}]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.1.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "market-basket-analysis"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "9ee40819-a2ad-43e6-851d-8b2eae92ad1a"
+  }
+}
