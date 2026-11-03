@@ -2,8 +2,6 @@
 
 Build what an approved spec describes (simple asks may not have a spec), within the team rules, and keep the spec in step with what was actually built.
 
-Development is done offline against `src/` but there is a development environment to where you can deploy the semantic model and report to test (e.g. test new measures with DAX queries)
-
 ## Checklist
 
 ```
@@ -30,10 +28,9 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
 ## 3. Build and persist the source
 
 - Follow the implementation workflows from the skills
-- Execute the development against the local code in `src/`. Whenever applicable use available tools to edit the code. E.g. Use Power BI authoring MCP server against the TMDL folder.
+- Execute the development against the local code in `src/`. Use the available tools against the code not the development environment. E.g. Use Power BI authoring MCP server against the TMDL folder.
 - Persist model and report changes to `src/` before running repository scripts.
-- When the work needs to differ from the spec (a better approach, a blocker, a new business rule), stop and agree the change with the developer, then update the spec before building it.
-- When developing reports, if Power BI Desktop is not opened, develop against the semantic model in devlopment workspace.
+- When developing reports, if Power BI Desktop is not opened or available, preview the report against the semantic model in the development workspace.
 
 ## 4. Run local checks and repair
 
@@ -51,19 +48,19 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
 
 ## 5. Test
 
-- The tests are done against a development workspace in fabric, configured in `.env`. The authentication is granted by Azure CLI.
-- Deploy to the development Fabric Workspace:
+- To test and validate semantic model changes, you must deploy it to the development Fabric Workspace configured in `.env`. The authentication is granted by Azure CLI.
+- Run the following script to deploy the Power BI artifacts in `src/`
 
     ```powershell
     python .\scripts\deploy.py
     ```
-- Refresh the semantic models:
+- Run the script to refresh the semantic models:
 
     ```powershell
     python .\scripts\refresh.py
     ```
-- After deployment, use the available tools to run DAX queries to validate developments.
-- Run the semantic model data tests:
+- If deployment is successfull, use the available tools to query the deployed semantic models.
+- Run the script for the DAX data asserts:
 
     ```powershell
     python .\scripts\test-data.py
