@@ -244,19 +244,25 @@ table Sales
 
 	column Quantity
 		dataType: int64
+		isHidden
 		formatString: 0
 		lineageTag: 534e4360-b978-4bfe-b601-89f99036e664
 		summarizeBy: sum
 		sourceColumn: Quantity
 
+		changedProperty = IsHidden
+
 		annotation SummarizationSetBy = Automatic
 
 	column 'Net Price'
 		dataType: decimal
+		isHidden
 		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
 		lineageTag: 1e74aeb2-0cad-4f36-a2dd-b5bc9dd93e33
 		summarizeBy: sum
 		sourceColumn: Net Price
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
