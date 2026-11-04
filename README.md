@@ -6,28 +6,29 @@ This sample repository demonstrates a Power BI project including CI/CD and agent
 
 | Folder / File | Purpose |
 | --- | --- |
-| [.github/](.github/) | GitHub Actions workflows for CI/CD, pull request validation and Copilot cloud agent setup. |
+| [.github/](.github/) | GitHub Actions workflows for CI/CD, pull request validation and Copilot cloud agent setup. They call scripts in `scripts/` |
 | [.agents/skills/](.agents/skills/) | Domain skills and project-specific team practices used by AI agents. |
-| [src/](src/) | Power BI project source, organized into semantic model (`.SemanticModel`) and report (`.Report`) folders. |
+| [src/](src/) | Power BI development uwing PBIP file format. |
 | [docs/specs/](docs/specs/) | Development specs describing the goal, scope, approach and acceptance checks for each feature or refactor. |
 | [docs/project/](docs/project/) | Documentation for the semantic models and reports. |
 | [scripts/](scripts/) | Scripts to deploy, refresh and test artifacts in Fabric. The `bpa/` subfolder provides local Best Practice Analyzer checks. |
 | [.vscode/](.vscode/) | Shared VS Code workspace settings. |
 | [AGENTS.md](AGENTS.md) | Provides repository-wide agent guidance. Includes important tool and skill routing to help agents get the job done as we want. |
 
-## Agent skills
+## Agentic context
 
 Only `team-practices` is maintained by this project. The other skills come from external repositories.
 
 | Skill name | Short description |
 | --- | --- |
-| [team-practices](.agents/skills/team-practices/) | Project-specific practices for specs, model and report standards, implementation, validation and documentation. |
+| [team-practices](.agents/skills/team-practices/) | Project-specific practices for specs, model and report standards, implementation, validation and documentation. This is the skill you can customize or bring your own that defines your workflow and development rules. |
 | [semantic-model-authoring](https://github.com/microsoft/skills-for-fabric/tree/main/skills/semantic-model-authoring) | Develop, test and optimize Power BI semantic models and DAX.  |
 | [powerbi-report-cli](https://github.com/microsoft/skills-for-fabric/tree/main/skills/powerbi-report-cli) | Plan, author, preview and publish Power BI reports. |
 | [fabric-cli-core](https://github.com/microsoft/fabric-cli/tree/main/.ai-assets/skills/fabric-cli-core) | Manage Fabric workspaces and items with the Fabric CLI. |
 
-> [!NOTE]
-> The external skills are installed locally in `.agents/skills` for convenience, including access by the GitHub Copilot cloud agent and reviewer. Alternatively, ensure the relevant plugins are installed and kept up to date to use the latest skills, such as the [`powerbi-authoring` plugin](https://learn.microsoft.com/power-bi/developer/agentic/power-bi-agentic-overview#install-the-plugin-with-github-copilot-cli). [APM - Agent Package Manager](https://microsoft.github.io/apm/) is another way to manage these skill dependencies.
+> [!IMPORTANT]
+> - [AGENTS.md](AGENTS.md) is an important agentic context file. Its loaded on every agentic session. It includes important tool and skill routing to help agents get the job done as we want.
+> - The external skills are installed locally in `.agents/skills` for convenience, including access by the GitHub Copilot cloud agent and reviewer. Alternatively, you can simply install the [`powerbi-authoring` plugin](https://learn.microsoft.com/power-bi/developer/agentic/power-bi-agentic-overview#install-the-plugin-with-github-copilot-cli). [APM - Agent Package Manager](https://microsoft.github.io/apm/) is another way to manage these skill dependencies.
 
 ## Scripts
 
@@ -39,6 +40,30 @@ The Fabric scripts target a development environment configured in a root `.env` 
 | [refresh.py](scripts/refresh.py) | Refreshes deployed semantic models using the Fabric CLI and waits for completion, reporting failures or timeouts. |
 | [test-data.py](scripts/test-data.py) | Runs `Tests.Run()` against deployed semantic models using the Fabric CLI and fails if any assertion does not pass. Assumes each model defines a `Tests.Run()` function that runs assertion tests using [PQL.Assert - DAX Lib](https://daxlib.org/package/PQL.Assert). |
 | [bpa.ps1](scripts/bpa/bpa.ps1) | Runs local Best Practice Analyzer checks for semantic models with [Tabular Editor](https://github.com/tabulareditor/tabulareditor) and reports with [FAB Inspector](https://github.com/NatVanG/fab-inspector).| 
+
+### Workflow
+
+Run the scripts in this order. BPA checks local files; deployment, refresh and data tests target the developer's Fabric environment.
+
+```text
+Local files in src/
+  |
+  v
+BPA (scripts/bpa/bpa.ps1)
+Check local semantic model and report files
+  |
+  v
+Deploy (scripts/deploy.py)
+Deploy to the Fabric development workspace using fabric_cicd
+  |
+  v
+Refresh (scripts/refresh.py)
+Refresh the deployed semantic models and wait for completion
+  |
+  v
+Test data (scripts/test-data.py)
+Run unit tests against the deployed semantic models
+```
 
 > [!NOTE]
 > The deployment, refresh and test scripts process all project items rather than only changed items. They could be optimized to process only changed items, but this example keeps the design as simple as possible.
@@ -188,6 +213,14 @@ Open **Settings > Copilot** and disable **Require Approval for workflow runs** s
 
 > [!NOTE]
 > Disabling workflow approval allows agent-triggered workflows to run with their configured secrets and workspace permissions. Use this setting only in a trusted repository targeting a development workspace.
+
+## Make it yours
+
+After completing the setup, replace the sample projects in [src/](src/) with your own Power BI code in PBIP format.
+
+Review the [team-practices skill](.agents/skills/team-practices/) and customize its rules and workflows to match how your team works. For example, use your own naming conventions, define a different testing approach, or change the deployment process to use your existing pipeline. 
+
+Keep [AGENTS.md](AGENTS.md), the [scripts/](scripts/) workflow and the [GitHub Actions workflows](.github/workflows/) aligned with those practices. Changing the skill's guidance does not change the automation, so review both when adapting testing or deployment.
 
 ## Resources
 
