@@ -1,6 +1,7 @@
 /// Disconnected minimum Support threshold. Changing this selection affects eligibility only, never raw association metrics.
 table 'Minimum Support'
 
+	/// Select the minimum joint-basket share for visible associations: 0% to 100% in 0.1 percentage-point steps; the measure defaults to 0.5%.
 	column 'Minimum Support'
 		dataType: double
 		formatString: 0.0%

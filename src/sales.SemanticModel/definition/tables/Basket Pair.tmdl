@@ -1,6 +1,7 @@
 /// Observed ordered Product A/B candidates for the global basket overview. One row per distinct pair ever present on positive-quantity lines of the same nonblank order; not a pre-aggregated metric. Disconnected; measures still recalculate under Date, Customer and Store filters. Zero-cooccurrence pairs remain available in Product drill, not this observed-pair list.
 table 'Basket Pair'
 
+	/// Technical identity of the antecedent product in this observed ordered pair.
 	column 'Product A Key'
 		dataType: int64
 		isHidden
@@ -8,6 +9,7 @@ table 'Basket Pair'
 		summarizeBy: none
 		sourceColumn: [Product A Key]
 
+	/// Technical identity of the associated product in this observed ordered pair.
 	column 'Product B Key'
 		dataType: int64
 		isHidden
@@ -15,16 +17,19 @@ table 'Basket Pair'
 		summarizeBy: none
 		sourceColumn: [Product B Key]
 
+	/// Antecedent product name in an observed pair; metrics describe the A-to-B direction.
 	column 'Product A'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: [Product A]
 
+	/// Associated product name in an observed pair; Confidence is the chance of this B given A.
 	column 'Product B'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: [Product B]
 
+	/// Readable A-to-B identity for a pair observed on positive-quantity lines of the same order. Metrics still recalculate in the current filter context.
 	column Pair
 		dataType: string
 		summarizeBy: none

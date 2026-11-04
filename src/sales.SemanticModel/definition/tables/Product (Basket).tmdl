@@ -1,6 +1,7 @@
 /// Disconnected Product B selection for directional market basket associations. Refreshed from Product in the same model; never filters Sales directly.
 table 'Product (Basket)'
 
+	/// Technical identity of the selected Product B; used to apply the disconnected role to qualifying basket lines.
 	column ProductKey
 		dataType: int64
 		isHidden
@@ -8,22 +9,26 @@ table 'Product (Basket)'
 		summarizeBy: none
 		sourceColumn: [ProductKey]
 
+	/// Product B name: the associated product sought in baskets that contain Product A.
 	column Product
 		dataType: string
 		isDefaultLabel
 		summarizeBy: none
 		sourceColumn: [Product]
 
+	/// Broad merchandise category selected for Product B associations.
 	column Category
 		dataType: string
 		summarizeBy: none
 		sourceColumn: [Category]
 
+	/// Merchandise subcategory selected for Product B associations.
 	column Subcategory
 		dataType: string
 		summarizeBy: none
 		sourceColumn: [Subcategory]
 
+	/// Explore the independent Product B role from Category through Subcategory to individual Product.
 	hierarchy 'Product Hierarchy'
 		level Category
 			column: Category

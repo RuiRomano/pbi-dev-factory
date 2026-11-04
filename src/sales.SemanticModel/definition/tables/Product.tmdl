@@ -122,6 +122,7 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Explore Product A basket associations from Category through Subcategory to individual Product.
 	hierarchy 'Product Hierarchy'
 		level Category
 			column: Category

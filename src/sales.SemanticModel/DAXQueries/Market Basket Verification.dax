@@ -42,6 +42,44 @@ CALCULATETABLE (
 )
 ORDER BY 'Sales'[Order Number]
 
+// Global-cap proof under a combined Date/Store selection. Compare the complete
+// displayed Order Number projection to an independently calculated TOPN100.
+EVALUATE
+CALCULATETABLE (
+    VAR v_lines =
+        CALCULATETABLE (
+            FILTER ( 'Sales', 'Sales'[Quantity] > 0 && NOT ISBLANK ( 'Sales'[Order Number] ) ),
+            REMOVEFILTERS ( 'Product' ),
+            REMOVEFILTERS ( 'Product (Basket)' ),
+            REMOVEFILTERS ( 'Basket Pair' ),
+            REMOVEFILTERS ( 'Sales'[ProductKey] )
+        )
+    VAR v_a = DISTINCT ( SELECTCOLUMNS ( FILTER ( v_lines, 'Sales'[ProductKey] = 18 ), "@Order", 'Sales'[Order Number] ) )
+    VAR v_b = DISTINCT ( SELECTCOLUMNS ( FILTER ( v_lines, 'Sales'[ProductKey] = 444 ), "@Order", 'Sales'[Order Number] ) )
+    VAR v_expected = TOPN ( 100, INTERSECT ( v_a, v_b ), [@Order], ASC )
+    VAR v_visible =
+        SELECTCOLUMNS (
+            FILTER (
+                SUMMARIZECOLUMNS ( 'Sales'[Order Number], "@InSample", [ORDER IN PAIR SAMPLE] ),
+                [@InSample] == 1
+            ),
+            "@Order", 'Sales'[Order Number]
+        )
+    RETURN
+        ROW (
+            "Visible Orders", COUNTROWS ( v_visible ),
+            "Expected Orders", COUNTROWS ( v_expected ),
+            "Global Cap Passed", COUNTROWS ( v_visible ) <= 100,
+            "Exact Membership Passed",
+                ISEMPTY ( EXCEPT ( v_visible, v_expected ) )
+                    && ISEMPTY ( EXCEPT ( v_expected, v_visible ) )
+        ),
+    TREATAS ( { 18 }, 'Product'[ProductKey] ),
+    TREATAS ( { 444 }, 'Product (Basket)'[ProductKey] ),
+    DATESBETWEEN ( 'Calendar'[Date], DATE ( 2017, 5, 1 ), DATE ( 2017, 5, 31 ) ),
+    TREATAS ( { 999999 }, 'Store'[StoreKey] )
+)
+
 // Independently discovered real pairs, all history, no Date/Customer/Store filters:
 // Total=2029 for all pairs. A18/B444: A=2 B=9 joint=1, Lift=112.72222222222223.
 // A113/B1577: A=2 B=5 joint=1, Lift=202.9.

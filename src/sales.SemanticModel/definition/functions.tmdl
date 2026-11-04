@@ -423,6 +423,88 @@ function 'Tests.MarketBasket' =
 		        Tests.BasketPair ( 18, 444, "all history Contoso MP3 / WWI desktop" ),
 		        Tests.BasketPair ( 113, 1577, "all history WWI headphones / SV recorder" ),
 		        Tests.BasketPair ( 216, 648, "all history Litware theater / Proseware fax" ),
+		        VAR v_referencePairs =
+		            DISTINCT (
+		                SELECTCOLUMNS (
+		                    GENERATE (
+		                        CALCULATETABLE (
+		                            VALUES ( 'Sales'[Order Number] ),
+		                            'Sales'[Quantity] > 0,
+		                            NOT ISBLANK ( 'Sales'[Order Number] )
+		                        ),
+		                        VAR v_products =
+		                            CALCULATETABLE ( VALUES ( 'Sales'[ProductKey] ), 'Sales'[Quantity] > 0 )
+		                        RETURN
+		                            FILTER (
+		                                CROSSJOIN (
+		                                    SELECTCOLUMNS ( v_products, "@A", 'Sales'[ProductKey] ),
+		                                    SELECTCOLUMNS ( v_products, "@B", 'Sales'[ProductKey] )
+		                                ),
+		                                [@A] <> [@B]
+		                                    && NOT ISBLANK ( LOOKUPVALUE ( 'Product'[Product], 'Product'[ProductKey], [@A] ) )
+		                                    && NOT ISBLANK ( LOOKUPVALUE ( 'Product'[Product], 'Product'[ProductKey], [@B] ) )
+		                            )
+		                    ),
+		                    "@A", [@A],
+		                    "@B", [@B]
+		                )
+		            )
+		        VAR v_candidates =
+		            SELECTCOLUMNS (
+		                'Basket Pair',
+		                "@A", 'Basket Pair'[Product A Key],
+		                "@B", 'Basket Pair'[Product B Key]
+		            )
+		        RETURN
+		            UNION (
+		                PQL.Assert.ShouldBeTrue (
+		                    "MBA refreshed candidate identities exactly match positive-line same-order pairs",
+		                    ISEMPTY ( EXCEPT ( v_referencePairs, v_candidates ) )
+		                        && ISEMPTY ( EXCEPT ( v_candidates, v_referencePairs ) )
+		                ),
+		                PQL.Assert.ShouldEqual (
+		                    "MBA observed pair labels uniquely identify key pairs",
+		                    COUNTROWS ( 'Basket Pair' ),
+		                    COUNTROWS ( SUMMARIZE ( 'Basket Pair', 'Basket Pair'[Product A], 'Basket Pair'[Product B] ) )
+		                )
+		            ),
+		        CALCULATETABLE (
+		            VAR v_ranked =
+		                FILTER (
+		                    SUMMARIZECOLUMNS (
+		                        'Basket Pair'[Product A Key],
+		                        'Basket Pair'[Product B Key],
+		                        "@Rank", [PAIR RANK]
+		                    ),
+		                    NOT ISBLANK ( [@Rank] ) && [@Rank] <= 20
+		                )
+		            RETURN
+		                UNION (
+		                    PQL.Assert.ShouldEqual ( "MBA global top20 has exactly twenty observed pair identities", 20, COUNTROWS ( v_ranked ) ),
+		                    PQL.Assert.ShouldEqual ( "MBA global top20 begins at ordinal one", 1, MINX ( v_ranked, [@Rank] ) ),
+		                    PQL.Assert.ShouldEqual ( "MBA global top20 ends at ordinal twenty", 20, MAXX ( v_ranked, [@Rank] ) ),
+		                    PQL.Assert.ShouldEqual ( "MBA global top20 ordinal ties cannot expand the bound", 20, COUNTROWS ( DISTINCT ( SELECTCOLUMNS ( v_ranked, "@Rank", [@Rank] ) ) ) )
+		                ),
+		            TREATAS ( { 0 }, 'Minimum Support'[Minimum Support] ),
+		            TREATAS ( { 0 }, 'Minimum Lift'[Minimum Lift] )
+		        ),
+		        CALCULATETABLE (
+		            PQL.Assert.ShouldBeNull ( "MBA observed historical pair rank respects current Country State", [PAIR RANK] ),
+		            TREATAS ( { 18 }, 'Basket Pair'[Product A Key] ),
+		            TREATAS ( { 444 }, 'Basket Pair'[Product B Key] ),
+		            TREATAS ( { "United States" }, 'Store'[Country] ),
+		            TREATAS ( { "South Carolina" }, 'Store'[State] ),
+		            TREATAS ( { 0 }, 'Minimum Support'[Minimum Support] ),
+		            TREATAS ( { 0 }, 'Minimum Lift'[Minimum Lift] )
+		        ),
+		        CALCULATETABLE (
+		            PQL.Assert.ShouldBeNull ( "MBA observed historical pair rank respects current Date", [PAIR RANK] ),
+		            TREATAS ( { 18 }, 'Basket Pair'[Product A Key] ),
+		            TREATAS ( { 444 }, 'Basket Pair'[Product B Key] ),
+		            TREATAS ( { DATE ( 2017, 5, 19 ) }, 'Calendar'[Date] ),
+		            TREATAS ( { 0 }, 'Minimum Support'[Minimum Support] ),
+		            TREATAS ( { 0 }, 'Minimum Lift'[Minimum Lift] )
+		        ),
 		        CALCULATETABLE (
 		            UNION (
 		                PQL.Assert.ShouldEqual ( "MBA ORDER SAMPLE DATE current order date", DATE ( 2017, 5, 18 ), [ORDER SAMPLE DATE] ),
@@ -611,12 +693,18 @@ function 'Tests.MarketBasket' =
 		            ),
 		            DATESBETWEEN ( 'Calendar'[Date], DATE ( 2017, 5, 1 ), DATE ( 2017, 5, 31 ) )
 		        ),
-		        CALCULATETABLE (
-		            Tests.BasketPair ( 18, 444, "combined Date Customer Store" ),
-		            TREATAS ( { DATE ( 2017, 5, 18 ) }, 'Calendar'[Date] ),
-		            TREATAS ( { 769337 }, 'Customer'[CustomerKey] ),
-		            TREATAS ( { 999999 }, 'Store'[StoreKey] )
-		        ),
+		        VAR v_fixtureCustomer =
+		            CALCULATE (
+		                SELECTEDVALUE ( 'Sales'[CustomerKey] ),
+		                TREATAS ( { 269500 }, 'Sales'[Order Number] )
+		            )
+		        RETURN
+		            CALCULATETABLE (
+		                Tests.BasketPair ( 18, 444, "combined Date Customer Store" ),
+		                TREATAS ( { DATE ( 2017, 5, 18 ) }, 'Calendar'[Date] ),
+		                TREATAS ( { v_fixtureCustomer }, 'Customer'[CustomerKey] ),
+		                TREATAS ( { 999999 }, 'Store'[StoreKey] )
+		            ),
 		        PQL.Assert.ShouldEqual ( "MBA MINIMUM SUPPORT default", 0.005, CALCULATE ( [MINIMUM SUPPORT], REMOVEFILTERS ( 'Minimum Support' ) ) ),
 		        PQL.Assert.ShouldEqual ( "MBA MINIMUM LIFT default", 1.2, CALCULATE ( [MINIMUM LIFT], REMOVEFILTERS ( 'Minimum Lift' ) ) ),
 		        CALCULATETABLE (

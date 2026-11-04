@@ -1,6 +1,7 @@
 /// Disconnected minimum Lift threshold. Changing this selection affects eligibility only, never raw association metrics.
 table 'Minimum Lift'
 
+	/// Select the minimum association strength for visible pairs: 0x to 10x in 0.1x steps; the measure defaults to 1.2x.
 	column 'Minimum Lift'
 		dataType: double
 		formatString: 0.0"x"
