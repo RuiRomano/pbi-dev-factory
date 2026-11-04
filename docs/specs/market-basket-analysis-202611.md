@@ -1,6 +1,6 @@
 # Market Basket Analysis
 
-**Status:** Draft
+**Status:** Approved
 **Updated:** 2026-11-04
 
 ## Goal
@@ -48,5 +48,8 @@ O4 - Is regional RLS required? If so, confirm the region mapping, user entitleme
 
 O5 - Should AVG BASKET SIZE mean distinct products per qualifying order and AVG ITEMS PER ORDER mean positive units per qualifying order? Confirm threshold ranges/steps and the order-detail sample limit.
 
+Approval authorizes implementation of this scope but does not supply the missing source mappings or return rule. Implementation is blocked on O2 and O3: the Sales source imports 13 columns from RAW-Sales.csv, including Quantity but no Channel or return flag; Customer has no Segment field; Store exposes Country and State but no Region mapping. Provide the authoritative mappings and return rule, or explicitly approve a reduced scope, before model/report changes. O1, O4 and O5 remain open for confirmation.
+
 ## Change log
+- 2026-11-04: Developer approved the spec and requested implementation in PR comment 6629207325. Rechecked Sales, Customer and Store source definitions and the existing Tests.Run validation path. Recorded approval without treating unresolved business questions as answered. No implementation artifacts were changed or deployed because the source mappings and qualifying-line return rule remain unresolved.
 - 2026-11-04: Drafted the MBA model and report scope from issue #39, inspected the local Sales metadata and existing test scripts, and recorded source and business-definition gaps. No model/report changes, deployment, live-data validation or Ana sign-off have occurred. Awaiting developer review and approval.
