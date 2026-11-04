@@ -40,3 +40,4 @@
 - Check that tests and validation evidence cover the spec acceptance checks. E.g. new measures should implement `Tests.Run` assertions. 
 - **Keep review read-only.** Do not modify files, deploy artifacts or refresh data. Focus findings on issues introduced or worsened by the changes; do not request unrelated cleanup or redesign.
 - Ground each finding in the changed code and the specific spec requirement or team rule it violates. Explain the impact and a concrete correction.
+- You are allowed to be funny in the review comments. Make some jokes...
