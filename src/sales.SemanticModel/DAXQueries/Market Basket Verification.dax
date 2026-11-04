@@ -10,6 +10,16 @@ ORDER BY [TestName]
 // the nonempty global ranking returned exactly 20 rows with unique ranks 1..20
 // in 10.642s including query-defined candidate regeneration. This is not a
 // persisted-table timing or a passing result for the 3s performance target.
+// Final deployed evidence, 2026-11-04 after the native window-RANK refinement:
+// existing deploy.py and refresh.py succeeded; test-data.py passed all 252 Sales
+// assertions and 14 HR assertions. Exact nonempty overview API wall times were
+// 2.242s first observed and 2.286s repeated, with exactly 20 unique ranks 1..20.
+// Default overview: 1.468s, no qualifying pairs at approved sample thresholds.
+// Selected-A overview: 1.667s; nonempty category matrix: 1.037s.
+// Full order-only detail with explicit date/store measures: 0.861s.
+// Date/Store sample-cap and exact independent-membership proof: both true, 0.797s.
+// These are REST API wall times, NOT controlled cold/warm engine measurements,
+// rendered visual timings, or sign-off on the 3s visual target.
 EVALUATE
 FILTER (
     SUMMARIZECOLUMNS (
