@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "abb03600000000000007",
-  "position": {"x": 968, "y": 344, "z": 6, "width": 920, "height": 336, "tabOrder": 6},
+  "position": {"x": 645.33, "y": 229.33, "z": 6, "width": 613.33, "height": 224, "tabOrder": 6},
   "visual": {
     "visualType": "barChart",
     "query": {
@@ -17,9 +17,14 @@
         {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "AVERAGE BASKET SIZE"}}, "direction": "Descending"}
       ], "isDefaultSort": true}
     },
+    "objects": {
+      "categoryAxis": [{"properties": {"fontSize": {"expr": {"Literal": {"Value": "10.5D"}}}}}],
+      "labels": [{"properties": {"fontSize": {"expr": {"Literal": {"Value": "10.5D"}}}}}]
+    },
     "visualContainerObjects": {
       "title": [{"properties": {
         "show": {"expr": {"Literal": {"Value": "true"}}},
+        "fontSize": {"expr": {"Literal": {"Value": "12D"}}},
         "text": {"expr": {"Literal": {"Value": "'Categories ranked by category-only basket size'"}}}
       }}],
       "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Categories ranked descending by distinct products from that category per basket containing it. Select a category to filter the other visuals.'" }}}}}]

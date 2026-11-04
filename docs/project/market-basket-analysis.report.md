@@ -11,7 +11,7 @@ Compares the number of distinct products per basket across stores and product ca
 | Semantic model | [sales](sales.semantic-model.md), bound locally to `../sales.SemanticModel` |
 | Pages | 1: Market basket analysis |
 | Visuals | 8; no slicers |
-| Canvas | 1920 × 1080 |
+| Canvas | 1280 × 720 |
 | Theme | Registered Contoso theme; Cloud canvas, Midnight text, Cornflower accents, Segoe UI and two-tone Fold/wordmark |
 | Development report | `bbcb94aa-3291-40d4-9bd4-54d7b1f2c851` |
 | Development workspace | `0a6ed388-8f6e-40a0-a9ac-df7d1522ba38` |
@@ -25,6 +25,8 @@ The single page moves from a metric definition and summary value to two descendi
 ### Market basket analysis
 
 The saved definition contains a page title, definition subtitle and Contoso Fold/wordmark; one summary card; a category-scope instruction block; store and category bar rankings; and a store-by-category matrix.
+
+The 2026-11-04 PR-check correction scales the original 1920×1080 layout by two thirds, with 16px gutters. Typography is 24pt for the page title, 12pt for visual titles, 10.5pt for supporting text/axes/matrix and 20pt for the summary value. The summary references Contoso palette index 0 (Cornflower) instead of a literal color. The metric, model binding, filters, descending sorts and interactions are unchanged.
 
 **Capture limitation:** no verified live page screenshot is currently available from this Linux implementation session. These descriptions reflect saved metadata, not a claim that the page was visually reviewed. No synthetic screenshot or mock rendering is supplied.
 
@@ -65,5 +67,9 @@ On 2026-11-03, the existing deployment script published the report and semantic 
 Author CLI page, visual and filter inventories confirm one page, eight visuals and the three filter cards. Final schema validation passed with zero errors and warnings. Service preview failed with `RENDER_FAILED: CreateReportFailed`, renderer code `401`, request ID `b7c94736-cf76-4588-b414-fd7d45af09e8`. No screenshot was captured. Clipping, typography, scroll behavior, displayed values and click-driven cross-filtering remain unverified. Local BPA was skipped because its analyzer is Windows-only.
 
 All 48 sales data assertions passed, including 12 basket assertions. Independent source CSV calculations matched 1,505 live store/category/year rows and totals. The unfiltered average is **1.4770823065549532**, displayed as **1.48**; basket 318005 returns 1.00 despite two lines and six units; basket 309404 returns 6.00 overall and 2.00 for Computers. These are query results, not observed report screenshots.
+
+On 2026-11-04, PR #37's failed BPA run `41806938229` was traced to the summary's literal color (`ENSURE_THEME_COLOURS`, error) and 1080px page height (`ENSURE_PAGES_DO_NOT_SCROLL_VERTICALLY`, warning). Both saved-definition conditions are corrected. The existing enabled rules were inspected read-only; BPA itself was not run on Linux, and a fresh CI result is still pending. The whole-number-format warning is inapplicable to the fractional `AVERAGE BASKET SIZE` measure; its two-decimal format and unrelated HR/sales findings are unchanged.
+
+After correction, `powerbi-report-author validate src/market-basket-analysis.Report` (0.5.0) passed with zero errors and warnings. Its page/visual/filter/theme inventories confirmed one 1280×720 page, eight visuals, three filters and Contoso registration. Saved rectangles are in bounds and non-overlapping; supported CLI text measurements fit the checked labels but use approximate metrics because Segoe UI is not installed. These checks are not a rendered review. `git diff --check` passed; semantic models, tests, safeguards and workflows were untouched. No deployment, live-data tests or preview retries were performed for this local report-only fix; the earlier renderer 401 still blocks screenshot and interactive verification. The deployed layout therefore remains the 2026-11-03 version until a subsequent authorized deployment.
 
 See the [implementation spec](../specs/market-basket-analysis-202611.md) for the approved definition, layout contract, exact fixtures and remaining delivery gates.

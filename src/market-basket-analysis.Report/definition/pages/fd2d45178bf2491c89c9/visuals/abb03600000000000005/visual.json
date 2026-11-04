@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "abb03600000000000005",
-  "position": {"x": 496, "y": 184, "z": 4, "width": 1392, "height": 136, "tabOrder": 4},
+  "position": {"x": 330.67, "y": 122.67, "z": 4, "width": 928, "height": 90.67, "tabOrder": 4},
   "visual": {
     "visualType": "textbox",
     "objects": {"general": [{"properties": {"paragraphs": [
-      {"textRuns": [{"value": "Category selections count only selected-category products. Repeated product lines count once.", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "14pt", "color": "#20283F"}}], "horizontalTextAlignment": "left"},
-      {"textRuns": [{"value": "Use the filter pane for Date, Store and Category. Select a bar to filter the other visuals.", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "14pt", "color": "#58627A"}}], "horizontalTextAlignment": "left"},
-      {"textRuns": [{"value": "Totals recalculate over qualifying baskets; they are not averages of the displayed rows.", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "14pt", "color": "#58627A"}}], "horizontalTextAlignment": "left"}
+      {"textRuns": [{"value": "Category selections count only selected-category products. Repeated product lines count once.", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "10.5pt", "color": "#20283F"}}], "horizontalTextAlignment": "left"},
+      {"textRuns": [{"value": "Use the filter pane for Date, Store and Category. Select a bar to filter the other visuals.", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "10.5pt", "color": "#58627A"}}], "horizontalTextAlignment": "left"},
+      {"textRuns": [{"value": "Totals recalculate over qualifying baskets; they are not averages of the displayed rows.", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "10.5pt", "color": "#58627A"}}], "horizontalTextAlignment": "left"}
     ]}}]},
     "visualContainerObjects": {
       "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Category scope, repeated products, weighted totals and filter instructions'"}}}}}]

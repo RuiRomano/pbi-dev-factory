@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "abb03600000000000003",
-  "position": {"x": 1584, "y": 40, "z": 2, "width": 288, "height": 80, "tabOrder": 2},
+  "position": {"x": 1056, "y": 26.67, "z": 2, "width": 192, "height": 53.33, "tabOrder": 2},
   "visual": {
     "visualType": "image",
     "objects": {"general": [{"properties": {

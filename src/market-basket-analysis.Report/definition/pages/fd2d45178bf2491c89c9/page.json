@@ -3,8 +3,8 @@
   "name": "fd2d45178bf2491c89c9",
   "displayName": "Market basket analysis",
   "displayOption": "FitToPage",
-  "height": 1080,
-  "width": 1920,
+  "height": 720,
+  "width": 1280,
   "objects": {
     "background": [{"properties": {
       "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#F6F7FB'"}}}}},

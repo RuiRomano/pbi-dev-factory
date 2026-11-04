@@ -1,13 +1,17 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "abb03600000000000001",
-  "position": {"x": 32, "y": 32, "z": 0, "width": 1408, "height": 72, "tabOrder": 0},
+  "position": {"x": 21.33, "y": 21.33, "z": 0, "width": 938.67, "height": 48, "tabOrder": 0},
   "visual": {
     "visualType": "textbox",
     "objects": {"general": [{"properties": {"paragraphs": [
-      {"textRuns": [{"value": "Market basket analysis", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "32pt", "color": "#20283F"}}], "horizontalTextAlignment": "left"}
+      {"textRuns": [{"value": "Market basket analysis", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "24pt", "color": "#20283F"}}], "horizontalTextAlignment": "left"}
     ]}}]},
     "visualContainerObjects": {
+      "padding": [{"properties": {
+        "top": {"expr": {"Literal": {"Value": "0D"}}}, "bottom": {"expr": {"Literal": {"Value": "0D"}}},
+        "left": {"expr": {"Literal": {"Value": "0D"}}}, "right": {"expr": {"Literal": {"Value": "0D"}}}
+      }}],
       "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Market basket analysis page title'"}}}}}]
     }
   }

@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "abb03600000000000008",
-  "position": {"x": 32, "y": 704, "z": 7, "width": 1856, "height": 344, "tabOrder": 7},
+  "position": {"x": 21.33, "y": 469.33, "z": 7, "width": 1237.33, "height": 229.33, "tabOrder": 7},
   "visual": {
     "visualType": "pivotTable",
     "query": {"queryState": {
@@ -18,12 +18,16 @@
     "objects": {
       "columnHeaders": [{"properties": {
         "autoSizeColumnWidth": {"expr": {"Literal": {"Value": "true"}}},
+        "fontSize": {"expr": {"Literal": {"Value": "10.5D"}}},
         "columnAdjustment": {"expr": {"Literal": {"Value": "'growToFit'"}}}
-      }}]
+      }}],
+      "rowHeaders": [{"properties": {"fontSize": {"expr": {"Literal": {"Value": "10.5D"}}}}}],
+      "values": [{"properties": {"fontSize": {"expr": {"Literal": {"Value": "10.5D"}}}}}]
     },
     "visualContainerObjects": {
       "title": [{"properties": {
         "show": {"expr": {"Literal": {"Value": "true"}}},
+        "fontSize": {"expr": {"Literal": {"Value": "12D"}}},
         "text": {"expr": {"Literal": {"Value": "'Store and category detail | distinct products per basket'"}}}
       }}],
       "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Store by category matrix of average distinct products per qualifying basket. Row and column totals recalculate in their own filter context, not as averages of cells.'" }}}}}]
