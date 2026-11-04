@@ -21,7 +21,17 @@ npx rayfin login
 npx rayfin login status
 ```
 
-Rayfin needs its own login, separate from Azure CLI. Use an OS keychain. On Linux without a keychain, review Rayfin's documented token-storage options before explicitly opting into its plaintext fallback. Never commit tokens or generated environment files.
+Rayfin normally needs its own login, separate from Azure CLI. Use an OS keychain when available. In the Copilot cloud environment or Linux without a keychain, explicitly enable the supported fallback:
+
+```bash
+export RAYFIN_ENCRYPTION_FALLBACK_ENABLED=true
+npx rayfin login --encryption-fallback-enabled
+npx rayfin login status
+```
+
+The environment variable also enables the fallback for subsequent commands, including `python scripts/deploy.py --app-only`. It permits plaintext token caching outside the repository and should be enabled only in the trusted development session, not by default in source code. Never commit tokens or generated environment files.
+
+For headless runners with Azure CLI authentication, Rayfin also supports a Fabric API token supplied through the shell-only `RAYFIN_TOKEN` variable and the target workspace ID through `RAYFIN_WORKSPACE_ID`. Acquire the token with Azure CLI, pass it only in the deployment process environment, and never print or persist it in project files. This authenticates the CLI but does not grant model Build permissions or prove delegated end-user access.
 
 The connectors in `rayfin/rayfin.yml` target workspace `0a6ed388-8f6e-40a0-a9ac-df7d1522ba38` (RR - PBI Factory {dev}), Sales model `7bcdd4c9-3584-4dd7-9268-c5b15cbba485`, and HR model `6c3215b9-c562-46d8-aef8-73e06969717d`. IDs were verified in the workspace. Connector registration could not run without Rayfin login, so configuration follows the documented semantic-model connector contract and must be confirmed at deployment.
 
@@ -48,4 +58,6 @@ Both committed DAX queries were executed successfully against the live developme
 
 Build and lint passed (Fast Refresh and bundle-size warnings remain). The production dependency audit passed after overriding the template's transitive Zod dependency to patched 4.6.7. Compatible audit repairs and patched test/lint packages were applied. The remaining development-only audit findings include MSAL Node (GHSA-xcx6-jx8p-x3h5), glob (GHSA-3g3m-2fjr-6pw4), and minimatch (GHSA-g3hv-75wg-m249), inherited through Rayfin CLI and lint tooling. Upstream-compatible fixes are not available for all of them. Do not expose development tools to untrusted input; no incompatible major overrides were forced.
 
-Deployment was attempted through `scripts/deploy.py --app-only` but blocked by Rayfin's unavailable OS keychain and missing login. Deployed SSO, connector behavior, database persistence, and cross-user policy enforcement remain unverified. The compiled schema's authenticated create/read role, owner predicate, and 2,000-character limit were checked locally. Browser verification confirmed the missing-configuration error is visible without horizontal overflow at mobile size; the signed-in dashboard preview remains blocked. After deployment, save a comment, reload and confirm it persists, switch KPIs and verify isolation, then sign in as another user and confirm the first user's comments cannot be read or created on their behalf. Also test denied model access and desktop/mobile layouts. Local BPA is Windows-only and does not apply to this web app.
+Deployment was retried through `scripts/deploy.py --app-only` on 4 November 2026 with the explicitly authorized encryption fallback and a Fabric API token acquired through Azure CLI and passed only in the process environment. The retry passed the keychain and authentication stages, resolved the workspace and app item, and reached runtime settings synchronization. Fabric then returned `403 Forbidden`: `Could not verify Build permission on semantic model '7bcdd4c9-3584-4dd7-9268-c5b15cbba485'. Ensure you have Build access, then re-add the connector.` RootActivityId: `6c644264-4d7a-4f4f-9d35-abd05764e714`. Deployment stopped without changing permissions or removing connectors. The earlier keychain error is no longer the blocker. Verify the deployment identity's model Build access before retrying.
+
+Deployed SSO, connector behavior, database persistence, and cross-user policy enforcement remain unverified. The compiled schema's authenticated create/read role, owner predicate, and 2,000-character limit were checked locally. Browser verification confirmed the missing-configuration error is visible without horizontal overflow at mobile size; the signed-in dashboard preview remains blocked. After deployment, save a comment, reload and confirm it persists, switch KPIs and verify isolation, then sign in as another user and confirm the first user's comments cannot be read or created on their behalf. Also test denied model access and desktop/mobile layouts. Local BPA is Windows-only and does not apply to this web app.
