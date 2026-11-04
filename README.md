@@ -13,6 +13,7 @@ This sample repository demonstrates a Power BI project including CI/CD and agent
 | [docs/project/](docs/project/) | Documentation for the semantic models and reports. |
 | [scripts/](scripts/) | Scripts to deploy, refresh and test artifacts in Fabric. The `bpa/` subfolder provides local Best Practice Analyzer checks. |
 | [.vscode/](.vscode/) | Shared VS Code workspace settings. |
+| [.mcp.json](.mcp.json) | Declares the MCP servers to load when working with this repository. Alternatively, install the MCP server through the [`powerbi-authoring` plugin](https://learn.microsoft.com/power-bi/developer/agentic/power-bi-agentic-overview#install-the-plugin-with-github-copilot-cli). |
 | [AGENTS.md](AGENTS.md) | Provides repository-wide agent guidance. Includes important tool and skill routing to help agents get the job done as we want. |
 
 ## Agentic context
