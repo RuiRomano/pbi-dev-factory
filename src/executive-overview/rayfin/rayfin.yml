@@ -1,0 +1,42 @@
+id: executive-overview
+name: executive-overview
+version: 1.0.0
+services:
+  auth:
+    enabled: true
+    fabric:
+      enabled: true
+    allowedRedirectUris:
+      - http://localhost:5173
+  data:
+    enabled: true
+    dialect: mssql
+  storage:
+    enabled: false
+  staticHosting:
+    enabled: true
+    folder: dist
+    buildCommand: npm run build:fabric
+    indexDocument: index.html
+    assetAccess: protected
+connectors:
+  - name: salesModel
+    type: fabric-semanticmodel
+    config:
+      workspaceId: 0a6ed388-8f6e-40a0-a9ac-df7d1522ba38
+      itemId: 7bcdd4c9-3584-4dd7-9268-c5b15cbba485
+    auth:
+      type: delegated
+    version: "1"
+    operations:
+      - name: executeQuery
+  - name: hrModel
+    type: fabric-semanticmodel
+    config:
+      workspaceId: 0a6ed388-8f6e-40a0-a9ac-df7d1522ba38
+      itemId: 6c3215b9-c562-46d8-aef8-73e06969717d
+    auth:
+      type: delegated
+    version: "1"
+    operations:
+      - name: executeQuery

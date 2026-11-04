@@ -1,0 +1,15 @@
+EVALUATE
+VAR Latest = MAX ( Sales[Order Date] )
+VAR PeriodStart = IF ( NOT ISBLANK ( Latest ), DATE ( YEAR ( Latest ), MONTH ( Latest ), 1 ) )
+RETURN
+    CALCULATETABLE (
+        ROW (
+            "periodStart", IF ( NOT ISBLANK ( Latest ), FORMAT ( PeriodStart, "yyyy-MM-dd" ) ),
+            "periodEnd", IF ( NOT ISBLANK ( Latest ), FORMAT ( Latest, "yyyy-MM-dd" ) ),
+            "sales-amount", [Sales Amount],
+            "sales-margin", [Margin],
+            "sales-quantity", [Sales Qty],
+            "sales-customers", [# Customers (w/ Sales)]
+        ),
+        DATESBETWEEN ( 'Calendar'[Date], PeriodStart, Latest )
+    )
