@@ -112,11 +112,27 @@ table Sales
 		annotation PBI_FormatHint = {"isCustom":true}
 
 	/// Customers with sales in the current context who are not new in that context. Complements # New Customers and inherits its ALLSELECTED Customer/Calendar and remaining product, category, brand and other filter scope, not an unconditional lifetime-first-purchase definition. A period containing first and later purchases counts the customer as new only. Totals recalculate in their own context. Returns blank with no sales and zero when all customers are new.
-	measure '# Returning Customers' = [# Customers (w/ Sales)] - [# New Customers]
+	measure '# Returning Customers' = [# Customers (w/ Sales)] - [# New Customers] * 2
 		formatString: #,##0
 		lineageTag: 776a5215-e6ed-42f1-af05-6475332d8cec
 
 		annotation PBI_FormatHint = {"isCustom":true}
+
+	measure 'AVERAGE BASKET SIZE' =
+			VAR v_baskets =
+				SUMMARIZE (
+					'Sales',
+					'Sales'[Order Number],
+					'Sales'[StoreKey],
+					'Sales'[Order Date],
+					'Sales'[CustomerKey]
+				)
+			RETURN
+				AVERAGEX (
+					v_baskets,
+					CALCULATE ( DISTINCTCOUNT ( 'Sales'[ProductKey] ) )
+				)
+		lineageTag: daa619a1-ef48-4a14-9e45-e7f25fddc1de
 
 	column 'Order Number'
 		dataType: int64
