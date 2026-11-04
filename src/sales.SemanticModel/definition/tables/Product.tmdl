@@ -122,6 +122,14 @@ table Product
 
 		annotation SummarizationSetBy = Automatic
 
+	hierarchy 'Product Hierarchy'
+		level Category
+			column: Category
+		level Subcategory
+			column: Subcategory
+		level Product
+			column: Product
+
 	partition Product-171f48b3-e0ea-4ea3-b9a0-c8c673eb0648 = m
 		mode: import
 		source =
@@ -162,4 +170,3 @@ table Product
 	annotation PBI_ResultType = Table
 
 	annotation PBI_NavigationStepName = Navigation
-

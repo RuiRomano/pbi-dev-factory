@@ -1,0 +1,23 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name":"ba050000000000000005",
+  "position":{"x":624,"y":136,"z":4000,"height":84,"width":632,"tabOrder":4000},
+  "visual":{
+    "visualType":"cardVisual",
+    "query":{"queryState":{"Data":{"projections":[{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDERS WITH A AND B"}},"queryRef":"Sales.ORDERS WITH A AND B","nativeQueryRef":"All matching orders"}]}}},
+    "objects":{
+      "value":[{"properties":{"fontSize":{"expr":{"Literal":{"Value":"20D"}}},"fontFamily":{"expr":{"Literal":{"Value":"'Segoe UI Light'"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}}},"selector":{"id":"default"}}],
+      "label":[{"properties":{"text":{"expr":{"Literal":{"Value":"'All matching orders · before the 100-order sample cap'"}}},"fontSize":{"expr":{"Literal":{"Value":"11D"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}}},"selector":{"id":"default"}}],
+      "padding":[{"properties":{"paddingUniform":{"expr":{"Literal":{"Value":"8D"}}}},"selector":{"id":"default"}}],
+      "layout":[{"properties":{"paddingUniform":{"expr":{"Literal":{"Value":"0D"}}}},"selector":{"id":"default"}}],
+      "fillCustom":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"fillColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}},"transparency":{"expr":{"Literal":{"Value":"0D"}}}},"selector":{"id":"default"}}]
+    },
+    "visualContainerObjects":{
+      "title":[{"properties":{"show":{"expr":{"Literal":{"Value":"false"}}}}}],
+      "border":[{"properties":{"show":{"expr":{"Literal":{"Value":"false"}}}}}],
+      "padding":[{"properties":{"top":{"expr":{"Literal":{"Value":"8D"}}},"bottom":{"expr":{"Literal":{"Value":"8D"}}},"left":{"expr":{"Literal":{"Value":"8D"}}},"right":{"expr":{"Literal":{"Value":"8D"}}}}}],
+      "spacing":[{"properties":{"customizeSpacing":{"expr":{"Literal":{"Value":"true"}}},"verticalSpacing":{"expr":{"Literal":{"Value":"2D"}}}},"selector":{"id":"default"}}],
+      "general":[{"properties":{"altText":{"expr":{"Literal":{"Value":"'The full distinct joint-order count for the selected pair, before the table is bounded to its first 100 order numbers.'" }}}}}]
+    }
+  }
+}

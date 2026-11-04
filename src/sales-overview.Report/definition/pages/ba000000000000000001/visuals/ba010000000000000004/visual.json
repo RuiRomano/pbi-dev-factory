@@ -1,0 +1,14 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name":"ba010000000000000004",
+  "position":{"x":24,"y":648,"z":3000,"height":64,"width":1232,"tabOrder":3000},
+  "visual":{
+    "visualType":"textbox",
+    "objects":{"general":[{"properties":{"paragraphs":[
+      {"textRuns":[{"value":"Basket size = distinct products/order; items = positive units/order. Use Filters for dates, Country/State, Store, A/B and thresholds.","textStyle":{"fontFamily":"Segoe UI","fontSize":"14px","color":"#20283F"}}]},
+      {"textRuns":[{"value":"Scope: Quantity > 0; no separate return flag. Segment/Channel deferred. Right-click a pair → MBA overview-pair orders.","textStyle":{"fontFamily":"Segoe UI","fontSize":"14px","color":"#20283F"}}]},
+      {"textRuns":[{"value":"Empty list? Sparse sample pairs may fall below default Support 0.5% and Lift 1.2. Lower thresholds in Filters to explore.","textStyle":{"fontFamily":"Segoe UI","fontSize":"14px","color":"#20283F"}}]}
+    ]}}]},
+    "visualContainerObjects":{"background":[{"properties":{"show":{"expr":{"Literal":{"Value":"false"}}}}}],"border":[{"properties":{"show":{"expr":{"Literal":{"Value":"false"}}}}}],"padding":[{"properties":{"top":{"expr":{"Literal":{"Value":"0D"}}},"bottom":{"expr":{"Literal":{"Value":"0D"}}},"left":{"expr":{"Literal":{"Value":"0D"}}},"right":{"expr":{"Literal":{"Value":"0D"}}}}}]}
+  }
+}

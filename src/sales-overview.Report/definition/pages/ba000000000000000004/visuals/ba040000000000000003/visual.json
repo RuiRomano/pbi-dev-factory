@@ -1,0 +1,37 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name":"ba040000000000000003",
+  "position":{"x":24,"y":400,"z":2000,"height":248,"width":1232,"tabOrder":2000},
+  "filterConfig":{"filters":[
+    {"name":"Filter000000000000000000004102","field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"PAIR ELIGIBLE"}},"type":"Advanced","displayName":"Selected pair meets monthly thresholds","howCreated":"User","filter":{"Version":2,"From":[{"Name":"s","Entity":"Sales","Type":0}],"Where":[{"Condition":{"Comparison":{"ComparisonKind":0,"Left":{"Measure":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"PAIR ELIGIBLE"}},"Right":{"Literal":{"Value":"1L"}}}}}]}}
+  ]},
+  "visual":{
+    "visualType":"lineChart",
+    "query":{
+      "queryState":{
+        "Category":{"projections":[
+          {"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Calendar"}},"Property":"Year"}},"queryRef":"Calendar.Year","nativeQueryRef":"Year","active":true},
+          {"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Calendar"}},"Property":"Month Name"}},"queryRef":"Calendar.Month Name","nativeQueryRef":"Month","active":true}
+        ]},
+        "Y":{"projections":[{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"LIFT"}},"queryRef":"Sales.LIFT","nativeQueryRef":"Lift"}]},
+        "Tooltips":{"projections":[
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDERS WITH A"}},"queryRef":"Sales.ORDERS WITH A","nativeQueryRef":"A orders"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDERS WITH B"}},"queryRef":"Sales.ORDERS WITH B","nativeQueryRef":"B orders"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDERS WITH A AND B"}},"queryRef":"Sales.ORDERS WITH A AND B","nativeQueryRef":"Joint orders"}
+        ]}
+      },
+      "sortDefinition":{"sort":[{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Calendar"}},"Property":"Year"}},"direction":"Ascending"},{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Calendar"}},"Property":"Month Name"}},"direction":"Ascending"}],"isDefaultSort":false}
+    },
+    "objects":{
+      "categoryAxis":[{"properties":{"axisType":{"expr":{"Literal":{"Value":"'Categorical'"}}},"concatenateLabels":{"expr":{"Literal":{"Value":"true"}}},"fontSize":{"expr":{"Literal":{"Value":"10.5D"}}},"labelColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"showAxisTitle":{"expr":{"Literal":{"Value":"true"}}},"titleText":{"expr":{"Literal":{"Value":"'Order month'"}}}}}],
+      "valueAxis":[{"properties":{"showAxisTitle":{"expr":{"Literal":{"Value":"true"}}},"titleText":{"expr":{"Literal":{"Value":"'Lift · 1 = independence'"}}},"labelColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"fontSize":{"expr":{"Literal":{"Value":"10.5D"}}}}}],
+      "dataPoint":[{"properties":{"fill":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}}},"selector":{"metadata":"Sales.LIFT"}}]
+    },
+    "visualContainerObjects":{
+      "title":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"text":{"expr":{"Literal":{"Value":"'Monthly Lift · selected A and B'"}}}}}],
+      "visualTooltip":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}}}}],
+      "general":[{"properties":{"altText":{"expr":{"Literal":{"Value":"'Monthly Lift for one selected A and B at matching grain. Calendar Year and Month Name sorted by the model Month number. Lift 1 means independence, above 1 stronger co-purchase. Months below either threshold are omitted.'" }}}}}]
+    },
+    "drillFilterOtherVisuals":true
+  }
+}

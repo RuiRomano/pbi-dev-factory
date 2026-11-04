@@ -1,0 +1,74 @@
+/// Observed ordered Product A/B candidates for the global basket overview. One row per distinct pair ever present on positive-quantity lines of the same nonblank order; not a pre-aggregated metric. Disconnected; measures still recalculate under Date, Customer and Store filters. Zero-cooccurrence pairs remain available in Product drill, not this observed-pair list.
+table 'Basket Pair'
+
+	column 'Product A Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: [Product A Key]
+
+	column 'Product B Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: [Product B Key]
+
+	column 'Product A'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: [Product A]
+
+	column 'Product B'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: [Product B]
+
+	column Pair
+		dataType: string
+		summarizeBy: none
+		sourceColumn: [Pair]
+
+	partition 'Basket Pair' = calculated
+		mode: import
+		source =
+				VAR v_orderProducts =
+				    CALCULATETABLE (
+				        SUMMARIZE ( 'Sales', 'Sales'[Order Number], 'Sales'[ProductKey] ),
+				        'Sales'[Quantity] > 0,
+				        NOT ISBLANK ( 'Sales'[Order Number] )
+				    )
+				VAR v_pairs =
+				    DISTINCT (
+				        SELECTCOLUMNS (
+				            GENERATE (
+				                v_orderProducts,
+				                VAR v_order = 'Sales'[Order Number]
+				                VAR v_keyA = 'Sales'[ProductKey]
+				                RETURN
+				                    SELECTCOLUMNS (
+				                        CALCULATETABLE (
+				                            VALUES ( 'Sales'[ProductKey] ),
+				                            'Sales'[Order Number] = v_order,
+				                            'Sales'[Quantity] > 0,
+				                            'Sales'[ProductKey] <> v_keyA
+				                        ),
+				                        "Product B Key", 'Sales'[ProductKey]
+				                    )
+				            ),
+				            "Product A Key", 'Sales'[ProductKey],
+				            "Product B Key", [Product B Key]
+				        )
+				    )
+				VAR v_named =
+				    ADDCOLUMNS (
+				        v_pairs,
+				        "Product A", LOOKUPVALUE ( 'Product'[Product], 'Product'[ProductKey], [Product A Key] ),
+				        "Product B", LOOKUPVALUE ( 'Product'[Product], 'Product'[ProductKey], [Product B Key] )
+				    )
+				RETURN
+				    ADDCOLUMNS (
+				        FILTER ( v_named, NOT ISBLANK ( [Product A] ) && NOT ISBLANK ( [Product B] ) ),
+				        "Pair", [Product A] & " → " & [Product B]
+				    )

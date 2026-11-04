@@ -1,0 +1,40 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name":"ba030000000000000002",
+  "position":{"x":24,"y":136,"z":1000,"height":512,"width":1232,"tabOrder":1000},
+  "visual":{
+    "visualType":"pivotTable",
+    "query":{"queryState":{
+      "Rows":{"projections":[
+        {"field":{"HierarchyLevel":{"Expression":{"Hierarchy":{"Expression":{"SourceRef":{"Entity":"Product"}},"Hierarchy":"Product Hierarchy"}},"Level":"Category"}},"queryRef":"Product.Product Hierarchy.Category","nativeQueryRef":"Category A"},
+        {"field":{"HierarchyLevel":{"Expression":{"Hierarchy":{"Expression":{"SourceRef":{"Entity":"Product"}},"Hierarchy":"Product Hierarchy"}},"Level":"Subcategory"}},"queryRef":"Product.Product Hierarchy.Subcategory","nativeQueryRef":"Subcategory A"},
+        {"field":{"HierarchyLevel":{"Expression":{"Hierarchy":{"Expression":{"SourceRef":{"Entity":"Product"}},"Hierarchy":"Product Hierarchy"}},"Level":"Product"}},"queryRef":"Product.Product Hierarchy.Product","nativeQueryRef":"Product A"}
+      ]},
+      "Columns":{"projections":[
+        {"field":{"HierarchyLevel":{"Expression":{"Hierarchy":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Hierarchy":"Product Hierarchy"}},"Level":"Category"}},"queryRef":"Product (Basket).Product Hierarchy.Category","nativeQueryRef":"Category B"},
+        {"field":{"HierarchyLevel":{"Expression":{"Hierarchy":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Hierarchy":"Product Hierarchy"}},"Level":"Subcategory"}},"queryRef":"Product (Basket).Product Hierarchy.Subcategory","nativeQueryRef":"Subcategory B"},
+        {"field":{"HierarchyLevel":{"Expression":{"Hierarchy":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Hierarchy":"Product Hierarchy"}},"Level":"Product"}},"queryRef":"Product (Basket).Product Hierarchy.Product","nativeQueryRef":"Product B"}
+      ]},
+      "Values":{"projections":[{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ELIGIBLE LIFT"}},"queryRef":"Sales.ELIGIBLE LIFT","nativeQueryRef":"Lift"}]}
+    }},
+    "expansionStates":[
+      {"roles":["Rows"],"levels":[{"queryRefs":["Product.Product Hierarchy.Category"],"isCollapsed":true,"isPinned":true},{"queryRefs":["Product.Product Hierarchy.Subcategory"],"isCollapsed":true},{"queryRefs":["Product.Product Hierarchy.Product"],"isCollapsed":true}],"root":{}},
+      {"roles":["Columns"],"levels":[{"queryRefs":["Product (Basket).Product Hierarchy.Category"],"isCollapsed":true,"isPinned":true},{"queryRefs":["Product (Basket).Product Hierarchy.Subcategory"],"isCollapsed":true},{"queryRefs":["Product (Basket).Product Hierarchy.Product"],"isCollapsed":true}],"root":{}}
+    ],
+    "objects":{
+      "columnHeaders":[{"properties":{"columnAdjustment":{"expr":{"Literal":{"Value":"'growToFit'"}}},"autoSizeColumnWidth":{"expr":{"Literal":{"Value":"true"}}},"fontSize":{"expr":{"Literal":{"Value":"11D"}}},"wordWrap":{"expr":{"Literal":{"Value":"true"}}},"showExpandCollapseButtons":{"expr":{"Literal":{"Value":"true"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"backColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#F6F7FB'"}}}}}}}],
+      "rowHeaders":[{"properties":{"fontSize":{"expr":{"Literal":{"Value":"11D"}}},"wordWrap":{"expr":{"Literal":{"Value":"true"}}},"showExpandCollapseButtons":{"expr":{"Literal":{"Value":"true"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"backColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}}}}],
+      "subTotals":[{"properties":{"rowSubtotals":{"expr":{"Literal":{"Value":"false"}}},"columnSubtotals":{"expr":{"Literal":{"Value":"false"}}}}}],
+      "values":[
+        {"properties":{"fontSize":{"expr":{"Literal":{"Value":"11D"}}},"fontColorPrimary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"fontColorSecondary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}}}},
+        {"properties":{"backColor":{"solid":{"color":{"expr":{"FillRule":{"Input":{"SelectRef":{"ExpressionName":"Sales.ELIGIBLE LIFT"}},"FillRule":{"linearGradient2":{"min":{"color":{"Literal":{"Value":"'#F6F7FB'"}}},"max":{"color":{"Literal":{"Value":"'#C8BCF4'"}}},"nullColoringStrategy":{"strategy":{"Literal":{"Value":"'noColor'"}}}}}}}}}}},"selector":{"data":[{"dataViewWildcard":{"matchingOption":1}}],"metadata":"Sales.ELIGIBLE LIFT"}}
+      ]
+    },
+    "visualContainerObjects":{
+      "title":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"text":{"expr":{"Literal":{"Value":"'Category A × Category B · Lift heatmap'"}}}}}],
+      "stylePreset":[{"properties":{"name":{"expr":{"Literal":{"Value":"'None'"}}}}}],
+      "general":[{"properties":{"altText":{"expr":{"Literal":{"Value":"'Category A by Category B Lift heatmap. Expand matching Category, Subcategory, Product hierarchies on rows and columns. Compare roles at the same grain. Nonqualifying, ambiguous, or identical pairs are blank. Use right-click drillthrough on a cell to inspect joint orders.'" }}}}}]
+    },
+    "drillFilterOtherVisuals":true
+  }
+}

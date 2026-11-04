@@ -2,15 +2,15 @@
 
 ## Overview
 
-This report presents Northwind Retail Group sample sales analysis for retail analysts and business users. It moves from headline sales and customer metrics to product mix, store comparisons and trends, then to a category-by-year matrix of sales, margin and cost.
+This report presents Northwind Retail Group sample sales analysis for retail analysts and business users. It moves from headline sales and customer metrics to product mix, store comparisons and trends, then to a category-by-year matrix of sales, margin and cost. Market Basket Analysis adds co-purchased product pairs, directional association metrics, monthly trends and joint-order samples.
 
 | Property | Value |
 |---|---|
 | Source | `src/sales-overview.Report` |
 | Project entry point | `src/sales-overview.pbip` |
 | Semantic model | [sales](sales.semantic-model.md), via `../sales.SemanticModel` |
-| Pages | 2 |
-| Visuals | 9: seven on Sales, two on KPI |
+| Pages | 10: six visible and four hidden drillthrough destinations |
+| Visuals | 39: the original nine plus 30 MBA visuals |
 | Theme | Registered Contoso theme over Fluent2-CY26SU08 |
 
 Amounts are sample calculations, not certified revenue. The model randomizes quantities and net prices at refresh and does not convert currencies. Dollar formatting does not establish the reporting currency.
@@ -20,7 +20,7 @@ Amounts are sample calculations, not certified revenue. The model randomizes qua
 1. **Sales**, the saved active page, provides four headline metrics and an on-page date-range slicer. Compare category and brand performance, inspect monthly store patterns, and review sales against prior-year sales and a moving average.
 2. **KPI** provides an annual financial matrix by product category. Use it to compare sales, monetary margin and cost across years.
 
-Use the standard report page selector to move between pages. No custom navigation buttons, bookmark groups or drillthrough destinations are defined.
+Use the standard report page selector to move between visible pages. The original Sales and KPI pages are unchanged. The MBA pages add pair exploration and matching hidden order-detail drillthrough destinations with Back actions.
 
 ## Pages
 
@@ -119,9 +119,32 @@ The Sales date slicer has no saved synchronization configuration. Do not assume 
 
 Use the standard page selector to return to Sales. The matrix supports normal selection, scrolling and standard tooltips. There are no custom buttons, bookmarks or drillthrough actions.
 
+### Market Basket Analysis
+
+The [MBA spec](../specs/market-basket-analysis-202611.md) defines the approved available-data scope. These pages use the existing Sales dataset, not a separate dataset or refresh schedule. Baskets are nonblank order numbers with positive-quantity lines. Segment and Channel are unavailable and deferred; geography uses Store Country/State. No new RLS is introduced.
+
+| Page | Purpose and controls |
+|---|---|
+| MBA overview | TOTAL ORDERS, AVG BASKET SIZE and AVG ITEMS PER ORDER cards, plus the top 20 qualifying Product A/Product B pairs by Lift. |
+| MBA product drill | Searchable Product A selection and an associated-product table with order counts, Support, Confidence and conditionally formatted Lift. |
+| MBA association matrix | Category A × Category B Lift heatmap. Identical members are excluded. |
+| MBA pair trend | Monthly Support and Lift for a selected pair. Select both roles at the same grain using the filter pane. |
+| MBA product-pair orders | Hidden destination for a Product A/Product B pair, with a sample of at most 100 matching order numbers and Back. |
+| MBA subcategory-pair orders | Hidden destination for a Subcategory A/Subcategory B pair, with the same bounded order sample. |
+| MBA category-pair orders | Hidden destination for a Category A/Category B pair, with the same bounded order sample. |
+| MBA overview-pair orders | Hidden destination for a pair selected from the observed Basket Pair overview fields. |
+
+The filter pane exposes order date, Country, State, Store, A/B selections and minimum Support/Lift where applicable. Product A uses `Product`; Product B uses the disconnected `Product (Basket)` dimension. Start with one Product A on the product-drill page. For trends, select one A and one B at matching Product, Subcategory or Category grain; ambiguous selections return blank rather than an aggregate presented as a pair.
+
+Support is the joint-order share of all qualifying baskets. Confidence is the joint-order share of A's baskets and therefore has an A-to-B direction. Lift compares Confidence with B's prevalence; one means independence. The defaults hide associations below 0.5% Support or 1.2 Lift. Select a single threshold value in each parameter filter; no or multiple selections use the default. Changing thresholds affects association visibility, not raw metric denominators.
+
+Right-click a valid pair to open its matching order destination and retain its pair and business filter context. Separate targets avoid requiring Product fields when drilling from a Category or Subcategory pair. Each sample identifies baskets containing both members on any lines of the same order, not a single line containing both products. Tables group by Order Number only so the sample cap does not restart for each date or store. The first 100 orders are ordered by order number and are not a full export. Use Back to return to the source page. Review the captured drillthrough filters before interpreting the sample.
+
+No screenshots of the new MBA pages have been captured yet. Their descriptions above follow saved definitions, not a verified rendering or Ana's sign-off. The historical Sales/KPI screenshots below remain evidence only for their original capture.
+
 ## Global Filters and Navigation
 
-No report-level filter definitions, bookmarks, custom navigation actions, synchronized slicer configuration or hidden pages were found. Saved page order is Sales then KPI, with Sales active. Both pages use a 1280 by 720 canvas and FitToPage display.
+The original report has no report-level filter predicates, bookmarks or synchronized slicer configuration. Sales remains the active page, followed by KPI and the new MBA pages; the four MBA detail destinations are hidden in view mode. New page-level filters do not change the original pages' filter definitions. Pages use a 1280 by 720 canvas and FitToPage display.
 
 The report enables data-filter behavior, drill filtering of other visuals, inline exploration and enhanced tooltips. Filter and slicer Apply buttons are not enabled in the slow-data-source settings. The filter pane is visible but collapsed by default.
 

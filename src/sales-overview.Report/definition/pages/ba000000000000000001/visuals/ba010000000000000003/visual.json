@@ -1,0 +1,39 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name":"ba010000000000000003",
+  "position":{"x":24,"y":236,"z":2000,"height":396,"width":1232,"tabOrder":2000},
+  "filterConfig":{"filters":[
+    {"name":"Filter000000000000000000001101","field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"PAIR ELIGIBLE"}},"type":"Advanced","displayName":"Qualifying distinct pair","howCreated":"User","filter":{"Version":2,"From":[{"Name":"s","Entity":"Sales","Type":0}],"Where":[{"Condition":{"Comparison":{"ComparisonKind":0,"Left":{"Measure":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"PAIR ELIGIBLE"}},"Right":{"Literal":{"Value":"1L"}}}}}]}},
+    {"name":"Filter000000000000000000001102","field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"PAIR RANK"}},"type":"Advanced","displayName":"Top 20 eligible pairs by Lift","howCreated":"User","filter":{"Version":2,"From":[{"Name":"s","Entity":"Sales","Type":0}],"Where":[{"Condition":{"Comparison":{"ComparisonKind":4,"Left":{"Measure":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"PAIR RANK"}},"Right":{"Literal":{"Value":"20L"}}}}}]}}
+  ]},
+  "visual":{
+    "visualType":"tableEx",
+    "query":{
+      "queryState":{
+        "Values":{"projections":[
+          {"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Basket Pair"}},"Property":"Product A"}},"queryRef":"Basket Pair.Product A","nativeQueryRef":"Product A"},
+          {"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Basket Pair"}},"Property":"Product B"}},"queryRef":"Basket Pair.Product B","nativeQueryRef":"Product B"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"PAIR RANK"}},"queryRef":"Sales.PAIR RANK","nativeQueryRef":"Rank"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDERS WITH A AND B"}},"queryRef":"Sales.ORDERS WITH A AND B","nativeQueryRef":"Joint orders"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"SUPPORT"}},"queryRef":"Sales.SUPPORT","nativeQueryRef":"Support"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"CONFIDENCE"}},"queryRef":"Sales.CONFIDENCE","nativeQueryRef":"Confidence A → B"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"LIFT"}},"queryRef":"Sales.LIFT","nativeQueryRef":"Lift"}
+        ]}
+      },
+      "sortDefinition":{"sort":[{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"PAIR RANK"}},"direction":"Ascending"}],"isDefaultSort":false}
+    },
+    "objects":{
+      "columnHeaders":[{"properties":{"columnAdjustment":{"expr":{"Literal":{"Value":"'growToFit'"}}},"autoSizeColumnWidth":{"expr":{"Literal":{"Value":"true"}}},"fontSize":{"expr":{"Literal":{"Value":"11D"}}},"backColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#F6F7FB'"}}}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}}}}],
+      "values":[
+        {"properties":{"fontSize":{"expr":{"Literal":{"Value":"11D"}}},"fontColorPrimary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"fontColorSecondary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"backColorPrimary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}},"backColorSecondary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#F6F7FB'"}}}}}}},
+        {"properties":{"backColor":{"solid":{"color":{"expr":{"FillRule":{"Input":{"SelectRef":{"ExpressionName":"Sales.LIFT"}},"FillRule":{"linearGradient2":{"min":{"color":{"Literal":{"Value":"'#F6F7FB'"}}},"max":{"color":{"Literal":{"Value":"'#C8BCF4'"}}},"nullColoringStrategy":{"strategy":{"Literal":{"Value":"'noColor'"}}}}}}}}}}},"selector":{"data":[{"dataViewWildcard":{"matchingOption":1}}],"metadata":"Sales.LIFT"}}
+      ]
+    },
+    "visualContainerObjects":{
+      "title":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"text":{"expr":{"Literal":{"Value":"'Top 20 qualifying observed product pairs · ranked by Lift'"}}}}}],
+      "stylePreset":[{"properties":{"name":{"expr":{"Literal":{"Value":"'None'"}}}}}],
+      "general":[{"properties":{"altText":{"expr":{"Literal":{"Value":"'Distinct Product A and Product B pairs observed together on positive-quantity order lines; semantic Top 20 by Lift after minimum Support and Lift thresholds. Unobserved pairs are not candidates. Metrics recalculate in the selected Date, Customer and Store context. Ties resolve by product keys. Right-click a pair to drill through to its order sample.'" }}}}}]
+    },
+    "drillFilterOtherVisuals":true
+  }
+}

@@ -118,6 +118,255 @@ table Sales
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Distinct nonblank order-number baskets containing a positive-quantity line. Clears both product roles and fact ProductKey, preserving Date, Customer, Store and other nonproduct context. Nonpositive quantities are the approved complete return/exclusion rule.
+	measure 'TOTAL ORDERS' =
+			CALCULATE (
+			    DISTINCTCOUNT ( 'Sales'[Order Number] ),
+			    REMOVEFILTERS ( 'Product' ),
+			    REMOVEFILTERS ( 'Product (Basket)' ),
+			    REMOVEFILTERS ( 'Sales'[ProductKey] ),
+			    KEEPFILTERS ( 'Sales'[Quantity] > 0 ),
+			    KEEPFILTERS ( NOT ISBLANK ( 'Sales'[Order Number] ) )
+			)
+		formatString: #,##0
+		displayFolder: Market Basket
+
+	/// Distinct qualifying baskets containing the selected A member, independent of B. Valid singleton Product, Subcategory or Category pairs only; identical or ambiguous pairs return blank.
+	measure 'ORDERS WITH A' =
+			VAR v_keys = Basket.KeysA ()
+			RETURN
+			    IF ( Basket.IsValidPair (), COALESCE ( COUNTROWS ( Basket.Orders ( v_keys ) ), 0 ) )
+		formatString: #,##0
+		displayFolder: Market Basket
+
+	/// Distinct qualifying baskets containing the selected B member, independent of A. Positive units and nonblank order numbers only; identical or ambiguous pairs return blank.
+	measure 'ORDERS WITH B' =
+			VAR v_keys = Basket.KeysB ()
+			RETURN
+			    IF ( Basket.IsValidPair (), COALESCE ( COUNTROWS ( Basket.Orders ( v_keys ) ), 0 ) )
+		formatString: #,##0
+		displayFolder: Market Basket
+
+	/// Distinct qualifying baskets containing both selected members on any lines of the same order. Repeated product lines count once; identical or ambiguous pairs return blank.
+	measure 'ORDERS WITH A AND B' =
+			VAR v_keysA = Basket.KeysA ()
+			VAR v_keysB = Basket.KeysB ()
+			RETURN
+			    IF (
+			        Basket.IsValidPair (),
+			        COALESCE ( COUNTROWS ( INTERSECT ( Basket.Orders ( v_keysA ), Basket.Orders ( v_keysB ) ) ), 0 )
+			    )
+		formatString: #,##0
+		displayFolder: Market Basket
+
+	/// Share of all qualifying order-number baskets containing both A and B. Symmetric; denominator ignores both product selections but retains Date, Customer, Store and other nonproduct filters. Undefined or invalid pairs return blank.
+	measure SUPPORT = DIVIDE ( [ORDERS WITH A AND B], [TOTAL ORDERS] )
+		formatString: 0.00%
+		displayFolder: Market Basket
+
+	/// Directional probability of B given A: joint qualifying baskets divided by baskets containing A. Positive-quantity lines only; undefined or invalid pairs return blank.
+	measure CONFIDENCE = DIVIDE ( [ORDERS WITH A AND B], [ORDERS WITH A] )
+		formatString: 0.00%
+		displayFolder: Market Basket
+
+	/// Association strength: A-to-B Confidence divided by B prevalence among all qualifying baskets. Symmetric despite directional Confidence; 1x means independence. Undefined or invalid pairs return blank.
+	measure LIFT = DIVIDE ( [ORDERS WITH A AND B] * [TOTAL ORDERS], [ORDERS WITH A] * [ORDERS WITH B] )
+		formatString: 0.00"x"
+		displayFolder: Market Basket
+
+	/// Average distinct products per qualifying order-number basket. Counts distinct order/ProductKey combinations, not lines or units; ignores both product roles and excludes nonpositive lines and blank order numbers.
+	measure 'AVG BASKET SIZE' =
+			VAR v_combinations =
+			    CALCULATETABLE (
+			        SUMMARIZE ( 'Sales', 'Sales'[Order Number], 'Sales'[ProductKey] ),
+			        REMOVEFILTERS ( 'Product' ),
+			        REMOVEFILTERS ( 'Product (Basket)' ),
+			        REMOVEFILTERS ( 'Sales'[ProductKey] ),
+			        KEEPFILTERS ( 'Sales'[Quantity] > 0 ),
+			        KEEPFILTERS ( NOT ISBLANK ( 'Sales'[Order Number] ) )
+			    )
+			RETURN
+			    DIVIDE ( COUNTROWS ( v_combinations ), [TOTAL ORDERS] )
+		formatString: 0.00
+		displayFolder: Market Basket
+
+	/// Average positive product units per qualifying order-number basket, not distinct products or lines. Ignores both product roles; retains Date, Customer, Store and other nonproduct context. Blank with no qualifying orders.
+	measure 'AVG ITEMS PER ORDER' =
+			VAR v_units =
+			    CALCULATE (
+			        SUM ( 'Sales'[Quantity] ),
+			        REMOVEFILTERS ( 'Product' ),
+			        REMOVEFILTERS ( 'Product (Basket)' ),
+			        REMOVEFILTERS ( 'Sales'[ProductKey] ),
+			        KEEPFILTERS ( 'Sales'[Quantity] > 0 ),
+			        KEEPFILTERS ( NOT ISBLANK ( 'Sales'[Order Number] ) )
+			    )
+			RETURN
+			    DIVIDE ( v_units, [TOTAL ORDERS] )
+		formatString: 0.00
+		displayFolder: Market Basket
+
+	/// Minimum Support for pair eligibility only. Defaults to 0.5% for no selection, multiple selections or a blank member; allowed range 0% to 100% in 0.1 percentage-point increments.
+	measure 'MINIMUM SUPPORT' = COALESCE ( SELECTEDVALUE ( 'Minimum Support'[Minimum Support], 0.005 ), 0.005 )
+		formatString: 0.0%
+		displayFolder: Market Basket
+
+	/// Minimum Lift for pair eligibility only. Defaults to 1.2x for no selection, multiple selections or a blank member; allowed range 0x to 10x in 0.1x increments.
+	measure 'MINIMUM LIFT' = COALESCE ( SELECTEDVALUE ( 'Minimum Lift'[Minimum Lift], 1.2 ), 1.2 )
+		formatString: 0.0"x"
+		displayFolder: Market Basket
+
+	/// Returns 1 for a valid, distinct singleton pair with at least one joint qualifying order at the active Product, Subcategory or Category grain meeting both inclusive thresholds. Otherwise blank. Never changes the raw metrics or denominators.
+	measure 'PAIR ELIGIBLE' =
+			VAR v_support = [SUPPORT]
+			VAR v_lift = [LIFT]
+			RETURN
+			    IF (
+			        Basket.IsValidPair ()
+			            && [ORDERS WITH A AND B] > 0
+			            && NOT ISBLANK ( v_support )
+			            && NOT ISBLANK ( v_lift )
+			            && v_support >= [MINIMUM SUPPORT]
+			            && v_lift >= [MINIMUM LIFT],
+			        1
+			    )
+		formatString: 0
+		displayFolder: Market Basket
+
+	/// Cell-level Lift for association matrices: returns raw Lift only when the current A/B cell is eligible, otherwise blank. Applies both thresholds and the positive joint-order rule inside each cell, without changing raw Lift or suppressing rows with an ambiguous column total.
+	measure 'ELIGIBLE LIFT' = IF ( [PAIR ELIGIBLE] == 1, [LIFT] )
+		formatString: 0.00"x"
+		displayFolder: Market Basket
+
+	/// Order-level drillthrough membership: 1 only for the current order among the first 100 joint qualifying baskets by ascending Order Number, otherwise blank. Preserves pair, Date, Customer and Store filters; removes order and technical line/ProductKey filters to find A and B on separate lines. Not a complete order export.
+	measure 'ORDER IN PAIR SAMPLE' =
+			VAR v_order =
+			    CALCULATE (
+			        SELECTEDVALUE ( 'Sales'[Order Number] ),
+			        REMOVEFILTERS ( 'Product' ),
+			        REMOVEFILTERS ( 'Sales'[ProductKey] ),
+			        REMOVEFILTERS ( 'Sales'[Line Number] )
+			    )
+			VAR v_keysA = Basket.KeysA ()
+			VAR v_keysB = Basket.KeysB ()
+			VAR v_joint =
+			    CALCULATETABLE (
+			        INTERSECT ( Basket.Orders ( v_keysA ), Basket.Orders ( v_keysB ) ),
+			        REMOVEFILTERS ( 'Sales'[Order Number] ),
+			        REMOVEFILTERS ( 'Sales'[Line Number] ),
+			        REMOVEFILTERS ( 'Sales'[ProductKey] )
+			    )
+			VAR v_sample = TOPN ( 100, v_joint, 'Sales'[Order Number], ASC )
+			RETURN
+			    IF (
+			        Basket.IsValidPair ()
+			            && NOT ISBLANK ( v_order )
+			            && CONTAINS ( v_sample, 'Sales'[Order Number], v_order ),
+			        1
+			    )
+		formatString: 0
+		displayFolder: Market Basket
+
+	/// Order Date for the current order only when it belongs to the globally bounded pair sample. Use as a measure beside Order Number, never group the sample by fact Order Date; that would create a separate first-100 sample per date.
+	measure 'ORDER SAMPLE DATE' =
+			IF (
+			    [ORDER IN PAIR SAMPLE] == 1,
+			    CALCULATE (
+			        SELECTEDVALUE ( 'Sales'[Order Date] ),
+			        REMOVEFILTERS ( 'Product' ),
+			        REMOVEFILTERS ( 'Sales'[ProductKey] ),
+			        REMOVEFILTERS ( 'Sales'[Line Number] )
+			    )
+			)
+		formatString: yyyy-mm-dd
+		displayFolder: Market Basket
+
+	/// Store name for the current order only when it belongs to the globally bounded pair sample. Use this explicit measure beside Order Number instead of grouping by Store, which would restart the 100-order cap per store. Existing Store selections are retained.
+	measure 'ORDER SAMPLE STORE' =
+			VAR v_storeKeys =
+			    CALCULATETABLE (
+			        VALUES ( 'Sales'[StoreKey] ),
+			        REMOVEFILTERS ( 'Product' ),
+			        REMOVEFILTERS ( 'Sales'[ProductKey] ),
+			        REMOVEFILTERS ( 'Sales'[Line Number] )
+			    )
+			RETURN
+			    IF (
+			        [ORDER IN PAIR SAMPLE] == 1,
+			        CALCULATE (
+			            SELECTEDVALUE ( 'Store'[Store] ),
+			            KEEPFILTERS ( TREATAS ( v_storeKeys, 'Store'[StoreKey] ) )
+			        )
+			    )
+		formatString: @
+		displayFolder: Market Basket
+
+	/// Unique global rank among observed eligible product pairs in the selected A/B universe: Lift descending, then Product A Key and Product B Key ascending. Use Basket Pair fields on the overview to avoid a full disconnected Product crossjoin. Blank for ineligible, ambiguous or nonproduct pairs.
+	measure 'PAIR RANK' =
+			VAR v_keysA = Basket.KeysA ()
+			VAR v_keysB = Basket.KeysB ()
+			VAR v_keyA = MAXX ( v_keysA, 'Product'[ProductKey] )
+			VAR v_keyB = MAXX ( v_keysB, 'Product (Basket)'[ProductKey] )
+			VAR v_currentLift = [LIFT]
+			VAR v_selectedA = CALCULATETABLE ( VALUES ( 'Product'[ProductKey] ), ALLSELECTED ( 'Product' ) )
+			VAR v_selectedB = CALCULATETABLE ( VALUES ( 'Product (Basket)'[ProductKey] ), ALLSELECTED ( 'Product (Basket)' ) )
+			VAR v_candidates =
+			    FILTER (
+			        ALLSELECTED ( 'Basket Pair' ),
+			        'Basket Pair'[Product A Key] IN v_selectedA
+			            && 'Basket Pair'[Product B Key] IN v_selectedB
+			    )
+			VAR v_scored =
+			    ADDCOLUMNS (
+			        v_candidates,
+			        "@Lift",
+			            VAR v_a = 'Basket Pair'[Product A Key]
+			            VAR v_b = 'Basket Pair'[Product B Key]
+			            RETURN
+			                CALCULATE (
+			                    [LIFT],
+			                    REMOVEFILTERS ( 'Product' ),
+			                    REMOVEFILTERS ( 'Product (Basket)' ),
+			                    REMOVEFILTERS ( 'Basket Pair' ),
+			                    TREATAS ( { v_a }, 'Product'[ProductKey] ),
+			                    TREATAS ( { v_b }, 'Product (Basket)'[ProductKey] )
+			                ),
+			        "@Eligible",
+			            VAR v_a = 'Basket Pair'[Product A Key]
+			            VAR v_b = 'Basket Pair'[Product B Key]
+			            RETURN
+			                CALCULATE (
+			                    [PAIR ELIGIBLE],
+			                    REMOVEFILTERS ( 'Product' ),
+			                    REMOVEFILTERS ( 'Product (Basket)' ),
+			                    REMOVEFILTERS ( 'Basket Pair' ),
+			                    TREATAS ( { v_a }, 'Product'[ProductKey] ),
+			                    TREATAS ( { v_b }, 'Product (Basket)'[ProductKey] )
+			                )
+			    )
+			RETURN
+			    IF (
+			        COUNTROWS ( v_keysA ) == 1
+			            && COUNTROWS ( v_keysB ) == 1
+			            && [PAIR ELIGIBLE] == 1,
+			        1
+			            + COUNTROWS (
+			                FILTER (
+			                    v_scored,
+			                    [@Eligible] == 1
+			                        && (
+			                            [@Lift] > v_currentLift
+			                                || ( [@Lift] == v_currentLift
+			                                    && ( 'Basket Pair'[Product A Key] < v_keyA
+			                                        || ( 'Basket Pair'[Product A Key] == v_keyA
+			                                            && 'Basket Pair'[Product B Key] < v_keyB ) ) )
+			                        )
+			                )
+			            )
+			    )
+		formatString: #,##0
+		displayFolder: Market Basket
+
 	column 'Order Number'
 		dataType: int64
 		formatString: 0
@@ -323,4 +572,3 @@ table Sales
 	annotation PBI_ResultType = Table
 
 	annotation PBI_NavigationStepName = Navigation
-

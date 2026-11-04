@@ -1,0 +1,28 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name":"ba010000000000000002",
+  "position":{"x":24,"y":136,"z":1000,"height":84,"width":1232,"tabOrder":1000},
+  "visual":{
+    "visualType":"cardVisual",
+    "query":{"queryState":{"Data":{"projections":[
+      {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"TOTAL ORDERS"}},"queryRef":"Sales.TOTAL ORDERS","nativeQueryRef":"TOTAL ORDERS"},
+      {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"AVG BASKET SIZE"}},"queryRef":"Sales.AVG BASKET SIZE","nativeQueryRef":"AVG BASKET SIZE"},
+      {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"AVG ITEMS PER ORDER"}},"queryRef":"Sales.AVG ITEMS PER ORDER","nativeQueryRef":"AVG ITEMS PER ORDER"}
+    ]}}},
+    "objects":{
+      "value":[{"properties":{"fontSize":{"expr":{"Literal":{"Value":"20D"}}},"fontFamily":{"expr":{"Literal":{"Value":"'Segoe UI Light'"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}}},"selector":{"id":"default"}}],
+      "label":[{"properties":{"fontSize":{"expr":{"Literal":{"Value":"11D"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"position":{"expr":{"Literal":{"Value":"'belowValue'"}}}},"selector":{"id":"default"}}],
+      "padding":[{"properties":{"paddingUniform":{"expr":{"Literal":{"Value":"8D"}}}},"selector":{"id":"default"}}],
+      "layout":[{"properties":{"paddingUniform":{"expr":{"Literal":{"Value":"0D"}}},"columnCount":{"expr":{"Literal":{"Value":"3L"}}},"rowCount":{"expr":{"Literal":{"Value":"1L"}}}},"selector":{"id":"default"}}],
+      "cardCalloutArea":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"backgroundFillColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}},"backgroundTransparency":{"expr":{"Literal":{"Value":"0D"}}},"rectangleRoundedCurve":{"expr":{"Literal":{"Value":"12L"}}}}}],
+      "fillCustom":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"fillColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}},"transparency":{"expr":{"Literal":{"Value":"0D"}}}},"selector":{"id":"default"}}]
+    },
+    "visualContainerObjects":{
+      "title":[{"properties":{"show":{"expr":{"Literal":{"Value":"false"}}}}}],
+      "border":[{"properties":{"show":{"expr":{"Literal":{"Value":"false"}}}}}],
+      "padding":[{"properties":{"top":{"expr":{"Literal":{"Value":"8D"}}},"bottom":{"expr":{"Literal":{"Value":"8D"}}},"left":{"expr":{"Literal":{"Value":"8D"}}},"right":{"expr":{"Literal":{"Value":"8D"}}}}}],
+      "spacing":[{"properties":{"customizeSpacing":{"expr":{"Literal":{"Value":"true"}}},"verticalSpacing":{"expr":{"Literal":{"Value":"2D"}}}},"selector":{"id":"default"}}],
+      "general":[{"properties":{"altText":{"expr":{"Literal":{"Value":"'Qualifying distinct orders, average distinct products per order, and average positive units per order. Product role and threshold filters do not redefine these basket KPIs.'" }}}}}]
+    }
+  }
+}

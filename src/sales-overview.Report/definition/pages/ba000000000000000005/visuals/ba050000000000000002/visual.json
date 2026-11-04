@@ -1,0 +1,35 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name":"ba050000000000000002",
+  "position":{"x":1104,"y":48,"z":1000,"height":48,"width":152,"tabOrder":1000},
+  "visual":{
+    "visualType":"actionButton",
+    "objects":{
+      "text":[
+        {"properties":{"show":{"expr":{"Literal":{"Value":"true"}}}}},
+        {"properties":{"text":{"expr":{"Literal":{"Value":"'Back'"}}},"fontFamily":{"expr":{"Literal":{"Value":"'Segoe UI Semibold'"}}},"fontSize":{"expr":{"Literal":{"Value":"12D"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}},"horizontalAlignment":{"expr":{"Literal":{"Value":"'center'"}}}},"selector":{"id":"default"}}
+      ],
+      "icon":[
+        {"properties":{"show":{"expr":{"Literal":{"Value":"true"}}}}},
+        {"properties":{"shapeType":{"expr":{"Literal":{"Value":"'back'"}}},"placement":{"expr":{"Literal":{"Value":"'left'"}}},"lineColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}}},"selector":{"id":"default"}}
+      ],
+      "fill":[
+        {"properties":{"show":{"expr":{"Literal":{"Value":"true"}}}}},
+        {"properties":{"fillColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#536CE5'"}}}}}},"selector":{"id":"default"}}
+      ],
+      "outline":[{"properties":{"show":{"expr":{"Literal":{"Value":"false"}}}}}],
+      "shape":[
+        {"properties":{"tileShape":{"expr":{"Literal":{"Value":"'rectangleRounded'"}}},"roundEdge":{"expr":{"Literal":{"Value":"12L"}}}}},
+        {"properties":{"tileShape":{"expr":{"Literal":{"Value":"'rectangleRounded'"}}}},"selector":{"id":"default"}}
+      ]
+    },
+    "visualContainerObjects":{
+      "background":[{"properties":{"show":{"expr":{"Literal":{"Value":"false"}}}}}],
+      "border":[{"properties":{"show":{"expr":{"Literal":{"Value":"false"}}}}}],
+      "visualLink":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"type":{"expr":{"Literal":{"Value":"'Back'"}}}}}],
+      "general":[{"properties":{"altText":{"expr":{"Literal":{"Value":"'Return to the source association page with the prior filter context.'" }}}}}]
+    },
+    "drillFilterOtherVisuals":true
+  },
+  "howCreated":"InsertVisualButton"
+}

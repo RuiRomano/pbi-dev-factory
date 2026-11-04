@@ -2,7 +2,7 @@
 
 ## Overview
 
-This model supports sample retail sales analysis for report consumers and self-service analysts. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, new and returning customers, customers with sales and time comparisons.
+This model supports sample retail sales analysis for report consumers and self-service analysts. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, new and returning customers, customers with sales, time comparisons and market basket associations.
 
 The dependent [sales-overview report](sales-overview.report.md) uses these measures for summary cards, charts and an annual category matrix. The report names Northwind Retail Group, but the model sources workshop sample files and modifies some values during refresh. It is not evidence of certified company revenue.
 
@@ -10,11 +10,11 @@ The dependent [sales-overview report](sales-overview.report.md) uses these measu
 |---|---|
 | Source | `src/sales.SemanticModel` |
 | Storage mode(s) | Import |
-| Tables | 5 |
-| Columns | 63: 53 visible, 10 hidden |
-| Measures | 15 |
+| Tables | 9: five source tables and four disconnected MBA tables |
+| Columns | 74: 61 visible, 13 hidden |
+| Measures | 32 |
 | Relationships | 4 |
-| Hierarchies | 1, with 3 levels |
+| Hierarchies | 3, with 3 levels each |
 | Calculation groups | None |
 | Compatibility level | 1702 |
 | Culture / source query culture | en-US / en-GB |
@@ -30,6 +30,8 @@ erDiagram
 ```
 
 `Sales` is the central fact table. Each dimension has an active one-to-many relationship to it, with single-direction filtering from the dimension to sales. There are no inactive, bidirectional or many-to-many relationships in the definition.
+
+`Product (Basket)`, `Basket Pair`, `Minimum Support` and `Minimum Lift` are disconnected MBA tables. They do not add relationships to the star schema. See [Market Basket Analysis](#market-basket-analysis) for role selection and metric behavior.
 
 | Dimension key | Sales key | Behavior |
 |---|---|---|
@@ -318,6 +320,50 @@ Counts store dimension rows in context. It does not automatically exclude closed
 COUNTROWS('Store')
 ```
 
+## Market Basket Analysis
+
+The [MBA spec](../specs/market-basket-analysis-202611.md) records the approved available-data scope. A basket is one nonblank `Sales[Order Number]`. Only lines with `Quantity > 0` qualify. This is the approved return-exclusion rule for this version, not a claim that the source has a separate return flag. Repeated lines for a product count once when measuring basket membership.
+
+Use `Product` for Product A and the disconnected `Product (Basket)` dimension for Product B. Matching Category > Subcategory > Product hierarchies support exploration at each grain. Product B does not directly filter Sales. Measures translate its selected keys into an independent set of order numbers, then intersect that set with A's orders. Products can therefore occur on different lines of the same order. Identical members are excluded at the active grain.
+
+The disconnected calculated `Basket Pair` table lists observed ordered product pairs for the overview. It contains candidate identities, not stored association metrics. Its product keys narrow evaluation to products that occurred together on qualifying lines of an order; pair metrics still recalculate in the selected Date, Customer and Store context. This avoids evaluating the entire product catalog against itself. Product A and B names are display labels; keys identify products.
+
+All MBA measures live on Sales in the **Market Basket** display folder. Counts, ratios and averages use the same qualifying lines. Date, Customer and Store filters remain in effect. Store Country and State provide geography; Customer Segment and Sales Channel are deferred until the developer supplies mappings. No security roles were added.
+
+| Measure | Meaning |
+|---|---|
+| TOTAL ORDERS | Distinct qualifying baskets, ignoring the A and B product-role filters. |
+| ORDERS WITH A | Qualifying baskets containing the selected A member. |
+| ORDERS WITH B | Qualifying baskets containing the selected B member, without inheriting A's product filter. |
+| ORDERS WITH A AND B | Distinct intersection of the A and B basket sets. |
+| SUPPORT | Joint baskets divided by TOTAL ORDERS. |
+| CONFIDENCE | Joint baskets divided by ORDERS WITH A. This is directional from A to B. |
+| LIFT | CONFIDENCE divided by B's share of TOTAL ORDERS. Values above one indicate greater co-occurrence than independence would imply, not causation. |
+| AVG BASKET SIZE | Distinct order/product combinations divided by TOTAL ORDERS. |
+| AVG ITEMS PER ORDER | Sum of positive units divided by TOTAL ORDERS. |
+| MINIMUM SUPPORT / MINIMUM LIFT | Selected what-if thresholds, with defaults of 0.5% and 1.2. |
+| PAIR ELIGIBLE | Pair visibility under the thresholds, without changing the raw counts or ratios. |
+| ELIGIBLE LIFT | Lift for an eligible pair only, used to threshold heatmap cells without filtering away an entire matrix row. |
+| PAIR RANK | Unique global rank among observed eligible product pairs in the selected universe, by descending Lift and then ascending A/B keys. Rank at most 20 selects the overview rows. |
+| ORDER IN PAIR SAMPLE | Membership in a sample of at most 100 qualifying joint orders, ordered by order number. |
+| ORDER SAMPLE DATE / ORDER SAMPLE STORE | Context-neutral date and store details for sampled orders, without grouping the sample into separate date/store limits. |
+
+Undefined ratios return blank rather than divide by zero. The minimum Support control spans 0 to 1 in increments of 0.001; minimum Lift spans 0 to 10 in increments of 0.1. The Lift control range does not cap calculated Lift. Apply the thresholds to association visuals, not to the underlying basket population.
+
+Product B, observed pair candidates and the controls are part of this model, not a second dataset. They are processed with the Sales model; no separate refresh schedule is introduced. Service schedule configuration is outside these source definitions.
+
+### MBA reference pairs
+
+These three pairs were independently queried on 2026-11-04 against the live development data before deployment. All used unfiltered history with 2,029 qualifying orders. Each had one joint order, Support of 0.0492853622% and A-to-B Confidence of 50%. The [verification query](../../src/sales.SemanticModel/DAXQueries/Market%20Basket%20Verification.dax) records the source evidence and recalculates results. Counts are sample evidence, not fixed expectations for future refreshes.
+
+| A key / B key | Product A | Product B | A orders | B orders | Joint orders | Lift |
+|---|---|---|---|---|---|---|
+| 18 / 444 | Contoso 8GB Super-Slim MP3/Video Player M800 Green | WWI Desktop PC2.33 X2330 Black | 2 | 9 | 1 | 112.722222 |
+| 113 / 1577 | WWI Wireless Transmitter and Bluetooth Headphones X250 White | SV DVD Recorder L200 Black | 2 | 5 | 1 | 202.9 |
+| 216 / 648 | Litware Home Theater System 4.1 Channel M413 Silver | Proseware Fax Machine E100 Black | 2 | 2 | 1 | 507.25 |
+
+These sparse pairs fall below the default 0.5% Support threshold. An empty default association visual can be correct; lower the threshold to inspect these examples. The defaults are not silently reduced to populate the report.
+
 ## Security
 
 No local security roles, row-level filters or object-level security permissions were found. Hidden keys and helper columns are usability settings, not access controls. Customer name, address and birthday fields remain visible; this document includes no customer records or role membership.
@@ -326,7 +372,7 @@ Workspace permissions, service role assignments and deployed security were not i
 
 ## Data Sources and Refresh
 
-There are five Import partitions, each using Power Query M. The four CSV imports use Web.Contents, UTF-8 comma-delimited parsing, promoted headers and explicit type conversions.
+The five source-table Import partitions use Power Query M. The four CSV imports use Web.Contents, UTF-8 comma-delimited parsing, promoted headers and explicit type conversions. Four additional calculated Import partitions derive Product B, observed pair candidates and threshold controls inside this model, with no new external source.
 
 | Table | Partition | Source / behavior |
 |---|---|---|

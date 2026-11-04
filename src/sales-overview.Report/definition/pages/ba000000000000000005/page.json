@@ -1,0 +1,39 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name":"ba000000000000000005",
+  "displayName":"MBA product-pair orders",
+  "displayOption":"FitToPage",
+  "height":720,
+  "width":1280,
+  "visibility":"HiddenInViewMode",
+  "type":"Drillthrough",
+  "visualInteractions":[{"source":"ba050000000000000003","target":"ba050000000000000005","type":"NoFilter"}],
+  "filterConfig":{
+    "filterSortOrder":"Custom",
+    "filters":[
+      {"name":"Filter000000000000000000000505","ordinal":0,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product"}},"Property":"Category"}},"type":"Categorical","displayName":"A · Category","howCreated":"User"},
+      {"name":"Filter000000000000000000000506","ordinal":1,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product"}},"Property":"Subcategory"}},"type":"Categorical","displayName":"A · Subcategory","howCreated":"User"},
+      {"name":"Filter000000000000000000000507","ordinal":2,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product"}},"Property":"Product"}},"type":"Categorical","displayName":"A · Product","howCreated":"Drillthrough"},
+      {"name":"Filter000000000000000000000508","ordinal":3,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Property":"Category"}},"type":"Categorical","displayName":"B · Category","howCreated":"User"},
+      {"name":"Filter000000000000000000000509","ordinal":4,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Property":"Subcategory"}},"type":"Categorical","displayName":"B · Subcategory","howCreated":"User"},
+      {"name":"Filter000000000000000000000510","ordinal":5,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Property":"Product"}},"type":"Categorical","displayName":"B · Product","howCreated":"Drillthrough"},
+      {"name":"Filter000000000000000000000501","ordinal":6,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Calendar"}},"Property":"Date"}},"type":"Advanced","displayName":"Order date","howCreated":"User"},
+      {"name":"Filter000000000000000000000502","ordinal":7,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Store"}},"Property":"Country"}},"type":"Categorical","displayName":"Country","howCreated":"User"},
+      {"name":"Filter000000000000000000000503","ordinal":8,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Store"}},"Property":"State"}},"type":"Categorical","displayName":"State","howCreated":"User"},
+      {"name":"Filter000000000000000000000504","ordinal":9,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Store"}},"Property":"Store"}},"type":"Categorical","displayName":"Store","howCreated":"User"}
+    ]
+  },
+  "pageBinding":{
+    "name":"MarketBasketPairDetails",
+    "type":"Drillthrough",
+    "acceptsFilterContext":"Default",
+    "parameters":[
+      {"name":"MBA_A_Product","boundFilter":"Filter000000000000000000000507","fieldExpr":{"Column":{"Expression":{"SourceRef":{"Entity":"Product"}},"Property":"Product"}}},
+      {"name":"MBA_B_Product","boundFilter":"Filter000000000000000000000510","fieldExpr":{"Column":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Property":"Product"}}}
+    ]
+  },
+  "objects":{
+    "background":[{"properties":{"color":{"solid":{"color":{"expr":{"Literal":{"Value":"'#F6F7FB'"}}}}},"transparency":{"expr":{"Literal":{"Value":"0D"}}}}}],
+    "outspacePane":[{"properties":{"width":{"expr":{"Literal":{"Value":"320L"}}}}}]
+  }
+}

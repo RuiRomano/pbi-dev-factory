@@ -1,0 +1,12 @@
+/// Disconnected minimum Lift threshold. Changing this selection affects eligibility only, never raw association metrics.
+table 'Minimum Lift'
+
+	column 'Minimum Lift'
+		dataType: double
+		formatString: 0.0"x"
+		summarizeBy: none
+		sourceColumn: [Value]
+
+	partition 'Minimum Lift' = calculated
+		mode: import
+		source = SELECTCOLUMNS ( GENERATESERIES ( 0, 100, 1 ), "Value", DIVIDE ( [Value], 10 ) )

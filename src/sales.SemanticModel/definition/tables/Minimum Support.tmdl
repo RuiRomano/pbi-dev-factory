@@ -1,0 +1,12 @@
+/// Disconnected minimum Support threshold. Changing this selection affects eligibility only, never raw association metrics.
+table 'Minimum Support'
+
+	column 'Minimum Support'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: [Value]
+
+	partition 'Minimum Support' = calculated
+		mode: import
+		source = SELECTCOLUMNS ( GENERATESERIES ( 0, 1000, 1 ), "Value", DIVIDE ( [Value], 1000 ) )

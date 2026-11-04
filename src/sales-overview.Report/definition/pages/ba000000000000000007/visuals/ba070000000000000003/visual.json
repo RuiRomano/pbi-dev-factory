@@ -1,0 +1,28 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name":"ba070000000000000003",
+  "position":{"x":24,"y":144,"z":2000,"height":512,"width":1232,"tabOrder":2000},
+  "filterConfig":{"filters":[
+    {"name":"Filter000000000000000000007101","field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDER IN PAIR SAMPLE"}},"type":"Advanced","displayName":"Contains A and B · first 100 orders","howCreated":"User","filter":{"Version":2,"From":[{"Name":"s","Entity":"Sales","Type":0}],"Where":[{"Condition":{"Comparison":{"ComparisonKind":0,"Left":{"Measure":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"ORDER IN PAIR SAMPLE"}},"Right":{"Literal":{"Value":"1L"}}}}}]}}
+  ]},
+  "visual":{
+    "visualType":"tableEx",
+    "query":{
+      "queryState":{"Values":{"projections":[
+        {"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"Order Number"}},"queryRef":"Sales.Order Number","nativeQueryRef":"Order number"},
+        {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDER SAMPLE DATE"}},"queryRef":"Sales.ORDER SAMPLE DATE","nativeQueryRef":"Order date"},
+        {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDER SAMPLE STORE"}},"queryRef":"Sales.ORDER SAMPLE STORE","nativeQueryRef":"Store"}
+      ]}},
+      "sortDefinition":{"sort":[{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"Order Number"}},"direction":"Ascending"}],"isDefaultSort":false}
+    },
+    "objects":{
+      "columnHeaders":[{"properties":{"columnAdjustment":{"expr":{"Literal":{"Value":"'growToFit'"}}},"autoSizeColumnWidth":{"expr":{"Literal":{"Value":"true"}}},"fontSize":{"expr":{"Literal":{"Value":"12D"}}},"backColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#F6F7FB'"}}}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}}}}],
+      "values":[{"properties":{"fontSize":{"expr":{"Literal":{"Value":"12D"}}},"fontColorPrimary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"fontColorSecondary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"backColorPrimary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}},"backColorSecondary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#F6F7FB'"}}}}}}}]
+    },
+    "visualContainerObjects":{
+      "title":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"text":{"expr":{"Literal":{"Value":"'First 100 joint orders · category pair · not a complete export'"}}}}}],
+      "stylePreset":[{"properties":{"name":{"expr":{"Literal":{"Value":"'None'"}}}}}],
+      "general":[{"properties":{"altText":{"expr":{"Literal":{"Value":"'At most 100 distinct orders containing both selected categories on positive-quantity lines. Both A and B filters are carried at Category grain, together with additional source context. Only Order Number is grouped.'"}}}}}]
+    }
+  }
+}

@@ -18,8 +18,11 @@ annotation PBI_ProTooling = ["DevMode","CalcGroup","TMDLView_Desktop","DaxQueryV
 ref table Calendar
 ref table Sales
 ref table Product
+ref table 'Product (Basket)'
+ref table 'Basket Pair'
+ref table 'Minimum Support'
+ref table 'Minimum Lift'
 ref table Customer
 ref table Store
 
 ref cultureInfo en-US
-

@@ -1,0 +1,113 @@
+// Run after deployment and refresh. Tests.Run includes the original regression suite.
+EVALUATE
+Tests.MarketBasket ()
+ORDER BY [TestName]
+
+// Global overview: observed candidates avoid the disconnected Product A x Product B
+// Cartesian query, which timed out after 90 seconds before this optimization.
+// The pair label must travel with drillthrough so both independent roles survive.
+// Pre-deploy query-scoped evidence: 2618 observed ordered candidates; at Support 0,
+// the nonempty global ranking returned exactly 20 rows with unique ranks 1..20
+// in 10.642s including query-defined candidate regeneration. This is not a
+// persisted-table timing or a passing result for the 3s performance target.
+EVALUATE
+FILTER (
+    SUMMARIZECOLUMNS (
+        'Basket Pair'[Product A],
+        'Basket Pair'[Product B],
+        "Lift", [LIFT],
+        "Support", [SUPPORT],
+        "Eligible", [PAIR ELIGIBLE],
+        "Rank", [PAIR RANK]
+    ),
+    [Eligible] == 1 && [Rank] <= 20
+)
+ORDER BY [Rank]
+
+// Correct detail visual shape: Order Number is the ONLY grouping. Date and Store
+// are explicit measures, so neither starts a separate first-100 sample.
+EVALUATE
+CALCULATETABLE (
+    FILTER (
+        SUMMARIZECOLUMNS (
+            'Sales'[Order Number],
+            "Order Date", [ORDER SAMPLE DATE],
+            "Store", [ORDER SAMPLE STORE],
+            "In Sample", [ORDER IN PAIR SAMPLE]
+        ),
+        [In Sample] == 1
+    ),
+    TREATAS ( { 18 }, 'Product'[ProductKey] ),
+    TREATAS ( { 444 }, 'Product (Basket)'[ProductKey] )
+)
+ORDER BY 'Sales'[Order Number]
+
+// Independently discovered real pairs, all history, no Date/Customer/Store filters:
+// Total=2029 for all pairs. A18/B444: A=2 B=9 joint=1, Lift=112.72222222222223.
+// A113/B1577: A=2 B=5 joint=1, Lift=202.9.
+// A216/B648: A=2 B=2 joint=1, Lift=507.25.
+// All three: Support=0.0004928536224741252, Confidence=0.5.
+// These numbers were independently queried on 2026-11-04 before deployment.
+// 18: Contoso 8GB Super-Slim MP3/Video Player M800 Green.
+// 444: WWI Desktop PC2.33 X2330 Black.
+// 113: WWI Wireless Transmitter and Bluetooth Headphones X250 White.
+// 1577: SV DVD Recorder L200 Black.
+// 216: Litware Home Theater System 4.1 Channel M413 Silver.
+// 648: Proseware Fax Machine E100 Black.
+// The suite recalculates expectations after refresh rather than freezing these counts.
+// Source evidence: no Order Number collisions across Customer/Date/Store;
+// no blank-order/nonpositive lines in current data; two repeated order/product lines.
+// Repeated-product fixture: order284405/Product428 has two lines and seven positive units.
+// The full order has four lines, three distinct products and thirteen positive units.
+EVALUATE
+UNION (
+    CALCULATETABLE (
+        ROW (
+            "A Key", 18, "B Key", 444,
+            "A", SELECTEDVALUE ( 'Product'[Product] ),
+            "B", SELECTEDVALUE ( 'Product (Basket)'[Product] ),
+            "Total", [TOTAL ORDERS], "A Orders", [ORDERS WITH A],
+            "B Orders", [ORDERS WITH B], "Joint", [ORDERS WITH A AND B],
+            "Support", [SUPPORT], "Confidence", [CONFIDENCE], "Lift", [LIFT]
+        ),
+        TREATAS ( { 18 }, 'Product'[ProductKey] ),
+        TREATAS ( { 444 }, 'Product (Basket)'[ProductKey] )
+    ),
+    CALCULATETABLE (
+        ROW (
+            "A Key", 113, "B Key", 1577,
+            "A", SELECTEDVALUE ( 'Product'[Product] ),
+            "B", SELECTEDVALUE ( 'Product (Basket)'[Product] ),
+            "Total", [TOTAL ORDERS], "A Orders", [ORDERS WITH A],
+            "B Orders", [ORDERS WITH B], "Joint", [ORDERS WITH A AND B],
+            "Support", [SUPPORT], "Confidence", [CONFIDENCE], "Lift", [LIFT]
+        ),
+        TREATAS ( { 113 }, 'Product'[ProductKey] ),
+        TREATAS ( { 1577 }, 'Product (Basket)'[ProductKey] )
+    ),
+    CALCULATETABLE (
+        ROW (
+            "A Key", 216, "B Key", 648,
+            "A", SELECTEDVALUE ( 'Product'[Product] ),
+            "B", SELECTEDVALUE ( 'Product (Basket)'[Product] ),
+            "Total", [TOTAL ORDERS], "A Orders", [ORDERS WITH A],
+            "B Orders", [ORDERS WITH B], "Joint", [ORDERS WITH A AND B],
+            "Support", [SUPPORT], "Confidence", [CONFIDENCE], "Lift", [LIFT]
+        ),
+        TREATAS ( { 216 }, 'Product'[ProductKey] ),
+        TREATAS ( { 648 }, 'Product (Basket)'[ProductKey] )
+    )
+)
+ORDER BY [A Key]
+
+// Pre-change live development baseline on 2026-11-04:
+// Sales Amount 2739908.8958; Sales Qty 9339; Customers 1973;
+// Returning Customers 0; Sales Rows 2999. Compare like-for-like data after refresh.
+EVALUATE
+ROW (
+    "Sales Amount", [Sales Amount],
+    "Sales Qty", [Sales Qty],
+    "Customers", [# Customers (w/ Sales)],
+    "Returning Customers", [# Returning Customers],
+    "Sales Rows", COUNTROWS ( 'Sales' )
+)

@@ -1,0 +1,29 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name":"ba000000000000000003",
+  "displayName":"MBA association matrix",
+  "displayOption":"FitToPage",
+  "height":720,
+  "width":1280,
+  "filterConfig":{
+    "filterSortOrder":"Custom",
+    "filters":[
+      {"name":"Filter000000000000000000000301","ordinal":0,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Calendar"}},"Property":"Date"}},"type":"Advanced","displayName":"Order date","howCreated":"User"},
+      {"name":"Filter000000000000000000000302","ordinal":1,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Store"}},"Property":"Country"}},"type":"Categorical","displayName":"Country","howCreated":"User"},
+      {"name":"Filter000000000000000000000303","ordinal":2,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Store"}},"Property":"State"}},"type":"Categorical","displayName":"State","howCreated":"User"},
+      {"name":"Filter000000000000000000000304","ordinal":3,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Store"}},"Property":"Store"}},"type":"Categorical","displayName":"Store","howCreated":"User"},
+      {"name":"Filter000000000000000000000305","ordinal":4,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product"}},"Property":"Category"}},"type":"Categorical","displayName":"A · Category","howCreated":"User"},
+      {"name":"Filter000000000000000000000306","ordinal":5,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product"}},"Property":"Subcategory"}},"type":"Categorical","displayName":"A · Subcategory","howCreated":"User"},
+      {"name":"Filter000000000000000000000307","ordinal":6,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product"}},"Property":"Product"}},"type":"Categorical","displayName":"A · Product","howCreated":"User"},
+      {"name":"Filter000000000000000000000308","ordinal":7,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Property":"Category"}},"type":"Categorical","displayName":"B · Category","howCreated":"User"},
+      {"name":"Filter000000000000000000000309","ordinal":8,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Property":"Subcategory"}},"type":"Categorical","displayName":"B · Subcategory","howCreated":"User"},
+      {"name":"Filter000000000000000000000310","ordinal":9,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Property":"Product"}},"type":"Categorical","displayName":"B · Product","howCreated":"User"},
+      {"name":"Filter000000000000000000000311","ordinal":10,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Minimum Support"}},"Property":"Minimum Support"}},"type":"Categorical","displayName":"Minimum Support · choose one (default 0.5%)","howCreated":"User"},
+      {"name":"Filter000000000000000000000312","ordinal":11,"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Minimum Lift"}},"Property":"Minimum Lift"}},"type":"Categorical","displayName":"Minimum Lift · choose one (default 1.2)","howCreated":"User"}
+    ]
+  },
+  "objects":{
+    "background":[{"properties":{"color":{"solid":{"color":{"expr":{"Literal":{"Value":"'#F6F7FB'"}}}}},"transparency":{"expr":{"Literal":{"Value":"0D"}}}}}],
+    "outspacePane":[{"properties":{"width":{"expr":{"Literal":{"Value":"320L"}}}}}]
+  }
+}

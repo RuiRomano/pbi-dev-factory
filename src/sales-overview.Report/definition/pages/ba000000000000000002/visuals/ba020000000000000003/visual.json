@@ -1,0 +1,40 @@
+{
+  "$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name":"ba020000000000000003",
+  "position":{"x":336,"y":136,"z":2000,"height":512,"width":920,"tabOrder":2000},
+  "filterConfig":{"filters":[
+    {"name":"Filter000000000000000000002101","field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"PAIR ELIGIBLE"}},"type":"Advanced","displayName":"Minimum Support and Lift met","howCreated":"User","filter":{"Version":2,"From":[{"Name":"s","Entity":"Sales","Type":0}],"Where":[{"Condition":{"Comparison":{"ComparisonKind":0,"Left":{"Measure":{"Expression":{"SourceRef":{"Source":"s"}},"Property":"PAIR ELIGIBLE"}},"Right":{"Literal":{"Value":"1L"}}}}}]}}
+  ]},
+  "visual":{
+    "visualType":"pivotTable",
+    "query":{
+      "queryState":{
+        "Rows":{"projections":[{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"Product (Basket)"}},"Property":"Product"}},"queryRef":"Product (Basket).Product","nativeQueryRef":"Associated Product B"}]},
+        "Values":{"projections":[
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDERS WITH A"}},"queryRef":"Sales.ORDERS WITH A","nativeQueryRef":"A orders"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDERS WITH B"}},"queryRef":"Sales.ORDERS WITH B","nativeQueryRef":"B orders"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"ORDERS WITH A AND B"}},"queryRef":"Sales.ORDERS WITH A AND B","nativeQueryRef":"Joint orders"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"SUPPORT"}},"queryRef":"Sales.SUPPORT","nativeQueryRef":"Support"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"CONFIDENCE"}},"queryRef":"Sales.CONFIDENCE","nativeQueryRef":"Confidence A → B"},
+          {"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"LIFT"}},"queryRef":"Sales.LIFT","nativeQueryRef":"Lift"}
+        ]}
+      },
+      "sortDefinition":{"sort":[{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"Sales"}},"Property":"LIFT"}},"direction":"Descending"}],"isDefaultSort":false}
+    },
+    "objects":{
+      "columnHeaders":[{"properties":{"columnAdjustment":{"expr":{"Literal":{"Value":"'growToFit'"}}},"autoSizeColumnWidth":{"expr":{"Literal":{"Value":"true"}}},"fontSize":{"expr":{"Literal":{"Value":"10.5D"}}},"wordWrap":{"expr":{"Literal":{"Value":"true"}}},"backColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#F6F7FB'"}}}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}}}}],
+      "rowHeaders":[{"properties":{"fontSize":{"expr":{"Literal":{"Value":"10.5D"}}},"wordWrap":{"expr":{"Literal":{"Value":"true"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}}}}],
+      "subTotals":[{"properties":{"rowSubtotals":{"expr":{"Literal":{"Value":"false"}}},"columnSubtotals":{"expr":{"Literal":{"Value":"false"}}}}}],
+      "values":[
+        {"properties":{"fontSize":{"expr":{"Literal":{"Value":"10.5D"}}},"fontColorPrimary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"fontColorSecondary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#20283F'"}}}}},"backColorPrimary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}},"backColorSecondary":{"solid":{"color":{"expr":{"Literal":{"Value":"'#F6F7FB'"}}}}}}},
+        {"properties":{"backColor":{"solid":{"color":{"expr":{"FillRule":{"Input":{"SelectRef":{"ExpressionName":"Sales.LIFT"}},"FillRule":{"linearGradient2":{"min":{"color":{"Literal":{"Value":"'#F6F7FB'"}}},"max":{"color":{"Literal":{"Value":"'#C8BCF4'"}}},"nullColoringStrategy":{"strategy":{"Literal":{"Value":"'noColor'"}}}}}}}}}}},"selector":{"data":[{"dataViewWildcard":{"matchingOption":1}}],"metadata":"Sales.LIFT"}}
+      ]
+    },
+    "visualContainerObjects":{
+      "title":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"text":{"expr":{"Literal":{"Value":"'Associated Product B · stronger Lift, deeper lilac'"}}}}}],
+      "stylePreset":[{"properties":{"name":{"expr":{"Literal":{"Value":"'None'"}}}}}],
+      "general":[{"properties":{"altText":{"expr":{"Literal":{"Value":"'Product B associations for the single selected Product A. Counts are distinct qualifying orders. Support is joint orders divided by all orders; Confidence is joint orders divided by A orders; Lift compares confidence with B prevalence. Only eligible distinct pairs are shown.'" }}}}}]
+    },
+    "drillFilterOtherVisuals":true
+  }
+}
