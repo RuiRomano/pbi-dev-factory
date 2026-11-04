@@ -307,61 +307,39 @@ table Sales
 			VAR v_keysB = Basket.KeysB ()
 			VAR v_keyA = MAXX ( v_keysA, 'Product'[ProductKey] )
 			VAR v_keyB = MAXX ( v_keysB, 'Product (Basket)'[ProductKey] )
-			VAR v_currentLift = [LIFT]
-			VAR v_selectedA = CALCULATETABLE ( VALUES ( 'Product'[ProductKey] ), ALLSELECTED ( 'Product' ) )
-			VAR v_selectedB = CALCULATETABLE ( VALUES ( 'Product (Basket)'[ProductKey] ), ALLSELECTED ( 'Product (Basket)' ) )
-			VAR v_candidates =
-			    FILTER (
-			        ALLSELECTED ( 'Basket Pair' ),
-			        'Basket Pair'[Product A Key] IN v_selectedA
-			            && 'Basket Pair'[Product B Key] IN v_selectedB
-			    )
-			VAR v_scored =
-			    ADDCOLUMNS (
-			        v_candidates,
-			        "@Lift",
-			            VAR v_a = 'Basket Pair'[Product A Key]
-			            VAR v_b = 'Basket Pair'[Product B Key]
-			            RETURN
-			                CALCULATE (
-			                    [LIFT],
-			                    REMOVEFILTERS ( 'Product' ),
-			                    REMOVEFILTERS ( 'Product (Basket)' ),
-			                    REMOVEFILTERS ( 'Basket Pair' ),
-			                    TREATAS ( { v_a }, 'Product'[ProductKey] ),
-			                    TREATAS ( { v_b }, 'Product (Basket)'[ProductKey] )
-			                ),
-			        "@Eligible",
-			            VAR v_a = 'Basket Pair'[Product A Key]
-			            VAR v_b = 'Basket Pair'[Product B Key]
-			            RETURN
-			                CALCULATE (
-			                    [PAIR ELIGIBLE],
-			                    REMOVEFILTERS ( 'Product' ),
-			                    REMOVEFILTERS ( 'Product (Basket)' ),
-			                    REMOVEFILTERS ( 'Basket Pair' ),
-			                    TREATAS ( { v_a }, 'Product'[ProductKey] ),
-			                    TREATAS ( { v_b }, 'Product (Basket)'[ProductKey] )
-			                )
-			    )
 			RETURN
 			    IF (
 			        COUNTROWS ( v_keysA ) == 1
 			            && COUNTROWS ( v_keysB ) == 1
 			            && [PAIR ELIGIBLE] == 1,
-			        1
-			            + COUNTROWS (
-			                FILTER (
-			                    v_scored,
-			                    [@Eligible] == 1
-			                        && (
-			                            [@Lift] > v_currentLift
-			                                || ( [@Lift] == v_currentLift
-			                                    && ( 'Basket Pair'[Product A Key] < v_keyA
-			                                        || ( 'Basket Pair'[Product A Key] == v_keyA
-			                                            && 'Basket Pair'[Product B Key] < v_keyB ) ) )
-			                        )
-			                )
+			        VAR v_scored =
+			            CALCULATETABLE (
+			                SUMMARIZECOLUMNS (
+			                    'Basket Pair'[Product A Key],
+			                    'Basket Pair'[Product B Key],
+			                    "@Lift", [LIFT],
+			                    "@Eligible", [PAIR ELIGIBLE]
+			                ),
+			                ALLSELECTED ( 'Basket Pair' ),
+			                ALLSELECTED ( 'Product' ),
+			                ALLSELECTED ( 'Product (Basket)' )
+			            )
+			        RETURN
+			            CALCULATE (
+			                RANK (
+			                    DENSE,
+			                    FILTER ( v_scored, [@Eligible] == 1 ),
+			                    ORDERBY (
+			                        [@Lift], DESC,
+			                        'Basket Pair'[Product A Key], ASC,
+			                        'Basket Pair'[Product B Key], ASC
+			                    ),
+			                    LAST,
+			                    ,
+			                    MATCHBY ( 'Basket Pair'[Product A Key], 'Basket Pair'[Product B Key] )
+			                ),
+			                TREATAS ( { v_keyA }, 'Basket Pair'[Product A Key] ),
+			                TREATAS ( { v_keyB }, 'Basket Pair'[Product B Key] )
 			            )
 			    )
 		formatString: #,##0
