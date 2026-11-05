@@ -365,3 +365,39 @@ Run `python scripts\test-data.py` from the repository root against the configure
 An independent per-customer first-sale calculation matched the returning measure across 2,815 grouped results, including totals: 725 date rows, 1,974 customer rows, five year rows and 111 year/category/brand rows. Both reused measures matched their pre-change baseline in all five year/total rows and eight fixture scopes.
 
 Local BPA ran with `& .\scripts\bpa\bpa.ps1 -src @('.\src')` against the model and report using the repository rule files. It exited zero with 72 existing severity-2 `PROVIDE_DESCRIPTIONS_FOR_TABLES_MEASURES_AND_COLUMNS` warnings across five tables, 14 existing measures and 53 visible columns. The returning measure had no violations. Report definitions were unchanged; the repository deployment script republished the existing report alongside the model.
+
+## Copilot Readiness
+
+Visible tables, columns and measures now have descriptions based on their model expressions and documented scope. Geographic categories identify the distinct customer and store locations. These descriptions do not change calculations or make hidden fields secure.
+
+The recommendations follow Microsoft's [Copilot model optimization](https://learn.microsoft.com/power-bi/create-reports/copilot-evaluate-data) and [AI instructions](https://learn.microsoft.com/power-bi/create-reports/copilot-prepare-data-ai-instructions) guidance. Prep data for AI is configured in Power BI and is not stored in these local TMDL definitions.
+
+Use the following draft instructions in Power BI's **Prep data for AI** only after reviewing them with model users:
+
+```text
+Metrics
+- Sales Amount is the sum of quantity times net price on sales lines. Source quantities and prices are randomized at refresh. Currency Code and Exchange Rate are present, but no measure converts values to a common reporting currency. Do not present an aggregate as certified revenue or converted currency.
+- When a user says "sales" without specifying amount, units, margin, or line count, ask which measure they mean. Use Sales Amount for an explicit sales-amount question, Sales Qty for units, Margin for monetary margin, and # Sales for sales-line count.
+- # New Customers follows the selected customer and calendar context and remaining sales filters. # Returning Customers counts customers with sales who are not new in that same context. A period containing first and later purchases counts that customer as new only.
+
+Dates
+- Use Calendar[Date] for sales time analysis. Its active relationship filters Sales[Order Date]. Delivery Date is not related to Calendar.
+- Use Calendar[Year] for calendar-year questions. Do not assume the Fiscal Quarter field is valid; its mapping to the July-start Fiscal Year has not been validated.
+
+Geography
+- Customer[City], [State], [Country], and [Continent] describe customers. Store[State] and [Country] describe stores. If a question asks for sales by "region" or location without naming customer or store geography, ask which geography is intended.
+```
+
+In the AI data schema, include the described business measures and relevant descriptive fields; exclude technical keys and helper fields. These keys are already hidden in the model. Do not treat hiding as access control. Avoid creating verified answers until the model owner confirms expected answers against live data and Copilot.
+
+| Copilot test question | Expected model interpretation |
+|---|---|
+| What was the sales amount by product category for calendar year 2020? | `Sales[Sales Amount]` by `Product[Category]`, filtered by `Calendar[Year]`; the result is sample data and is not a consolidated-currency total. |
+| How many units were sold by brand in calendar year 2020? | `Sales[Sales Qty]` by `Product[Brand]`, filtered by `Calendar[Year]`. |
+| How many new and returning customers were there by month in 2019? | `Sales[# New Customers]` and `Sales[# Returning Customers]` by `Calendar[Year-Month]`; totals follow the measures' period-specific classification. |
+| Which country had the most sales? | Ask whether the user means customer country or store country before grouping. |
+| What was sales by delivery month? | Do not use Calendar as a delivery-date filter; Delivery Date has no Calendar relationship. Clarify or use an explicitly supported delivery-date analysis. |
+
+These are test cases, not verified Copilot answers. Workspace **Prep data for AI** settings and live Copilot responses were not available during this local TMDL change. The sales calendar's existing Fiscal Quarter formula produces labels FQ2 through FQ5; this field should not be used as a standard fiscal quarter until its logic is reviewed.
+
+The metadata changes were deployed to `RR - PBI Factory {dev}` on 2026-11-02. `python scripts/test-data.py` passed all 36 sales assertions and all 14 HR assertions after deployment. No refresh was run because only descriptions and geographic categories changed; refresh would also regenerate randomized sales values. Live Copilot responses remain unverified.

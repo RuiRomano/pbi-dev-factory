@@ -1,7 +1,9 @@
+/// Daily calendar from 2017 through 2021. Calendar[Date] filters Sales by Order Date, not Delivery Date. Fiscal Year starts in July; validate Fiscal Quarter before use.
 table Calendar
 	lineageTag: bfa0074c-0a44-4a9c-8bba-c87af778b3d7
 	dataCategory: Time
 
+	/// Calendar day number from 1 to 31. Use Date for actual date filtering and grouping.
 	column Day
 		dataType: int64
 		formatString: 0
@@ -11,6 +13,7 @@ table Calendar
 
 		annotation SummarizationSetBy = User
 
+	/// Calendar month number from 1 to 12; use Month Name for display.
 	column Month
 		dataType: int64
 		formatString: 0
@@ -22,6 +25,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Calendar quarter label (Q1 to Q4), based on January-to-December quarters.
 	column Quarter
 		dataType: string
 		lineageTag: 0d2804c4-111e-4544-aaf6-c6a6988e49a1
@@ -30,6 +34,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Calendar year number, distinct from Fiscal Year.
 	column Year
 		dataType: int64
 		formatString: 0
@@ -39,6 +44,7 @@ table Calendar
 
 		annotation SummarizationSetBy = User
 
+	/// Daily date used for time filtering. The active relationship filters Sales by Order Date, not Delivery Date.
 	column Date
 		dataType: dateTime
 		isKey
@@ -56,6 +62,7 @@ table Calendar
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Abbreviated calendar month name, sorted by Month number.
 	column 'Month Name'
 		dataType: string
 		lineageTag: 062506a9-c575-44d5-8498-18f83383b9bb
@@ -67,6 +74,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Chronological year-month display value for grouping calendar dates by month.
 	column Year-Month
 		dataType: dateTime
 		formatString: mmm yyyy
@@ -78,6 +86,7 @@ table Calendar
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Week-of-year number calculated by the source calendar using its default week convention.
 	column 'Week Number'
 		dataType: int64
 		formatString: 0
@@ -87,6 +96,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Day-of-week number used to sort Day Name; numbering follows the source calendar calculation.
 	column 'Day of Week'
 		dataType: int64
 		formatString: 0
@@ -96,6 +106,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Weekday name for the calendar date, sorted by Day of Week.
 	column 'Day Name'
 		dataType: string
 		lineageTag: 64852f77-1949-4ead-8d3c-ba5471bda0f6
@@ -105,6 +116,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Boolean flag set by the source calendar rule Date.DayOfWeek(Date) >= 5; follows that rule rather than a business-defined weekend.
 	column 'Is Weekend'
 		dataType: boolean
 		formatString: """TRUE"";""TRUE"";""FALSE"""
@@ -116,6 +128,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Fiscal year starting in July and labeled by its ending calendar year. Use Year for calendar-year analysis.
 	column 'Fiscal Year'
 		dataType: int64
 		formatString: 0
@@ -127,6 +140,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
+	/// Fiscal quarter label from the existing source formula. Its mapping to the July-start Fiscal Year has not been validated.
 	column 'Fiscal Quarter'
 		dataType: string
 		lineageTag: 58e95095-84d6-47f8-a9af-9ee5f1d2621b
