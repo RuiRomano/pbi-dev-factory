@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "a01ba5e7000000000002",
+  "position": { "x": 1600, "y": 32, "z": 1, "width": 288, "height": 64, "tabOrder": 1 },
+  "visual": {
+    "visualType": "textbox",
+    "objects": { "general": [{ "properties": { "paragraphs": [{
+      "textRuns": [{ "value": "contoso", "textStyle": { "fontFamily": "Segoe UI Semibold", "fontSize": "40px", "color": "#536CE5" } }],
+      "horizontalTextAlignment": "right"
+    }] } }] },
+    "visualContainerObjects": {
+      "background": [{ "properties": { "show": { "expr": { "Literal": { "Value": "false" } } } } }],
+      "border": [{ "properties": { "show": { "expr": { "Literal": { "Value": "false" } } } } }],
+      "padding": [{ "properties": {
+        "top": { "expr": { "Literal": { "Value": "0D" } } }, "bottom": { "expr": { "Literal": { "Value": "0D" } } },
+        "left": { "expr": { "Literal": { "Value": "0D" } } }, "right": { "expr": { "Literal": { "Value": "0D" } } }
+      } }]
+    }
+  }
+}

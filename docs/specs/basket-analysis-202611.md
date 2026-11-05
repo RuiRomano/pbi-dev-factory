@@ -1,6 +1,6 @@
 # Sales basket analysis
 
-**Status:** Approved
+**Status:** In progress
 **Updated:** 2026-11-05
 
 ## Goal
@@ -13,7 +13,7 @@ Help merchandising and store operations compare basket sizes across stores and p
 ## Approach
 The [Sales model](../../src/sales.SemanticModel/definition/tables/Sales.tmdl) stores order lines. `# Sales` counts lines, so it is not a basket denominator. Use distinct nonblank `Sales[Order Number]` values as baskets and divide the existing `Sales Qty` by that count. Exclude lines without an order number from both quantities and basket counts. Return blank for no matching baskets. Basket size means product units, not distinct products or monetary value. Store, date, customer and product filters remain active. Category results mean category units per order containing that category, not full-order units. Totals recalculate from units and distinct orders, rather than averaging category or store averages. The current source query preserves quantities and net prices; only time is randomized. Verify that each order number belongs to one store and customer.
 
-Create [basket-analysis.pbip](../../src/basket-analysis.pbip), bound by relative path to `sales.SemanticModel`. One page compares stores and categories with descending horizontal bars and provides a store-by-category matrix with average basket size, baskets and units. Store ranking uses a native top-10 filter by basket size; the matrix retains all stores. Use the filter pane for `Calendar[Date]` (order date), country, store, category and brand. Use explicit measures only, descriptive titles and alt text. No slicers or custom visuals.
+Create [basket-analysis.pbip](../../src/basket-analysis.pbip), bound by relative path to `sales.SemanticModel`. One page compares stores and categories with descending horizontal bars and provides a store-by-category matrix with average basket size, baskets and units. Store ranking retains all stores with scrolling, rather than hiding locations through a top-N filter. Use the filter pane for `Calendar[Date]` (order date), country, store, category and brand. Use explicit measures only, descriptive titles and alt text. No slicers or custom visuals.
 
 ```yaml
 Design Brief:
@@ -100,8 +100,12 @@ Design Brief:
 - Run the existing deployment, refresh and data-test scripts against DEV. Preview the latest report against the deployed model and review a fresh page screenshot. Skip Windows-only BPA on Linux and record the limitation.
 
 ## Open questions
-None. The chosen units-per-order definition and category-only interpretation are explicit demo design decisions under the delegated approval.
+O1 - Service preview failed with `RENDER_FAILED: CreateReportFailed`, code `401`, request `d890a171-0d3b-46c6-968a-870f0016f343`. Restore service preview access, then capture and review the page and test interactive filtering. Rendering, keyboard navigation and interaction checks remain unverified. The spec stays In progress until these checks pass. The units-per-order definition and category-only interpretation are explicit demo design decisions under the delegated approval.
 
 ## Change log
 - 2026-11-05: Inspected the model, team rules and existing tests. Created and reviewed the spec; approved under the user's demo delegation before implementation.
 - 2026-11-05: Independent review prompted order-identity checks, exact numeric fixtures, an explicit Calendar date binding and a native top-10 scope. Verified the current partition preserves source quantities despite older documentation suggesting randomization. Changes self-approved under the same demo delegation.
+- 2026-11-05: Kept all stores in the ranked chart with scrolling to avoid top-N exclusions and preserve access to smaller locations. Self-approved under the demo delegation. Added both measures and 12 focused assertions; all 12 passed against live data with query-scoped candidate measures before deployment.
+- 2026-11-05: Saved and reloaded the local model: five tables, 17 measures and four unchanged relationships. Built the six-visual Contoso report with five filter-pane fields; report CLI 0.5.0 validation passed with zero errors and warnings after increasing title height.
+- 2026-11-05: Ran `AUTH=CLI python scripts/deploy.py`, `python scripts/refresh.py` and `python scripts/test-data.py` against `RR - PBI Factory {dev}`. Both models refreshed. All 48 Sales assertions (36 existing, 12 new) and 14 HR regression assertions returned boolean true. An independent per-order average matched 395 store/category rows including the total. Baseline totals remained 2,999 sales lines, 9,339 units, sales amount 2,739,908.8958 and 1,973 customers; basket count is 2,029 and average size is 4.602759980285855 units.
+- 2026-11-05: Published report `da9fcaeb-ad27-4640-b3c2-a7d954ba2121` was read back with Sales dataset binding `3667483b-67dc-44a2-9056-7d01aa1e4fb9` in DEV workspace `0a6ed388-8f6e-40a0-a9ac-df7d1522ba38`. The unchanged HR and existing Sales reports were republished by the required repository script. Updated model/report documentation and catalog. Windows-only BPA was not run on Linux. Screenshot validation is blocked by O1; no screenshot was captured.

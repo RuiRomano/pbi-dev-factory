@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "basket-analysis"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "28326331-29a2-457a-ac47-1b79e099b3d5"
+  }
+}

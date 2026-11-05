@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "a01ba5e7000000000004",
+  "position": { "x": 968, "y": 120, "z": 3, "width": 920, "height": 496, "tabOrder": 3 },
+  "visual": {
+    "visualType": "barChart",
+    "query": {
+      "queryState": {
+        "Category": { "projections": [{
+          "field": { "Column": { "Expression": { "SourceRef": { "Entity": "Product" } }, "Property": "Category" } },
+          "queryRef": "Product.Category", "nativeQueryRef": "Category", "displayName": "Category"
+        }] },
+        "Y": { "projections": [{
+          "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "AVERAGE BASKET SIZE" } },
+          "queryRef": "Sales.AVERAGE BASKET SIZE", "nativeQueryRef": "AVERAGE BASKET SIZE", "displayName": "Units per basket"
+        }] },
+        "Tooltips": { "projections": [{
+          "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "BASKETS" } },
+          "queryRef": "Sales.BASKETS", "nativeQueryRef": "BASKETS", "displayName": "Baskets"
+        }] }
+      },
+      "sortDefinition": { "sort": [{
+        "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "AVERAGE BASKET SIZE" } },
+        "direction": "Descending"
+      }] }
+    },
+    "objects": {
+      "dataPoint": [{ "properties": { "defaultColor": { "solid": { "color": { "expr": { "Literal": { "Value": "'#536CE5'" } } } } }, "borderShow": { "expr": { "Literal": { "Value": "false" } } } } }],
+      "labels": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "labelPosition": { "expr": { "Literal": { "Value": "'OutsideEnd'" } } }, "labelDisplayUnits": { "expr": { "Literal": { "Value": "1D" } } }, "labelPrecision": { "expr": { "Literal": { "Value": "2L" } } } } }],
+      "valueAxis": [{ "properties": { "show": { "expr": { "Literal": { "Value": "false" } } }, "start": { "expr": { "Literal": { "Value": "0D" } } }, "gridlineShow": { "expr": { "Literal": { "Value": "false" } } } } }],
+      "categoryAxis": [{ "properties": { "showAxisTitle": { "expr": { "Literal": { "Value": "false" } } }, "maxMarginFactor": { "expr": { "Literal": { "Value": "40L" } } }, "fontSize": { "expr": { "Literal": { "Value": "12D" } } } } }],
+      "legend": [{ "properties": { "show": { "expr": { "Literal": { "Value": "false" } } } } }]
+    },
+    "visualContainerObjects": {
+      "title": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Categories ranked by basket size'" } } }, "fontSize": { "expr": { "Literal": { "Value": "18D" } } } } }],
+      "subTitle": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Category units per order containing that category'" } } } } }],
+      "general": [{ "properties": { "altText": { "expr": { "Literal": { "Value": "'Categories ranked by category units per matching order, not full-order units. Hover for basket counts. An order can appear in more than one category.'" } } } } }]
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "a01ba5e7000000000005",
+  "position": { "x": 32, "y": 640, "z": 4, "width": 1856, "height": 320, "tabOrder": 4 },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": { "projections": [
+          { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "Store" } }, "Property": "Store" } }, "queryRef": "Store.Store", "nativeQueryRef": "Store", "displayName": "Store" },
+          { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "Product" } }, "Property": "Category" } }, "queryRef": "Product.Category", "nativeQueryRef": "Category", "displayName": "Category" }
+        ] },
+        "Values": { "projections": [
+          { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "AVERAGE BASKET SIZE" } }, "queryRef": "Sales.AVERAGE BASKET SIZE", "nativeQueryRef": "AVERAGE BASKET SIZE", "displayName": "Units per basket" },
+          { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "BASKETS" } }, "queryRef": "Sales.BASKETS", "nativeQueryRef": "BASKETS", "displayName": "Baskets" },
+          { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "Sales Qty" } }, "queryRef": "Sales.Sales Qty", "nativeQueryRef": "Sales Qty", "displayName": "Units" }
+        ] }
+      },
+      "sortDefinition": { "sort": [{
+        "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "AVERAGE BASKET SIZE" } },
+        "direction": "Descending"
+      }] }
+    },
+    "objects": {
+      "columnHeaders": [{ "properties": { "columnAdjustment": { "expr": { "Literal": { "Value": "'growToFit'" } } }, "autoSizeColumnWidth": { "expr": { "Literal": { "Value": "true" } } }, "fontSize": { "expr": { "Literal": { "Value": "12D" } } } } }],
+      "rowHeaders": [{ "properties": { "showExpandCollapseButtons": { "expr": { "Literal": { "Value": "true" } } }, "fontSize": { "expr": { "Literal": { "Value": "12D" } } } } }],
+      "values": [{ "properties": { "fontSize": { "expr": { "Literal": { "Value": "12D" } } } } }]
+    },
+    "visualContainerObjects": {
+      "title": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Basket size and volume by store and category'" } } }, "fontSize": { "expr": { "Literal": { "Value": "18D" } } } } }],
+      "subTitle": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "text": { "expr": { "Literal": { "Value": "'Expand a store for categories | Totals recalculate from units and distinct orders'" } } } } }],
+      "general": [{ "properties": { "altText": { "expr": { "Literal": { "Value": "'Store and category detail with average units per basket, distinct basket counts and units. Expand stores to inspect categories. Grand totals are recalculated, not sums of category counts or averages.'" } } } } }]
+    }
+  }
+}

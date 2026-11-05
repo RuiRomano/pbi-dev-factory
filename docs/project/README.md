@@ -4,19 +4,22 @@
 
 This project presents Northwind Retail Group sales analysis using sample retail data and a separate, fictional HR demo semantic model and local report. The sales Import model connects sales lines to calendar, product, customer and store dimensions. The sales-overview report provides an interactive sales summary and a category-by-year financial matrix. The customer-comparison report compares new and existing customers by month. All three HR pages have Desktop screenshots; agreement with the latest saved definitions and interactive behavior remain unverified.
 
-The source queries can randomize sales quantities and net prices at refresh. Treat the results as sample analysis, not certified company revenue. Currency conversion, returns and company fiscal-calendar compliance are not established by the definitions.
+The current Sales source query preserves quantities and net prices and randomizes only Time. Treat the results as sample analysis, not certified company revenue. Currency conversion, returns and company fiscal-calendar compliance are not established by the definitions.
 
 ## Artifacts
 
 | Artifact | Type | Source | Connected artifact(s) | Purpose | Documentation |
 |---|---|---|---|---|---|
-| sales | Semantic model | `src/sales.SemanticModel` | sales-overview and customer-comparison reports | Sales amounts, cost, margin, quantities, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
+| sales | Semantic model | `src/sales.SemanticModel` | sales-overview, customer-comparison and basket-analysis reports | Sales amounts, cost, margin, quantities, basket sizes, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
 | hr | Semantic model | `src/hr.SemanticModel` | hr report | Synthetic employee snapshots and movements for headcount, FTE, salary cost and attrition demonstrations. | [Open](hr.semantic-model.md) |
 | hr | Report | `src/hr.Report` | hr semantic model, bound by relative path | Three-page fictional HR demo: workforce trends, exits and workforce mix. Local only; current Desktop screenshots documented. | [Open](hr.report.md) |
 | sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, and annual category KPIs. | [Open](sales-overview.report.md) |
 | customer-comparison | Report | `src/customer-comparison.Report` | sales semantic model, bound by relative path | Monthly comparison and detail for new, existing and total customers with sales. | [Source](../../src/customer-comparison.Report/definition/pages/2b3f5f9676144f1e9f79/page.json) |
+| basket-analysis | Report | `src/basket-analysis.Report` | sales semantic model, bound by relative path | Ranked basket size by store and category, with basket counts and units for volume context. Deployed to DEV; screenshot validation blocked. | [Open](basket-analysis.report.md) |
 
 ## Project Entry Point and Shared Resources
+
+Open [basket-analysis.pbip](../../src/basket-analysis.pbip) for the new one-page store/category basket comparison. It uses `Sales[BASKETS]` and `Sales[AVERAGE BASKET SIZE]`, with basket size defined as selected units per distinct nonblank order. Category filters count category units only. See the [report documentation](basket-analysis.report.md) and [spec](../specs/basket-analysis-202611.md) for definitions and validation limits.
 
 Open [sales-overview.pbip](../../src/sales-overview.pbip) in Power BI Desktop. Its report definition binds to `../sales.SemanticModel`; no published workspace binding is specified.
 
@@ -24,7 +27,7 @@ Open [customer-comparison.pbip](../../src/customer-comparison.pbip) for the sepa
 
 Existing customers are customers with sales who are not new in the same period. The report inherits the model's filter-dependent classification, not an unconditional lifetime definition. A customer who makes first and later purchases in a period counts only as new. Totals recalculate in the selected period and are not sums of monthly counts. The existing report and semantic model are unchanged.
 
-The report uses a registered [Contoso theme](../../src/sales-overview.Report/StaticResources/RegisteredResources/Contoso718570950292274.json) over the Fluent2 base theme. The model shares the `HttpSource`, `Environment` and `Randomizer` Power Query parameters across its queries.
+The report uses a registered [Contoso theme](../../src/sales-overview.Report/StaticResources/RegisteredResources/Contoso718570950292274.json) over the Fluent2 base theme. The model shares the `HttpSource` and `Environment` Power Query parameters across its queries.
 
 The [description specification](../specs/semantic-model-descriptions-202610.md) provides supporting interpretation and caveats. Its linked company-context file is absent from the current worktree, so it was not treated as an available business glossary.
 
@@ -53,6 +56,8 @@ python scripts\refresh.py
 The [refresh script](../../scripts/refresh.py) discovers models under `src` using their `.platform` display names and requests a full refresh for each deployed model, one at a time. It polls the specific refresh every five seconds for up to 600 seconds per model. It prints success only when the refresh completes. A CLI error, API error, unsuccessful refresh or timeout raises an error and stops the script. Timing out does not cancel the refresh in the service.
 
 ## Inspection and Validation
+
+Added basket analysis on 2026-11-05: two Sales measures and a six-visual report. The model loaded locally, the report passed CLI validation with zero errors and warnings, deployment and refresh succeeded, and all 48 Sales plus 14 HR assertions passed. An independent calculation matched 395 store/category rows including the total. The report's Sales binding was verified in DEV. Screenshot and interaction checks are blocked by `401 CreateReportFailed`; the [spec](../specs/basket-analysis-202611.md) remains In progress.
 
 Updated HR screenshot documentation on 2026-11-01. All three current Desktop pages were captured and reviewed, with populated charts and no visible visual error messages. The window was not reloaded from disk. See [HR screenshot inspection](hr.report.md#screenshot-inspection-2026-11-01) for capture scope and unverified behavior. Unrelated artifact documentation and screenshots were preserved; the existing customer-comparison document and screenshot coverage gap remains.
 

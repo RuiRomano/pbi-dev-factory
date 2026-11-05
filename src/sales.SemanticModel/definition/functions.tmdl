@@ -193,7 +193,67 @@ function 'Tests.Run' =
 		            "Returning", [# Returning Customers]
 		        )
 		    RETURN
-		        PQL.Assert.ShouldBeTrue ( "Returning - category brand rows and total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) )
+		        PQL.Assert.ShouldBeTrue ( "Returning - category brand rows and total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldEqual ( "Basket - three lines count as one order", 1, [BASKETS] ),
+		            PQL.Assert.ShouldEqual ( "Basket - multi-line order has eight units", 8, [AVERAGE BASKET SIZE] )
+		        ),
+		        TREATAS ( { 273500 }, 'Sales'[Order Number] )
+		    ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldEqual ( "Basket - category counts one matching order", 1, [BASKETS] ),
+		            PQL.Assert.ShouldEqual ( "Basket - category counts only its two units", 2, [AVERAGE BASKET SIZE] )
+		        ),
+		        TREATAS ( { 273500 }, 'Sales'[Order Number] ),
+		        TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+		        TREATAS ( { "Online store" }, 'Store'[Store] ),
+		        TREATAS ( { DATE ( 2017, 6, 27 ) }, 'Calendar'[Date] )
+		    ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldEqual ( "Basket - selected dates have two orders", 2, [BASKETS] ),
+		            PQL.Assert.ShouldEqual ( "Basket - selected dates average is 4.5 units", 4.5, [AVERAGE BASKET SIZE] )
+		        ),
+		        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+		        TREATAS ( { DATE ( 2017, 6, 27 ), DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
+		    ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldBeNull ( "Basket - empty selection count is blank", [BASKETS] ),
+		            PQL.Assert.ShouldBeNull ( "Basket - empty selection average is blank", [AVERAGE BASKET SIZE] )
+		        ),
+		        TREATAS ( { -1 }, 'Sales'[Order Number] )
+		    ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldBeNull ( "Basket - blank order count is blank", [BASKETS] ),
+		            PQL.Assert.ShouldBeNull ( "Basket - blank order average is blank", [AVERAGE BASKET SIZE] )
+		        ),
+		        TREATAS ( { BLANK () }, 'Sales'[Order Number] )
+		    ),
+		    VAR orders =
+		        SUMMARIZECOLUMNS (
+		            'Sales'[Order Number],
+		            "Stores", DISTINCTCOUNT ( 'Sales'[StoreKey] ),
+		            "Customers", DISTINCTCOUNT ( 'Sales'[CustomerKey] )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldBeTrue ( "Basket - order belongs to one store and customer", COUNTROWS ( orders ) > 0 && ISEMPTY ( FILTER ( orders, ISBLANK ( 'Sales'[Order Number] ) || [Stores] <> 1 || [Customers] <> 1 ) ) ),
+		    VAR results =
+		        SUMMARIZECOLUMNS (
+		            ROLLUPADDISSUBTOTAL ( ROLLUPGROUP ( 'Store'[Store], 'Product'[Category] ), "IsTotal" ),
+		            "Baskets", [BASKETS],
+		            "OrderCount", COUNTROWS ( FILTER ( VALUES ( 'Sales'[Order Number] ), NOT ISBLANK ( 'Sales'[Order Number] ) ) ),
+		            "Actual", [AVERAGE BASKET SIZE],
+		            "Expected", AVERAGEX (
+		                FILTER ( VALUES ( 'Sales'[Order Number] ), NOT ISBLANK ( 'Sales'[Order Number] ) ),
+		                CALCULATE ( SUM ( 'Sales'[Quantity] ) )
+		            )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldBeTrue ( "Basket - store category rows and weighted total match per-order calculation", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Baskets] == [OrderCount] ) || ISBLANK ( [Actual] ) <> ISBLANK ( [Expected] ) || ABS ( [Actual] - [Expected] ) > 0.000000001 ) ) )
 		)
 	lineageTag: ce15773d-5b5a-4708-8f2c-b3ae3575ab40
 

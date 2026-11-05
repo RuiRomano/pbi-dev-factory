@@ -2,7 +2,7 @@
 
 ## Overview
 
-This model supports sample retail sales analysis for report consumers and self-service analysts. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, new and returning customers, customers with sales and time comparisons.
+This model supports sample retail sales analysis for report consumers and self-service analysts. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, baskets, average basket size, new and returning customers, customers with sales and time comparisons. The [basket-analysis report](basket-analysis.report.md) compares units per order by store and category.
 
 The dependent [sales-overview report](sales-overview.report.md) uses these measures for summary cards, charts and an annual category matrix. The report names Northwind Retail Group, but the model sources workshop sample files and modifies some values during refresh. It is not evidence of certified company revenue.
 
@@ -12,7 +12,7 @@ The dependent [sales-overview report](sales-overview.report.md) uses these measu
 | Storage mode(s) | Import |
 | Tables | 5 |
 | Columns | 63: 53 visible, 10 hidden |
-| Measures | 15 |
+| Measures | 17 |
 | Relationships | 4 |
 | Hierarchies | 1, with 3 levels |
 | Calculation groups | None |
@@ -194,15 +194,25 @@ For example, the verified customer 102075 fixture has sales on 2017-06-27 and 20
 
 ### Sales Qty
 
-Sums individual product units from sales lines after refresh-time randomization. This is not a count of orders or lines.
+Sums individual product units from sales lines. The current source query preserves Quantity; only Time is randomized. This is not a count of orders or lines.
 
 ```dax
 sum('Sales'[Quantity])
 ```
 
+### BASKETS
+
+Counts distinct nonblank `Sales[Order Number]` values under the current store, date, customer and product filters. Multiple lines in an order count once. An order can appear in several category rows, so category basket counts are not additive. Returns blank with no matching orders. Visible in Sales with format `#,##0`.
+
+### AVERAGE BASKET SIZE
+
+Divides `Sales Qty` for lines with nonblank order numbers by `BASKETS`. Measures product units per order, not distinct products or monetary value. Category filters count only category units and orders containing that category, not full-order contents. Store, date, customer, category and brand filters remain active. Totals recalculate from selected units and distinct orders, not an average of row averages. Returns blank with no matching orders. Visible in Sales with format `#,##0.00`.
+
+The [basket-analysis spec](../specs/basket-analysis-202611.md) records the definition and delegated demo approval. Order 273500 has three lines and eight units across three categories; its Games and Toys slice has two units and one basket. Two selected dates for customer 102075 have nine units across two orders, averaging 4.5 units per basket.
+
 ### Sales Amount
 
-Sums quantity multiplied by net unit price for each filtered sales line. It uses randomized quantity and net price, with no explicit exchange-rate conversion or separate returns adjustment. Do not equate it with certified net revenue.
+Sums quantity multiplied by net unit price for each filtered sales line. It uses the source quantity and net price, with no explicit exchange-rate conversion or separate returns adjustment. Do not equate it with certified net revenue.
 
 ```dax
 SUMX('Sales', 'Sales'[Quantity] * 'Sales'[Net Price])
@@ -331,7 +341,7 @@ There are five Import partitions, each using Power Query M. The four CSV imports
 | Table | Partition | Source / behavior |
 |---|---|---|
 | Calendar | Calendar-c9bc757b-0dad-4b99-8287-18a451a3c5c3 | Generated date list, 2017-01-01 to 2021-12-31. |
-| Sales | Sales-ddb4c40b-46fd-49ea-9a19-16e7e640a21a | `RAW-Sales.csv`; modifies quantity/net price and adds random Time and Environment. |
+| Sales | Sales-ddb4c40b-46fd-49ea-9a19-16e7e640a21a | `RAW-Sales.csv`; preserves quantity/net price and adds random Time and Environment. |
 | Product | Product-171f48b3-e0ea-4ea3-b9a0-c8c673eb0648 | `RAW-Product.csv`; renames Product Name to Product. |
 | Customer | Customer-3757b886-e26c-4cec-a550-cdeea37b94d4 | `RAW-Customer.csv`; renames Name to Customer and removes source Age. |
 | Store | Store-c0e5ba98-f95a-4712-91ec-71c7dc35e177 | `RAW-Store.csv`; renames Name to Store. |
@@ -342,11 +352,8 @@ There are five Import partitions, each using Power Query M. The four CSV imports
 |---|---|---|
 | HttpSource | `https://raw.githubusercontent.com/RuiRomano/workshop-fabcon-26-bcn/main/resources/sample-data/` | Required text base URL for all four CSV imports. |
 | Environment | `DEV`, with suggested values DEV, QUAL and PRD | Adds an environment label to Sales; the query does not use it to switch the source URL. |
-| Randomizer | `0.6` | Required numeric input controlling sales quantity and net-price randomization. |
 
-For positive source values, the randomization expressions generally choose between a lower bound based on `value * (1 - Randomizer)`, floored at one, and an upper bound capped at the original value. Quantity is rounded down; net price is rounded to three decimal places. They do not implement a symmetric plus/minus variation. Edge inputs and refresh results were not tested.
-
-Repeated refreshes can change sales results even if the CSVs are unchanged. Time contains a generated hour and minute, not a source transaction time. Customer Age is recalculated from Birthday during processing.
+The current model has no Randomizer parameter or quantity/net-price randomization steps. Time contains a generated hour and minute, not a source transaction time. Customer Age is recalculated from Birthday during processing.
 
 No incremental-refresh policy or refresh schedule is present in the inspected model definition. A service schedule, credentials and gateway configuration were not inspected. Calendar month text conversion and weekday logic depend on parsing/default conventions and need runtime verification.
 
@@ -365,3 +372,11 @@ Run `python scripts\test-data.py` from the repository root against the configure
 An independent per-customer first-sale calculation matched the returning measure across 2,815 grouped results, including totals: 725 date rows, 1,974 customer rows, five year rows and 111 year/category/brand rows. Both reused measures matched their pre-change baseline in all five year/total rows and eight fixture scopes.
 
 Local BPA ran with `& .\scripts\bpa\bpa.ps1 -src @('.\src')` against the model and report using the repository rule files. It exited zero with 72 existing severity-2 `PROVIDE_DESCRIPTIONS_FOR_TABLES_MEASURES_AND_COLUMNS` warnings across five tables, 14 existing measures and 53 visible columns. The returning measure had no violations. Report definitions were unchanged; the repository deployment script republished the existing report alongside the model.
+
+## Basket Analysis Validation
+
+On 2026-11-05 the model was saved in `src`, reloaded through the offline modeling tools, deployed to DEV and refreshed using the existing scripts. All 48 Sales `Tests.Run` assertions returned boolean true: the existing 36 plus 12 basket assertions for multi-line orders, category/store/date scope, two-date weighted totals, empty and blank-order selections, order identity and independent per-order reconciliation. Each order belongs to one store and customer in the current data. There are no blank-order rows, so the blank-order tests cover an empty selection rather than a populated blank-order fixture.
+
+An independent query matched 395 store/category rows including the total. The refreshed model has 2,029 baskets and 9,339 units, averaging 4.602759980285855 units per basket. Existing baseline totals matched before refresh: 2,999 sales lines, 9,339 units, sales amount 2,739,908.8958, 1,973 customers with sales, 1,973 new customers and zero returning customers at the unrestricted total. All 14 HR regression assertions also passed.
+
+Windows-only BPA was not run on Linux. The new report passed CLI schema validation with zero errors and warnings and was deployed with the correct Sales binding. Service preview returned `401 CreateReportFailed`; report rendering, screenshots and interactive behavior remain unverified. See the [report validation limits](basket-analysis.report.md#validation-and-limitations).

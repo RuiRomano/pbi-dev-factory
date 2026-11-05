@@ -118,6 +118,27 @@ table Sales
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Distinct nonblank sales orders in the current store, date, customer and product context. An order containing several selected products counts once. Orders can appear in several category rows; totals recalculate. Returns blank with no matching orders.
+	measure BASKETS =
+			CALCULATE (
+			    DISTINCTCOUNT ( 'Sales'[Order Number] ),
+			    KEEPFILTERS ( NOT ISBLANK ( 'Sales'[Order Number] ) )
+			)
+		formatString: #,##0
+		lineageTag: 22540211-ba45-462b-b53e-984e21bf4038
+
+	/// Average product units per distinct nonblank order for Northwind Retail Group sample sales. Respects store, date, customer and product filters. A category selection counts only that category's units and orders, not full-order contents. Totals divide selected units by selected distinct orders, not an average of row averages. Returns blank with no matching orders; not basket value or distinct-product count.
+	measure 'AVERAGE BASKET SIZE' =
+			VAR UnitsInBaskets =
+			    CALCULATE (
+			        [Sales Qty],
+			        KEEPFILTERS ( NOT ISBLANK ( 'Sales'[Order Number] ) )
+			    )
+			RETURN
+			    DIVIDE ( UnitsInBaskets, [BASKETS] )
+		formatString: #,##0.00
+		lineageTag: 2741bfd2-ac67-46bc-b95d-6e46f8e48139
+
 	column 'Order Number'
 		dataType: int64
 		formatString: 0
