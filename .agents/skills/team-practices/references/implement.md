@@ -1,4 +1,4 @@
-# Implement a spec
+# Implement workflow
 
 Build what an approved spec describes (simple asks may not have a spec), within the team rules, and keep the spec in step with what was actually built.
 

@@ -1,4 +1,4 @@
-# Document the project
+# Document workflow
 
 Generate professional, business-friendly Markdown documentation for every artifact in `src/`, and keep it in step with the code. Save under `docs/project/` unless the developer names another destination.
 
