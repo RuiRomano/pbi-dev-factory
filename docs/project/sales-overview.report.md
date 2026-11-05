@@ -2,7 +2,7 @@
 
 ## Overview
 
-This report presents Northwind Retail Group sample sales analysis for retail analysts and business users. It moves from headline sales and customer metrics to product mix, store comparisons and trends, then to a category-by-year matrix of sales, margin and cost.
+This report presents Northwind Retail Group sample sales analysis for retail analysts and business users. It moves from headline sales and customer metrics to product mix, store comparisons and trends, then to margin time-intelligence cards and a category-by-year matrix of sales, margin and cost.
 
 | Property | Value |
 |---|---|
@@ -10,7 +10,7 @@ This report presents Northwind Retail Group sample sales analysis for retail ana
 | Project entry point | `src/sales-overview.pbip` |
 | Semantic model | [sales](sales.semantic-model.md), via `../sales.SemanticModel` |
 | Pages | 2 |
-| Visuals | 9: seven on Sales, two on KPI |
+| Visuals | 10: seven on Sales, three on KPI |
 | Theme | Registered Contoso theme over Fluent2-CY26SU08 |
 
 Amounts are sample calculations, not certified revenue. The model randomizes quantities and net prices at refresh and does not convert currencies. Dollar formatting does not establish the reporting currency.
@@ -18,7 +18,7 @@ Amounts are sample calculations, not certified revenue. The model randomizes qua
 ## Report Flow
 
 1. **Sales**, the saved active page, provides four headline metrics and an on-page date-range slicer. Compare category and brand performance, inspect monthly store patterns, and review sales against prior-year sales and a moving average.
-2. **KPI** provides an annual financial matrix by product category. Use it to compare sales, monetary margin and cost across years.
+2. **KPI** provides margin last-year and year-to-date cards above an annual financial matrix by product category. Use the cards for time comparisons and the matrix to compare sales, monetary margin and cost across years.
 
 Use the standard report page selector to move between pages. No custom navigation buttons, bookmark groups or drillthrough destinations are defined.
 
@@ -87,12 +87,14 @@ The screenshot shows chart scrollbars and truncated store labels, a truncated bu
 
 ![sales-overview - KPI](assets/sales-overview/kpi.png)
 
-This page contains a heading and one matrix titled **KPI table**. It supports a detailed financial comparison across product categories and calendar years. It does not contain target-based KPI indicators or variance-to-target calculations.
+This page contains a heading, two margin time-intelligence cards and a matrix titled **KPI table**. The cards sit above the matrix. The matrix supports a detailed financial comparison across product categories and calendar years. The page does not contain target-based KPI indicators or variance-to-target calculations.
 
 #### Main Metrics
 
 | Metric | Business meaning and presentation |
 |---|---|
+| Margin (LY) | Card showing Margin for the selected date period one calendar year earlier. It is blank unless current-period Sales Amount is positive, matching the model's Sales Amount (LY) behavior. |
+| Margin (YTD) | Card showing Margin from January 1 through the last selected date in the calendar year. It is calendar-year-to-date, not fiscal-year-to-date. |
 | Sales Amount | Monetary sales-line total for each category/year intersection. |
 | Margin | Monetary sales-line margin for each category/year intersection, not a percentage. |
 | Cost | Sales-line quantity multiplied by sales-line unit cost for each category/year intersection. |
@@ -104,6 +106,8 @@ The captured matrix contains populated category rows and a total row. Dollar amo
 The matrix uses Product.Category as rows, Calendar.Year as columns, and Sales Amount, Margin and Cost as values. It provides annual comparisons rather than monthly or fiscal-year analysis.
 
 The matrix exceeds the visible width. Horizontal scrolling is required to see later columns; the screenshot does not show the complete matrix. No additional matrix drill levels are defined.
+
+The margin cards are separate from the matrix and do not inherit the Sales page's date slicer. With no date filter, Margin (LY) shifts the available calendar period back one year and Margin (YTD) covers the latest calendar year in the model, 2021.
 
 #### Available Filters
 
@@ -129,8 +133,8 @@ The registered Contoso theme supplies the blue, lilac, sea-glass and pink palett
 
 ## Inspection and Screenshot Limitations
 
-Metadata and captures were inspected on 2026-10-30. Both screenshots came from the existing Power BI Desktop window, captured without reloading files from disk. Source report definitions were not edited.
+Metadata and captures were inspected on 2026-10-30. Both screenshots came from the existing Power BI Desktop window, captured without reloading files from disk. The KPI page was updated locally on 2026-11-02; the saved screenshots predate the new cards and do not validate them.
 
 The live KPI heading reads **NKPI**, while the saved definition says **Northwind Retail Group - KPI**. This confirms that the images are evidence of the current window, not proof that all saved content has been reloaded. Bindings, calculations and page descriptions above follow saved metadata. Capture-time values are not baseline test results.
 
-Screenshot review confirmed populated cards, charts and matrix rows, plus the filter experience visible in the captures. It did not test every filter, drill path, tooltip or cross-highlight interaction. No service preview, publication, refresh, deployed security validation or numerical reconciliation was performed.
+Screenshot review confirmed populated cards, charts and matrix rows, plus the filter experience visible in the captures. It did not test every filter, drill path, tooltip or cross-highlight interaction. The updated KPI page was not rendered in this environment: Power BI Desktop preview is unsupported on Linux, and the service preview needs workspace and semantic-model GUIDs. No publication, refresh, deployed security validation or visual review of the new cards was performed.

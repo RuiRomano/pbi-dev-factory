@@ -18,11 +18,57 @@ function 'PQL.Assert.Tbl.ShouldHaveRows' =
 
 	annotation DAXLIB_PackageVersion = 0.8.0
 
+
 function 'Tests.Run' =
 		() =>
 		UNION (
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Sales should have rows", 'Sales' ),
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Customer should have rows", 'Customer' ),
+		    VAR _startOfYear = DATE ( 2019, 1, 1 )
+		    VAR _endOfYear = DATE ( 2019, 12, 31 )
+		    VAR _actual =
+		        CALCULATE (
+		            [Margin (LY)],
+		            DATESBETWEEN ( 'Calendar'[Date], _startOfYear, _endOfYear )
+		        )
+		    VAR _expected =
+		        IF (
+		            CALCULATE (
+		                [Sales Amount],
+		                DATESBETWEEN ( 'Calendar'[Date], _startOfYear, _endOfYear )
+		            ) > 0,
+		            CALCULATE (
+		                SUMX (
+		                    'Sales',
+		                    'Sales'[Quantity]
+		                        * ( 'Sales'[Net Price] - 'Sales'[Unit Cost] )
+		                ),
+		                DATESBETWEEN (
+		                    'Calendar'[Date],
+		                    DATE ( 2018, 1, 1 ),
+		                    DATE ( 2018, 12, 31 )
+		                )
+		            )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "Margin (LY) matches prior calendar year", _expected, _actual ),
+		    VAR _endDate = DATE ( 2019, 12, 25 )
+		    VAR _actual =
+		        CALCULATE (
+		            [Margin (YTD)],
+		            TREATAS ( { _endDate }, 'Calendar'[Date] )
+		        )
+		    VAR _expected =
+		        CALCULATE (
+		            SUMX (
+		                'Sales',
+		                'Sales'[Quantity]
+		                    * ( 'Sales'[Net Price] - 'Sales'[Unit Cost] )
+		            ),
+		            DATESBETWEEN ( 'Calendar'[Date], DATE ( 2019, 1, 1 ), _endDate )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "Margin (YTD) matches calendar year to date", _expected, _actual ),
 			// Tests [# New Customers]
 		    VAR actual =
 		        CALCULATE (
@@ -598,4 +644,3 @@ function 'PQL.Assert.Tbl.ShouldHaveColumns' =
 	annotation DAXLIB_PackageId = PQL.Assert
 
 	annotation DAXLIB_PackageVersion = 0.8.0
-
