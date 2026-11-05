@@ -5,35 +5,34 @@ Build what an approved spec describes (simple asks may not have a spec), within 
 ## Checklist
 
 ```
-- [ ] 1. Confirm the spec, mode and target
-- [ ] 2. Load skills and rules
+- [ ] 1. Review the spec
+- [ ] 2. Ensure skills
 - [ ] 3. Code it
-- [ ] 4. Run local checks and repair
-- [ ] 5. Test
+- [ ] 4. Quality checks
+- [ ] 5. Test Data
 - [ ] 6. Document
-- [ ] 7. Update the spec and report
+- [ ] 7. Update the spec
 ```
 
-## 1. Confirm the spec, mode and target
+## 1. Review the spec
 
 Find the spec for the request. If none exists, offer to write one with [spec](./spec.md) first. For a trivial change the developer can waive the spec; record that in the report. If the spec is Draft or has open questions that change the approach, confirm with the developer before building. Set **Status** to In progress.
 
 Record the execution mode, affected artifacts, acceptance checks and existing source changes. Preserve unrelated work.
 
-## 2. Load skills and rules
+## 2. Ensure skills
 
-- Load the domain skills for the artifacts in scope, then read the team development rule files in `./rules`. 
-- Load the `team-practices` skill. Rules there take precedence over conflicting guidance in the domain skills. Reapply them if you load another skill later.
+- Load the domain skills for the artifacts in scope.
+- Development [rules/](rules/) in this skill there take precedence over conflicting guidance in the domain skills. Reapply them if you load another skill later.
 
 ## 3. Code it
 
-- Follow the implementation workflows from the skills
-- Respect the development rules in [rules/](rules/)
+- Follow the implementation workflows and this skill development [rules/](rules/).
 - Execute the development against the local code in `src/`. Use the available tools against the code not the development environment. E.g. Use Power BI authoring MCP server against the TMDL folder.
-- Persist model and report changes to `src/` before running repository scripts.
+- Always ensure changes get persisted to `src/` and don't stay tools memory.
 - When developing reports, if Power BI Desktop is not opened or available, preview the report against the semantic model in the development workspace.
 
-## 4. Run local checks and repair
+## 4. Quality checks
 
 > Only on Windows environment. If not Windows skip this.
 
@@ -43,11 +42,10 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
   ```powershell
   & .\scripts\bpa\bpa.ps1 -src @('.\src')
   ```
-- Capture the command, output, status, artifacts analyzed, rule files used, and violations with rule ID, severity and affected object.
-- Fix failures caused by this change within the approved spec, then rerun the affected local checks. Do not suppress rules, weaken assertions or change expected results merely to pass.
+- Fix failures cause by the implementation, then rerun the affected local checks. Do not suppress rules, weaken assertions or change expected results merely to pass.
 - Existing unrelated BPA violations do not block deployment to the development workspace; retain them in the final report.
 
-## 5. Test
+## 5. Test Data
 
 - Test and validate semantic model changes, deploy it to the development Fabric Workspace configured in `.env`. The authentication is granted by Azure CLI.
 - Run the following script to deploy the Power BI artifacts in `src/`
@@ -74,6 +72,6 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
 - Document the new developments, follow workflow [document](./document.md)
 - Do not describe intended behavior as verified behavior. If validation is blocked, record the actual implementation and limitation in the spec; do not mark the delivery complete.
 
-## 7. Update the spec and report
+## 7. Update the spec
 
 Set **Status** to Implemented only when every required stage and acceptance check has passed or is genuinely not applicable. Otherwise keep In progress. Bump **Updated** and add a **Change log** entry with what was built, approved divergences, validation evidence, documentation changes and any unresolved findings or blockers. Existing unrelated findings must be distinguished from failures of this change.
