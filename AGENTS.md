@@ -15,6 +15,7 @@
     - Make sure you commit the spec for review in the PR. 
     - Keep the PR description's Open questions section current with unresolved spec questions. Write "None." if there are no open questions.
     - Include a note in the PR calling out the PR originated from AI
+- When creating / modifying items in Fabric Workspace, include the link to the item in your output. E.g "Created model with name [Sales](https://link-to-fabric-item).
 
 
 ## Tool routing
