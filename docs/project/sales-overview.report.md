@@ -13,7 +13,7 @@ This report presents Northwind Retail Group sample sales analysis for retail ana
 | Visuals | 9: seven on Sales, two on KPI |
 | Theme | Registered Contoso theme over Fluent2-CY26SU08 |
 
-Amounts are sample calculations, not certified revenue. The model randomizes quantities and net prices at refresh and does not convert currencies. Dollar formatting does not establish the reporting currency.
+Amounts are sample calculations, not certified revenue. The model randomizes quantities and net prices at refresh. Its `Currency[Currency]` calculation group supports EUR, USD and GBP through a report filter or slicer. This report's saved layout has no currency selector and remains unchanged. Without exactly one currency selected, amounts stay native and potentially mixed-currency; dollar formatting alone does not establish a common reporting currency.
 
 ## Report Flow
 

@@ -1,0 +1,51 @@
+/// Exchange-rate observations by date, source currency and reporting currency. Month-end observations apply throughout their calendar month before 2020; daily observations apply from 2020 onward. Multiply local sales amounts by Exchange. This disconnected lookup does not filter sales.
+table 'Exchange Rates'
+	isHidden
+	lineageTag: 78e444cd-f793-4bcc-81ba-dc55372ddccd
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: b3c22877-8372-4f54-934e-c02aea984ff1
+		summarizeBy: none
+		sourceColumn: Date
+
+	column FromCurrency
+		dataType: string
+		isHidden
+		lineageTag: 2755b82e-39c6-48e8-907a-c9ac4900da2f
+		summarizeBy: none
+		sourceColumn: FromCurrency
+
+	column ToCurrency
+		dataType: string
+		isHidden
+		lineageTag: 668405e9-c804-4f98-9caf-e1d7a8ae6919
+		summarizeBy: none
+		sourceColumn: ToCurrency
+
+	column Exchange
+		dataType: double
+		isHidden
+		formatString: 0.0000
+		lineageTag: e498b1ca-94a4-4a3a-90e4-9d40029fb784
+		summarizeBy: none
+		sourceColumn: Exchange
+
+	partition 'Exchange Rates' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(
+				        Web.Contents(HttpSource, [RelativePath = "RAW-CurrencyExchange.csv"]),
+				        [Delimiter = ",", Columns = 4, Encoding = 65001, QuoteStyle = QuoteStyle.None]
+				    ),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(
+				        Headers,
+				        {{"Date", type date}, {"FromCurrency", type text}, {"ToCurrency", type text}, {"Exchange", type number}},
+				        "en-US"
+				    )
+				in
+				    Typed

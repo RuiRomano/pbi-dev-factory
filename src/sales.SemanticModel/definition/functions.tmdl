@@ -21,6 +21,7 @@ function 'PQL.Assert.Tbl.ShouldHaveRows' =
 function 'Tests.Run' =
 		() =>
 		UNION (
+		    Tests.Currency.Run (),
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Sales should have rows", 'Sales' ),
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Customer should have rows", 'Customer' ),
 			// Tests [# New Customers]
@@ -598,4 +599,179 @@ function 'PQL.Assert.Tbl.ShouldHaveColumns' =
 	annotation DAXLIB_PackageId = PQL.Assert
 
 	annotation DAXLIB_PackageVersion = 0.8.0
+
+/// Multiplier from a sales row's local currency to the selected reporting currency. No single reporting currency returns 1 for native amounts. Uses month-end dates before 2020 and exact daily dates thereafter. Missing, duplicate, blank or non-positive rates raise an error instead of returning partial totals.
+function 'Currency.Rate' =
+		(orderDate : DATETIME, sourceCurrency : STRING, targetCurrency : STRING) =>
+		    IF (
+		        targetCurrency = "",
+		        1,
+		        VAR rateDate =
+		            IF ( orderDate < DATE ( 2020, 1, 1 ), EOMONTH ( orderDate, 0 ), orderDate )
+		        VAR rates =
+		            FILTER (
+		                ALL ( 'Exchange Rates' ),
+		                'Exchange Rates'[Date] = rateDate
+		                    && 'Exchange Rates'[FromCurrency] = sourceCurrency
+		                    && 'Exchange Rates'[ToCurrency] = targetCurrency
+		            )
+		        VAR rate = MAXX ( rates, 'Exchange Rates'[Exchange] )
+		        RETURN
+		            Currency.RequireRate ( COUNTROWS ( rates ), rate )
+		    )
+	lineageTag: 793c9da6-a003-4f1f-9fcd-d316a41741e2
+
+/// Require exactly one positive nonblank exchange rate. Reject invalid observations instead of returning partial monetary totals.
+function 'Currency.RequireRate' =
+		(rateCount : INT64, rate : DOUBLE) =>
+		    IF (
+		        rateCount = 1 && NOT ISBLANK ( rate ) && rate > 0,
+		        rate,
+		        ERROR ( "Missing, duplicate or invalid exchange rate. Check the sales date and source/reporting currency pair." )
+		    )
+	lineageTag: fafb7a9d-3e0c-4e26-aa52-6c2ab4602ad1
+
+/// Independent row-level reference for conversion tests, using lookup keys rather than the production rate functions. Evaluates the current Sales context and uses native amounts when targetCurrency is blank.
+function 'Tests.Currency.Expected' =
+		(targetCurrency : STRING, amountKind : STRING) =>
+		    SUMX (
+		        'Sales',
+		        VAR orderDate = 'Sales'[Order Date]
+		        VAR rateDate =
+		            IF ( YEAR ( orderDate ) < 2020, DATE ( YEAR ( orderDate ), MONTH ( orderDate ) + 1, 1 ) - 1, orderDate )
+		        VAR rate =
+		            IF (
+		                targetCurrency = "",
+		                1,
+		                LOOKUPVALUE (
+		                    'Exchange Rates'[Exchange],
+		                    'Exchange Rates'[Date], rateDate,
+		                    'Exchange Rates'[FromCurrency], 'Sales'[Currency Code],
+		                    'Exchange Rates'[ToCurrency], targetCurrency
+		                )
+		            )
+		        VAR price =
+		            SWITCH (
+		                amountKind,
+		                "Cost", 'Sales'[Unit Cost],
+		                "Margin", 'Sales'[Net Price] - 'Sales'[Unit Cost],
+		                'Sales'[Net Price]
+		            )
+		        RETURN
+		            rate * 'Sales'[Quantity] * CONVERT ( price, DOUBLE )
+		    )
+	lineageTag: 93789dc1-3aba-4157-afd6-4c641c078d53
+
+/// Currency conversion assertions against an independent lookup-based reference. Covers all targets and source currencies, date rows and totals, shifted periods and averages, filtered contexts, unchanged counts, selection fallbacks and invalid rates. Monetary tolerance is 0.0001 reporting-currency units.
+function 'Tests.Currency.Run' =
+		() =>
+		    VAR tolerance = 0.0001
+		    VAR targetTests =
+		        GENERATE (
+		            SELECTCOLUMNS ( { "EUR", "USD", "GBP" }, "Target", [Value] ),
+		            VAR target = [Target]
+		            RETURN
+		                CALCULATETABLE (
+		                    VAR daily =
+		                        SUMMARIZECOLUMNS (
+		                            ROLLUPADDISSUBTOTAL ( ROLLUPGROUP ( 'Calendar'[Date], 'Sales'[Currency Code] ), "IsTotal" ),
+		                            "SalesActual", [Sales Amount],
+		                            "SalesExpected", Tests.Currency.Expected ( target, "Sales" ),
+		                            "CostActual", [Cost],
+		                            "CostExpected", Tests.Currency.Expected ( target, "Cost" ),
+		                            "MarginActual", [Margin],
+		                            "MarginExpected", Tests.Currency.Expected ( target, "Margin" )
+		                        )
+		                    VAR periods =
+		                        SUMMARIZECOLUMNS (
+		                            ROLLUPADDISSUBTOTAL ( 'Calendar'[Year-Month], "IsTotal" ),
+		                            "LYActual", [Sales Amount (LY)],
+		                            "LYExpected", IF ( Tests.Currency.Expected ( target, "Sales" ) > 0, CALCULATE ( Tests.Currency.Expected ( target, "Sales" ), SAMEPERIODLASTYEAR ( 'Calendar'[Date] ) ) ),
+		                            "AverageActual", [Sales Amount Avg per Day],
+		                            "AverageExpected", AVERAGEX ( VALUES ( 'Calendar'[Date] ), CALCULATE ( Tests.Currency.Expected ( target, "Sales" ) ) ),
+		                            "SixActual", [Sales Amount (6M average)],
+		                            "SixExpected",
+		                                VAR period = DATESINPERIOD ( 'Calendar'[Date], MAX ( 'Calendar'[Date] ), -6, MONTH )
+		                                RETURN IF ( MINX ( period, 'Calendar'[Date] ) <= MAX ( 'Sales'[Order Date] ), CALCULATE ( AVERAGEX ( VALUES ( 'Calendar'[Date] ), CALCULATE ( Tests.Currency.Expected ( target, "Sales" ) ) ), period ) ),
+		                            "TwelveActual", [Sales Amount (12M average)],
+		                            "TwelveExpected",
+		                                VAR period = DATESINPERIOD ( 'Calendar'[Date], MAX ( 'Calendar'[Date] ), -12, MONTH )
+		                                RETURN IF ( MINX ( period, 'Calendar'[Date] ) <= MAX ( 'Sales'[Order Date] ), CALCULATE ( AVERAGEX ( VALUES ( 'Calendar'[Date] ), CALCULATE ( Tests.Currency.Expected ( target, "Sales" ) ) ), period ) )
+		                        )
+		                    VAR yearly =
+		                        SUMMARIZECOLUMNS (
+		                            ROLLUPADDISSUBTOTAL ( 'Calendar'[Year], "IsTotal" ),
+		                            "Actual", [Sales Amount],
+		                            "Expected", Tests.Currency.Expected ( target, "Sales" )
+		                        )
+		                    RETURN
+		                        UNION (
+		                            PQL.Assert.ShouldBeTrue ( target & " - daily source-currency sales and grand total", COUNTROWS ( daily ) > 1 && ISEMPTY ( FILTER ( daily, ABS ( [SalesActual] - [SalesExpected] ) > tolerance || ISBLANK ( [SalesActual] ) <> ISBLANK ( [SalesExpected] ) ) ) ),
+		                            PQL.Assert.ShouldBeTrue ( target & " - daily source-currency cost and grand total", ISEMPTY ( FILTER ( daily, ABS ( [CostActual] - [CostExpected] ) > tolerance || ISBLANK ( [CostActual] ) <> ISBLANK ( [CostExpected] ) ) ) ),
+		                            PQL.Assert.ShouldBeTrue ( target & " - daily source-currency margin and grand total", ISEMPTY ( FILTER ( daily, ABS ( [MarginActual] - [MarginExpected] ) > tolerance || ABS ( [MarginActual] - ( [SalesActual] - [CostActual] ) ) > tolerance || ISBLANK ( [MarginActual] ) <> ISBLANK ( [MarginExpected] ) ) ) ),
+		                            PQL.Assert.ShouldBeTrue ( target & " - yearly sales and grand total", COUNTROWS ( yearly ) > 1 && ISEMPTY ( FILTER ( yearly, ABS ( [Actual] - [Expected] ) > tolerance || ISBLANK ( [Actual] ) <> ISBLANK ( [Expected] ) ) ) ),
+		                            PQL.Assert.ShouldBeTrue ( target & " - LY uses prior-period rates", COUNTROWS ( periods ) > 1 && ISEMPTY ( FILTER ( periods, ABS ( [LYActual] - [LYExpected] ) > tolerance || ISBLANK ( [LYActual] ) <> ISBLANK ( [LYExpected] ) ) ) ),
+		                            PQL.Assert.ShouldBeTrue ( target & " - daily average preserves denominator", ISEMPTY ( FILTER ( periods, ABS ( [AverageActual] - [AverageExpected] ) > tolerance || ISBLANK ( [AverageActual] ) <> ISBLANK ( [AverageExpected] ) ) ) ),
+		                            PQL.Assert.ShouldBeTrue ( target & " - six-month average uses underlying rates", ISEMPTY ( FILTER ( periods, ABS ( [SixActual] - [SixExpected] ) > tolerance || ISBLANK ( [SixActual] ) <> ISBLANK ( [SixExpected] ) ) ) ),
+		                            PQL.Assert.ShouldBeTrue ( target & " - twelve-month average uses underlying rates", ISEMPTY ( FILTER ( periods, ABS ( [TwelveActual] - [TwelveExpected] ) > tolerance || ISBLANK ( [TwelveActual] ) <> ISBLANK ( [TwelveExpected] ) ) ) ),
+		                            PQL.Assert.ShouldEqual ( target & " - quantity unchanged", CALCULATE ( [Sales Qty], REMOVEFILTERS ( 'Currency' ) ), [Sales Qty] ),
+		                            PQL.Assert.ShouldEqual ( target & " - sales count unchanged", CALCULATE ( [# Sales], REMOVEFILTERS ( 'Currency' ) ), [# Sales] ),
+		                            PQL.Assert.ShouldEqual ( target & " - customer count unchanged", CALCULATE ( [# Customers (w/ Sales)], REMOVEFILTERS ( 'Currency' ) ), [# Customers (w/ Sales)] ),
+		                            PQL.Assert.ShouldEqual ( target & " - new customers unchanged", CALCULATE ( [# New Customers], REMOVEFILTERS ( 'Currency' ) ), [# New Customers] ),
+		                            PQL.Assert.ShouldEqual ( target & " - returning customers unchanged", CALCULATE ( [# Returning Customers], REMOVEFILTERS ( 'Currency' ) ), [# Returning Customers] ),
+		                            CALCULATETABLE (
+		                                PQL.Assert.ShouldBeTrue ( target & " - product customer and noncontiguous dates", NOT ISBLANK ( [Sales Amount] ) && ABS ( [Sales Amount] - Tests.Currency.Expected ( target, "Sales" ) ) <= tolerance ),
+		                                TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+		                                TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+		                                TREATAS ( { DATE ( 2017, 6, 27 ), DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
+		                            ),
+		                            CALCULATETABLE (
+		                                UNION (
+		                                    PQL.Assert.ShouldBeNull ( target & " - empty sales stays blank", [Sales Amount] ),
+		                                    PQL.Assert.ShouldBeNull ( target & " - empty cost stays blank", [Cost] ),
+		                                    PQL.Assert.ShouldBeNull ( target & " - empty margin stays blank", [Margin] )
+		                                ),
+		                                TREATAS ( { DATE ( 2017, 1, 1 ) }, 'Calendar'[Date] )
+		                            )
+		                        ),
+		                    TREATAS ( { target }, 'Currency'[Currency] )
+		                )
+		        )
+		    RETURN
+		        UNION (
+		            SELECTCOLUMNS ( targetTests, "TestName", [TestName], "Expected", [Expected], "Actual", [Actual], "Passed", [Passed] ),
+		            PQL.Assert.Tbl.ShouldHaveRows ( "Exchange Rates should have rows", 'Exchange Rates' ),
+		            PQL.Assert.ShouldBeTrue ( "Rates have unique date/source/target keys", COUNTROWS ( 'Exchange Rates' ) = COUNTROWS ( SUMMARIZE ( 'Exchange Rates', 'Exchange Rates'[Date], 'Exchange Rates'[FromCurrency], 'Exchange Rates'[ToCurrency] ) ) ),
+		            PQL.Assert.ShouldBeTrue ( "Rates are nonblank and positive", ISEMPTY ( FILTER ( 'Exchange Rates', ISBLANK ( 'Exchange Rates'[Exchange] ) || 'Exchange Rates'[Exchange] <= 0 ) ) ),
+		            PQL.Assert.ShouldEqual ( "Rates cover all fifteen source/target pairs", 15, COUNTROWS ( SUMMARIZE ( 'Exchange Rates', 'Exchange Rates'[FromCurrency], 'Exchange Rates'[ToCurrency] ) ) ),
+		            PQL.Assert.ShouldBeTrue ( "May sales use May month-end rate", ABS ( 100 * Currency.Rate ( DATE ( 2017, 5, 18 ), "USD", "EUR" ) - 89.12 ) < tolerance ),
+		            PQL.Assert.ShouldBeTrue ( "June sales use June month-end rate", ABS ( Currency.Rate ( DATE ( 2017, 6, 1 ), "USD", "EUR" ) - 0.8763 ) < tolerance ),
+		            PQL.Assert.ShouldBeTrue ( "USD to GBP direction", ABS ( 100 * Currency.Rate ( DATE ( 2017, 5, 18 ), "USD", "GBP" ) - 77.86 ) < tolerance ),
+		            PQL.Assert.ShouldBeTrue ( "EUR to USD direction", ABS ( 100 * Currency.Rate ( DATE ( 2017, 5, 18 ), "EUR", "USD" ) - 112.21 ) < tolerance ),
+		            PQL.Assert.ShouldBeTrue ( "Same-currency rate preserves amount", Currency.Rate ( DATE ( 2017, 5, 18 ), "EUR", "EUR" ) == 1 && Currency.Rate ( DATE ( 2020, 2, 29 ), "USD", "USD" ) == 1 && Currency.Rate ( DATE ( 2020, 1, 1 ), "GBP", "GBP" ) == 1 ),
+		            PQL.Assert.ShouldBeTrue ( "Leap day uses exact daily rate", ABS ( Currency.Rate ( DATE ( 2020, 2, 29 ), "USD", "EUR" ) - 0.911 ) < tolerance ),
+		            PQL.Assert.ShouldBeTrue ( "Missing rate raises error", ISERROR ( Currency.Rate ( DATE ( 2017, 4, 30 ), "USD", "EUR" ) ) ),
+		            PQL.Assert.ShouldBeTrue ( "Unsupported source raises error", ISERROR ( Currency.Rate ( DATE ( 2020, 1, 1 ), "XYZ", "EUR" ) ) ),
+		            PQL.Assert.ShouldBeTrue ( "Duplicate rates raise error", ISERROR ( Currency.RequireRate ( 2, 1 ) ) ),
+		            PQL.Assert.ShouldBeTrue ( "Zero rate raises error", ISERROR ( Currency.RequireRate ( 1, 0 ) ) ),
+		            PQL.Assert.ShouldBeTrue ( "Negative rate raises error", ISERROR ( Currency.RequireRate ( 1, -1 ) ) ),
+		            PQL.Assert.ShouldBeTrue ( "Blank rate raises error", ISERROR ( Currency.RequireRate ( 1, BLANK () ) ) ),
+		            CALCULATETABLE (
+		                UNION (
+		                    PQL.Assert.ShouldBeTrue ( "No selection preserves native sales", ABS ( [Sales Amount] - Tests.Currency.Expected ( BLANK (), "Sales" ) ) <= tolerance ),
+		                    PQL.Assert.ShouldBeTrue ( "No selection preserves native cost", ABS ( [Cost] - Tests.Currency.Expected ( BLANK (), "Cost" ) ) <= tolerance ),
+		                    PQL.Assert.ShouldBeTrue ( "No selection preserves native margin", ABS ( [Margin] - Tests.Currency.Expected ( BLANK (), "Margin" ) ) <= tolerance )
+		                ),
+		                REMOVEFILTERS ( 'Currency' )
+		            ),
+		            CALCULATETABLE (
+		                UNION (
+		                    PQL.Assert.ShouldBeTrue ( "Multiple selections preserve native sales", ABS ( [Sales Amount] - Tests.Currency.Expected ( BLANK (), "Sales" ) ) <= tolerance ),
+		                    PQL.Assert.ShouldBeTrue ( "Multiple selections preserve native cost", ABS ( [Cost] - Tests.Currency.Expected ( BLANK (), "Cost" ) ) <= tolerance ),
+		                    PQL.Assert.ShouldBeTrue ( "Multiple selections preserve native margin", ABS ( [Margin] - Tests.Currency.Expected ( BLANK (), "Margin" ) ) <= tolerance )
+		                ),
+		                TREATAS ( { "EUR", "USD" }, 'Currency'[Currency] )
+		            )
+		        )
+	lineageTag: a27269c8-ead8-4a19-868a-086013c083d7
 

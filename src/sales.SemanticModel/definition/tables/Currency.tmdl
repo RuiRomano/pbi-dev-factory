@@ -1,0 +1,50 @@
+table Currency
+
+	/// Select EUR, USD or GBP to convert sales amounts, cost, margin and their time-based variants. Base measures convert local amounts exactly once at their sales dates. No selection or multiple selections retain native, potentially mixed-currency values and existing formats. Counts and quantities are unchanged.
+	calculationGroup
+		precedence: 10
+
+		/// Preserve native amounts and formats when the selection does not resolve to one reporting currency.
+		multipleOrEmptySelectionExpression = SELECTEDMEASURE ()
+
+			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
+
+		/// Preserve native amounts and formats when no reporting currency is selected.
+		noSelectionExpression = SELECTEDMEASURE ()
+
+			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
+
+		/// Convert monetary sales measures to EUR using each sales row's source currency and applicable rate date.
+		calculationItem EUR = SELECTEDMEASURE ()
+
+			formatStringDefinition =
+					IF (
+					    ISSELECTEDMEASURE ( [Sales Amount], [Cost], [Margin], [Sales Amount (LY)], [Sales Amount Avg per Day], [Sales Amount (6M average)], [Sales Amount (12M average)] ),
+					    "€ #,##0;€ -#,##0;€ 0",
+					    SELECTEDMEASUREFORMATSTRING ()
+					)
+
+		/// Convert monetary sales measures to USD using each sales row's source currency and applicable rate date.
+		calculationItem USD = SELECTEDMEASURE ()
+
+			formatStringDefinition =
+					IF (
+					    ISSELECTEDMEASURE ( [Sales Amount], [Cost], [Margin], [Sales Amount (LY)], [Sales Amount Avg per Day], [Sales Amount (6M average)], [Sales Amount (12M average)] ),
+					    "$ #,##0;$ -#,##0;$ 0",
+					    SELECTEDMEASUREFORMATSTRING ()
+					)
+
+		/// Convert monetary sales measures to GBP using each sales row's source currency and applicable rate date.
+		calculationItem GBP = SELECTEDMEASURE ()
+
+			formatStringDefinition =
+					IF (
+					    ISSELECTEDMEASURE ( [Sales Amount], [Cost], [Margin], [Sales Amount (LY)], [Sales Amount Avg per Day], [Sales Amount (6M average)], [Sales Amount (12M average)] ),
+					    "£ #,##0;£ -#,##0;£ 0",
+					    SELECTEDMEASUREFORMATSTRING ()
+					)
+
+	column Currency
+		dataType: string
+
+	partition Partition_Currency = calculationGroup
