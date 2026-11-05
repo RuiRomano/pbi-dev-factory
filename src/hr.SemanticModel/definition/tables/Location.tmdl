@@ -5,23 +5,30 @@ table Location
 	column 'Location Key'
 		dataType: int64
 		isHidden
+		isKey
+		isAvailableInMdx: false
 		lineageTag: cdc77813-5606-45f7-b4fd-d18d26c62960
 		summarizeBy: none
 		sourceColumn: Location Key
 
+	/// City of the fictional workforce hub.
 	column City
 		dataType: string
 		lineageTag: 7e593d03-d086-411b-9859-f1ce5fcd5b80
+		dataCategory: City
 		isDefaultLabel
 		summarizeBy: none
 		sourceColumn: City
 
+	/// Country containing the fictional workforce hub.
 	column Country
 		dataType: string
 		lineageTag: 8f815b92-a06d-4d1e-8906-2f167fa5ac55
+		dataCategory: Country
 		summarizeBy: none
 		sourceColumn: Country
 
+	/// Geographic region containing the fictional workforce hub.
 	column Region
 		dataType: string
 		lineageTag: f3b785b8-c94c-482e-8969-dcb1905ca3d3
