@@ -1,6 +1,6 @@
 ---
 name: team-practices
-description: "Apply this repository's Power BI team practices: write and maintain specs, follow team rules, implement changes with local BPA, deploy to the Fabric development environment, test and query live semantic models, and document the project. Team rules take precedence over conflicting guidance in other skills."
+description: "Defines how development is done in this repository: team rules, workflows, required checks and completion evidence. Use for every development task in this repository, including planning, specs, implementation, bug fixes, refactoring, code review, testing, deployment and documentation. Load before domain skills and use it to select the workflow and rules for the task. Team rules take precedence over conflicting guidance in other skills."
 argument-hint: "Describe what you want to spec, implement, document or test"
 ---
 
@@ -10,10 +10,10 @@ argument-hint: "Describe what you want to spec, implement, document or test"
 
 ## Start here
 
-1. **Understand the request.** What the developer wants, which models or reports in `src/` are affected, and whether a spec already exists in `docs/specs/`. Reuse what the developer already said.
-2. **Load the domain skills** the task needs: `semantic-model-authoring` for models, DAX, relationships and data sources; `powerbi-report-cli` for Power BI report pages, visuals, filters and bindings. Load both when the work spans models and reports.
-3. **Load the team rules.** Read the [team rule files](#team-rules) for the artifacts in scope. They are required for spec and implementation work, and they apply to reviews, documentation and testing too.
-4. **Pick the workflow** below, load its file, and follow its checklist.
+1. **Understand the request.** What the developer wants, which models or reports in `src/` are affected, and whether a spec already exists in `docs/specs/`. 
+2. **Load the necessary skills:** `semantic-model-authoring` for semantic model work (DAX, relationships and data sources); `powerbi-report-cli` for Power BI report work (pages, visuals, filters and bindings). Load both when the work spans models and reports.
+3. **Load and enforce the team rules.** Read the [team rule files](#team-rules) for the artifacts in scope. They mostly define opionated implementation, but you should consider them also on specs and reviews.
+4. **Pick the workflow guidance** below. Follow it's checklist.
 5. **Report back** with the template in [Definition of done](#definition-of-done).
 
 ## Workflow selector
@@ -24,11 +24,11 @@ argument-hint: "Describe what you want to spec, implement, document or test"
 | Build what an approved spec describes | [implement](./references/implement.md) |
 | Generate or refresh project documentation | [document](./references/document.md) |
 
-Workflows are step-by-step procedures in `references/`. Follow their checklist. They chain: spec, then implement, then test, then document. Each one can also run on its own.
+Workflows are step-by-step procedures. Follow their checklist. They chain but can also run on its own.
 
 ## Team rules
 
-The rule files in `references/rules/` are the repository's authority for development decisions.
+The rule files in `references/rules/` are authority for development decisions.
 
 | File | Covers |
 | --- | --- |

@@ -15,6 +15,7 @@
     - Make sure you commit the spec for review in the PR. 
     - Keep the PR description's Open questions section current with unresolved spec questions. Write "None." if there are no open questions.
     - Include a note in the PR calling out the PR originated from AI
+- When creating / modifying items in Fabric Workspace, include the link to the item in your output. E.g "Created model with name [Sales](https://link-to-fabric-item).
 
 
 ## Tool routing
@@ -35,9 +36,8 @@
 
 ## Code review
 
-- Find the development spec linked in the pull request or matching the affected artifacts in [docs/specs/](docs/specs/). If a spec exists, review the changes against its goal, scope, approach, acceptance checks and approved deviations. Flag missing requirements, behavior that contradicts the spec and out-of-scope changes. Do not invent requirements when no matching spec exists.
-- Read [team-practices](.agents/skills/team-practices/SKILL.md) and its applicable rule files before reviewing Power BI changes. Read the files directly if skill loading is unavailable.
-- Apply the [semantic model rules](.agents/skills/team-practices/references/rules/semantic-model-rules.md) to model changes and the [report rules](.agents/skills/team-practices/references/rules/report-rules.md) to report changes. Team rules take precedence over conflicting guidance in other skills. Respect explicitly approved deviations.
-- Check that tests and validation evidence cover the spec's acceptance checks and the applicable team rules, including `Tests.Run` assertions for new measures. 
-- Keep review read-only. Do not modify files, deploy artifacts or refresh data. Focus findings on issues introduced or worsened by the changes; do not request unrelated cleanup or redesign.
-- Ground each finding in the changed code and the specific spec requirement or team rule it violates. Explain the impact and a concrete correction. Distinguish missing validation evidence from a confirmed implementation defect.
+- **Honor the spec.** Find the development spec linked in the pull request or matching the affected artifacts in [docs/specs/](docs/specs/). If a spec exists, review the changes against its goal, scope, approach, acceptance checks and approved deviations. Flag missing requirements, behavior that contradicts the spec and out-of-scope changes. Do not invent requirements when no matching spec exists.
+- **Ensure the [team-practices](.agents/skills/team-practices/SKILL.md) are applied.** Specially the [semantic model rules](.agents/skills/team-practices/references/rules/semantic-model-rules.md) to semantic model developments and the [report rules](.agents/skills/team-practices/references/rules/report-rules.md) to report developments. 
+- Check that tests and validation evidence cover the spec acceptance checks. E.g. new measures should implement `Tests.Run` assertions. 
+- **Keep review read-only.** Do not modify files, deploy artifacts or refresh data. Focus findings on issues introduced or worsened by the changes; do not request unrelated cleanup or redesign.
+- Ground each finding in the changed code and the specific spec requirement or team rule it violates. Explain the impact and a concrete correction.

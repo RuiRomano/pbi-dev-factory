@@ -9,9 +9,10 @@ The `hr` semantic model supports a fictional workforce briefing for the HR team.
 | Source | [`src/hr.SemanticModel`](../../src/hr.SemanticModel) |
 | Storage | Import, generated in Power Query without an external source |
 | Tables | 6 |
+| Columns | 37 |
 | Measures | 9 |
 | Relationships | 8 |
-| DEV model | `hr` in `RR - PBI Factory {dev}` |
+| Previously validated DEV model | `hr` in `RR - PBI Factory {dev}`; current local changes are not deployed |
 
 ## Model structure
 
@@ -29,6 +30,8 @@ erDiagram
 
 All relationships filter one way from a dimension to a fact. `Employee` has 1,200 fictional profiles with static department and location assignments. `Department` has six rows; `Location` has five. `Calendar` contains every day from 2019-01-01 to 2025-12-31 and a February to January fiscal year. `Headcount` contains one row per employed employee at each month end from January 2023 through December 2025. `Movements` contains one row per hire or exit, including older events used to explain employee tenure. Fact foreign keys and aggregation-only numeric columns are hidden.
 
+The local model marks the Employee, Department and Location keys as primary keys. Location City and Country have geographic categories. `Employee[Manager Flag]` is text: `Yes` for level L4 and `No` for other levels. `Headcount[FTE Value]` uses fixed decimal, with generated weights of 0.8 or 1.0. The unused hidden Fiscal Month column and its generating step have been removed; fiscal year behavior is unchanged.
+
 ## Measures
 
 | Home table | Measure | Meaning |
@@ -45,8 +48,16 @@ All relationships filter one way from a dimension to a fact. `Employee` has 1,20
 
 The synthetic demo definitions are specified in the [HR demo spec](../specs/hr-demo-202610.md). These are not verified HR policy. Gender, fictional names and salary are not protected by a role; do not replace this sample with actual employee data without a security design.
 
+FTE, average headcount and salary cost display with thousands separators and one decimal place. Salary cost previously displayed two decimal places; its DAX definition is unchanged. Attrition measures display percentages with one decimal place for positive, negative and zero values.
+
 ## Data sources, refresh and validation
 
-`EmployeeRows` is a deterministic Power Query expression. The Import partitions use that roster to generate the snapshot and movement rows without network access. The model is saved as local TMDL and was deployed to DEV via the Power BI model authoring tool, then fully refreshed through XMLA. The model loaded and all 14 live `Tests.Run` assertions returned boolean true. Live checks found 1,200 employees, six departments, five locations, 2,557 calendar dates, 26,123 snapshot rows, 1,509 events, 36 distinct snapshot months and no duplicate dimension keys. There were no unmatched employee foreign keys. At 2025-12-31, headcount was 891 and trailing attrition was approximately 5.02%. The monthly headcount reconciliation passed for all 35 transitions.
+`EmployeeRows` is a deterministic Power Query expression. The Import partitions use that roster to generate the snapshot and movement rows without network access. During the original implementation, the model was deployed to DEV via the Power BI model authoring tool, then fully refreshed through XMLA. All 14 live `Tests.Run` assertions returned boolean true. Those historical checks found 1,200 employees, six departments, five locations, 2,557 calendar dates, 26,123 snapshot rows, 1,509 events, 36 distinct snapshot months and no duplicate dimension keys. There were no unmatched employee foreign keys. At 2025-12-31, headcount was 891 and trailing attrition was approximately 5.02%. The monthly headcount reconciliation passed for all 35 transitions. These results have not been rerun against the current local changes.
 
-The Windows-only BPA was not run in this Linux environment. `scripts/test-data.py` and `scripts/refresh.py` were not run because `.env`, Fabric CLI and Azure CLI are unavailable here; equivalent live `Tests.Run` and XMLA full-refresh checks were completed with the model authoring tool. No report has been built or published.
+### Local BPA remediation, 2026-11-05
+
+The [approved remediation](../specs/bpa-remediation-202611.md) resolved all 48 HR model findings. The local definition loads successfully with six tables, 37 columns, nine measures and eight relationships. Running `& .\scripts\bpa\bpa.ps1 -src @('.\src')` reported no model violations. The HR report passed all 23 evaluated BPA results.
+
+Added descriptions to all 21 previously undocumented visible columns. Complete before/after metadata comparisons confirmed that all nine measure expressions, test functions, relationships, roles, lineage tags and unrelated metadata were preserved.
+
+The developer selected local-only delivery after deployment configuration was found to be missing. No deployment, Fabric refresh or live data tests were run. Fresh rendered review remains pending. The existing [HR report documentation](hr.report.md) contains the earlier Desktop screenshots.

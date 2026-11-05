@@ -139,7 +139,7 @@ function 'Tests.Run' =
 			        Tests.Equal ( "AVERAGE HEADCOUNT: 2025 monthly roster mean", _average2025,
 			            CALCULATE ( [AVERAGE HEADCOUNT], DATESBETWEEN ( 'Calendar'[Date], DATE ( 2025, 1, 1 ), _last ) ) ),
 			        Tests.Equal ( "SALARY COST: final snapshot versus roster salary and FTE", _salaryLast,
-			            CALCULATE ( [SALARY COST], TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
+			            ROUND ( CALCULATE ( [SALARY COST], TREATAS ( { _last }, 'Calendar'[Date] ) ), 4 ) ),
 			        Tests.Equal ( "HEADCOUNT LY: previous year versus active roster", _countLY,
 			            CALCULATE ( [HEADCOUNT LY], TREATAS ( { _last }, 'Calendar'[Date] ) ) ),
 			        Tests.Equal ( "HIRES: 2025 versus roster hire dates", _hires2025,
@@ -163,4 +163,3 @@ function 'Tests.Run' =
 			        Tests.Equal ( "Monthly headcount = prior headcount + hires - exits (35 months)", 0, _reconciliationErrors )
 			    )
 	lineageTag: df3e1baa-dcc4-47c0-86bb-47469f94188b
-

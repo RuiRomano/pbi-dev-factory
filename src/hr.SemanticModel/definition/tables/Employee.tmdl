@@ -5,10 +5,13 @@ table Employee
 	column 'Employee Key'
 		dataType: int64
 		isHidden
+		isKey
+		isAvailableInMdx: false
 		lineageTag: 8007267f-8ee3-4289-9d42-087b6a25ab68
 		summarizeBy: none
 		sourceColumn: Employee Key
 
+	/// Fictional employee name used to identify a person in this demo.
 	column Employee
 		dataType: string
 		lineageTag: 0c800c1f-4c71-4ace-804d-c8a02e52156b
@@ -16,24 +19,28 @@ table Employee
 		summarizeBy: none
 		sourceColumn: Employee
 
+	/// Fictional job title assigned to the employee.
 	column 'Job Title'
 		dataType: string
 		lineageTag: 827b9208-e64d-44ec-86d7-4a8208c3c283
 		summarizeBy: none
 		sourceColumn: Job Title
 
+	/// Fictional job level from L1 through L4. L4 employees are classified as managers.
 	column Level
 		dataType: string
 		lineageTag: bf3de7bf-b401-4229-9e6f-d23b9a35f5ca
 		summarizeBy: none
 		sourceColumn: Level
 
+	/// Fictional gender category generated for workforce composition analysis. Not actual employee information.
 	column Gender
 		dataType: string
 		lineageTag: c18b2ca1-9785-4ec8-be0d-2e9f98a8753b
 		summarizeBy: none
 		sourceColumn: Gender
 
+	/// Date the fictional employee joined the organization.
 	column 'Hire Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
@@ -43,6 +50,7 @@ table Employee
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Date the fictional employee leaves the organization. Blank for employees with no recorded exit.
 	column 'Termination Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
@@ -52,13 +60,14 @@ table Employee
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Yes for fictional employees at level L4 and No for other levels.
 	column 'Manager Flag'
-		dataType: boolean
+		dataType: string
 		lineageTag: 8fc51d1b-03b7-407a-bf37-675923797709
 		summarizeBy: none
 		sourceColumn: Manager Flag
 
 	partition Employee = m
 		mode: import
-		source = Table.SelectColumns(EmployeeRows, {"Employee Key", "Employee", "Job Title", "Level", "Gender", "Hire Date", "Termination Date", "Manager Flag"})
+		source = Table.TransformColumns(Table.SelectColumns(EmployeeRows, {"Employee Key", "Employee", "Job Title", "Level", "Gender", "Hire Date", "Termination Date", "Manager Flag"}), {{"Manager Flag", each if _ then "Yes" else "No", type text}})
 
