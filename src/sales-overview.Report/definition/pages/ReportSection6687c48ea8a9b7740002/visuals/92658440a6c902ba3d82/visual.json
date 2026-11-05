@@ -7,7 +7,7 @@
     "z": 1000,
     "height": 62.045734629604269,
     "width": 878.10488840202652,
-    "tabOrder": 0
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "textbox",
@@ -38,6 +38,21 @@
                 ]
               }
             ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Northwind Retail Group - KPI.'"
+                }
+              }
+            }
           }
         }
       ]

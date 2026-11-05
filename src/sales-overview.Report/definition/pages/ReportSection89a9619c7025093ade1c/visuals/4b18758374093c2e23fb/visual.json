@@ -7,7 +7,7 @@
     "z": 3000,
     "height": 272.37025879775433,
     "width": 335.46761604819937,
-    "tabOrder": 2000
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "scatterChart",
@@ -106,6 +106,19 @@
       }
     },
     "visualContainerObjects": {
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scatter chart of sales amount by month and store. Bubble size represents the number of customers with sales.'"
+                }
+              }
+            }
+          }
+        }
+      ],
       "title": [
         {
           "properties": {

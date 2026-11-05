@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "00000000000000000004",
-  "position": {"x": 32, "y": 604, "z": 3, "width": 1216, "height": 100, "tabOrder": 3},
+  "position": {"x": 32, "y": 604, "z": 3, "width": 1216, "height": 100, "tabOrder": 0},
   "visual": {
     "visualType": "textbox",
     "objects": {
@@ -15,6 +15,7 @@
       }]
     },
     "visualContainerObjects": {
+      "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Existing customers have sales but are not new in the same period. Classification follows selected date, customer and product filters, not unconditional lifetime history. Customers with first and later purchases in a period count only as new. Totals recalculate for the selected period, rather than sum monthly counts.'"}}}}}],
       "background": [{"properties": {"show": {"expr": {"Literal": {"Value": "false"}}}}}],
       "border": [{"properties": {"show": {"expr": {"Literal": {"Value": "false"}}}}}]
     }
