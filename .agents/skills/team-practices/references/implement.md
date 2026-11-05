@@ -7,7 +7,7 @@ Build what an approved spec describes (simple asks may not have a spec), within 
 ```
 - [ ] 1. Confirm the spec, mode and target
 - [ ] 2. Load skills and rules
-- [ ] 3. Build and persist the source
+- [ ] 3. Code it
 - [ ] 4. Run local checks and repair
 - [ ] 5. Test
 - [ ] 6. Document
@@ -25,9 +25,10 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
 - Load the domain skills for the artifacts in scope, then read the team development rule files in `./rules`. 
 - Load the `team-practices` skill. Rules there take precedence over conflicting guidance in the domain skills. Reapply them if you load another skill later.
 
-## 3. Build and persist the source
+## 3. Code it
 
 - Follow the implementation workflows from the skills
+- Respect the development rules in [rules/](rules/)
 - Execute the development against the local code in `src/`. Use the available tools against the code not the development environment. E.g. Use Power BI authoring MCP server against the TMDL folder.
 - Persist model and report changes to `src/` before running repository scripts.
 - When developing reports, if Power BI Desktop is not opened or available, preview the report against the semantic model in the development workspace.
@@ -37,7 +38,7 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
 > Only on Windows environment. If not Windows skip this.
 
 - Check every new or changed object against the applicable team rules. Fix deviations you introduced. Report existing ones without changing them.
-- Run BPA from the repository root against every semantic model and report in `src/`:
+- Run BPA from the repository root against code in `src/`:
 
   ```powershell
   & .\scripts\bpa\bpa.ps1 -src @('.\src')
@@ -48,7 +49,7 @@ Record the execution mode, affected artifacts, acceptance checks and existing so
 
 ## 5. Test
 
-- To test and validate semantic model changes, you must deploy it to the development Fabric Workspace configured in `.env`. The authentication is granted by Azure CLI.
+- Test and validate semantic model changes, deploy it to the development Fabric Workspace configured in `.env`. The authentication is granted by Azure CLI.
 - Run the following script to deploy the Power BI artifacts in `src/`
 
     ```powershell
