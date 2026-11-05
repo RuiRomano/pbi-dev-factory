@@ -1,0 +1,181 @@
+createOrReplace
+
+	function 'Tests.Run' =
+			() =>
+			UNION (
+			    PQL.Assert.Tbl.ShouldHaveRows ( "Sales should have rows", 'Sales' ),
+			    PQL.Assert.Tbl.ShouldHaveRows ( "Customer should have rows", 'Customer' ),
+				// Tests [# New Customers]
+			    VAR actual =
+			        CALCULATE (
+			            [# New Customers],
+			            TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			            TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+			            TREATAS ( { "Southridge Video" }, 'Product'[Brand] ),
+			            TREATAS ( { DATE ( 2017, 6, 27 ) }, 'Calendar'[Date] )
+			        )
+			    RETURN
+			        PQL.Assert.ShouldEqual ( "1 brand - positive: first purchase", 1, actual ),
+			    VAR actual =
+			        COALESCE (
+			            CALCULATE (
+			                [# New Customers],
+			                TREATAS ( { 357592 }, 'Customer'[CustomerKey] ),
+			                TREATAS ( { "Cell phones" }, 'Product'[Category] ),
+			                TREATAS ( { "Contoso" }, 'Product'[Brand] ),
+			                TREATAS ( { DATE ( 2019, 12, 25 ) }, 'Calendar'[Date] )
+			            ),
+			            0
+			        )
+			    RETURN
+			        PQL.Assert.ShouldEqual ( "1 brand - negative: repeat purchase is not new", 0, actual ),
+			    CALCULATETABLE (
+			        PQL.Assert.ShouldEqual ( "Returning - first purchase returns zero", 0, [# Returning Customers] ),
+			        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+			        TREATAS ( { "Southridge Video" }, 'Product'[Brand] ),
+			        TREATAS ( { DATE ( 2017, 6, 27 ) }, 'Calendar'[Date] )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldEqual ( "Returning - repeat purchase", 1, [# Returning Customers] ),
+			            PQL.Assert.ShouldEqual ( "Returning - repeat fixture has current sales", 1, [# Customers (w/ Sales)] ),
+			            PQL.Assert.ShouldEqual ( "Returning - repeat fixture has earlier purchase", DATE ( 2017, 11, 8 ), CALCULATE ( MIN ( 'Sales'[Order Date] ), REMOVEFILTERS ( 'Calendar' ) ) )
+			        ),
+			        TREATAS ( { 357592 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { "Cell phones" }, 'Product'[Category] ),
+			        TREATAS ( { "Contoso" }, 'Product'[Brand] ),
+			        TREATAS ( { DATE ( 2019, 12, 25 ) }, 'Calendar'[Date] )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldEqual ( "Returning - earlier selected brand", 1, [# Returning Customers] ),
+			            PQL.Assert.ShouldEqual ( "New - earlier selected brand excludes new", 0, COALESCE ( [# New Customers], 0 ) )
+			        ),
+			        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+			        TREATAS ( { "Southridge Video", "Tailspin Toys" }, 'Product'[Brand] ),
+			        TREATAS ( { DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldEqual ( "Returning - excluded brand and category do not qualify", 0, [# Returning Customers] ),
+			            PQL.Assert.ShouldEqual ( "New - excluded brand and category preserve new", 1, [# New Customers] )
+			        ),
+			        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+			        TREATAS ( { "Tailspin Toys", "Contoso" }, 'Product'[Brand] ),
+			        TREATAS ( { DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldEqual ( "Returning - earlier purchase in excluded brand", 0, [# Returning Customers] ),
+			            PQL.Assert.ShouldEqual ( "New - earlier purchase in excluded brand", 1, [# New Customers] )
+			        ),
+			        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { "Games and Toys" }, 'Product'[Category] ),
+			        TREATAS ( { "Tailspin Toys" }, 'Product'[Brand] ),
+			        TREATAS ( { DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldEqual ( "Returning - earlier selected category qualifies", 1, [# Returning Customers] ),
+			            PQL.Assert.ShouldEqual ( "New - earlier selected category excludes new", 0, COALESCE ( [# New Customers], 0 ) )
+			        ),
+			        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { "Tailspin Toys", "Contoso" }, 'Product'[Brand] ),
+			        TREATAS ( { DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldEqual ( "Returning - same-day first purchase is new only", 0, [# Returning Customers] ),
+			            PQL.Assert.ShouldEqual ( "New - same-day rows count once", 1, [# New Customers] ),
+			            PQL.Assert.ShouldEqual ( "Customers - same-day rows count once", 1, [# Customers (w/ Sales)] ),
+			            PQL.Assert.ShouldEqual ( "Returning - same-day fixture has multiple rows", 3, COUNTROWS ( 'Sales' ) )
+			        ),
+			        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { DATE ( 2017, 6, 27 ) }, 'Calendar'[Date] )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldEqual ( "Returning - multiple repeat rows count once", 1, [# Returning Customers] ),
+			            PQL.Assert.ShouldEqual ( "New - multiple repeat rows are not new", 0, COALESCE ( [# New Customers], 0 ) ),
+			            PQL.Assert.ShouldEqual ( "Returning - multiple repeat fixture has two rows", 2, COUNTROWS ( 'Sales' ) )
+			        ),
+			        TREATAS ( { 215446 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { DATE ( 2018, 6, 25 ) }, 'Calendar'[Date] )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldEqual ( "Returning - first and later purchases in period", 0, [# Returning Customers] ),
+			            PQL.Assert.ShouldEqual ( "New - first and later purchases in period", 1, [# New Customers] ),
+			            PQL.Assert.ShouldEqual ( "Customers - first and later purchases count once", 1, [# Customers (w/ Sales)] )
+			        ),
+			        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			        DATESBETWEEN ( 'Calendar'[Date], DATE ( 2017, 6, 27 ), DATE ( 2019, 12, 4 ) )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldEqual ( "Returning - noncontiguous total recalculates", 0, [# Returning Customers] ),
+			            PQL.Assert.ShouldEqual ( "New - noncontiguous total counts customer once", 1, [# New Customers] ),
+			            PQL.Assert.ShouldEqual ( "Returning - daily sum differs from period total", 1, SUMX ( VALUES ( 'Calendar'[Date] ), [# Returning Customers] ) ),
+			            VAR results =
+			                SUMMARIZECOLUMNS (
+			                    ROLLUPADDISSUBTOTAL ( 'Calendar'[Date], "IsTotal" ),
+			                    "Customers", [# Customers (w/ Sales)],
+			                    "New", [# New Customers],
+			                    "Returning", [# Returning Customers]
+			                )
+			            RETURN
+			                PQL.Assert.ShouldBeTrue ( "Returning - noncontiguous rows and total reconcile", COUNTROWS ( results ) = 3 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) )
+			        ),
+			        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { DATE ( 2017, 6, 27 ), DATE ( 2019, 12, 4 ) }, 'Calendar'[Date] )
+			    ),
+			    CALCULATETABLE (
+			        UNION (
+			            PQL.Assert.ShouldBeNull ( "Returning - no sales returns blank", [# Returning Customers] ),
+			            PQL.Assert.ShouldBeNull ( "Customers - no sales fixture", [# Customers (w/ Sales)] )
+			        ),
+			        TREATAS ( { 102075 }, 'Customer'[CustomerKey] ),
+			        TREATAS ( { DATE ( 2017, 1, 1 ) }, 'Calendar'[Date] )
+			    ),
+			    VAR results =
+			        SUMMARIZECOLUMNS (
+			            ROLLUPADDISSUBTOTAL ( 'Calendar'[Date], "IsTotal" ),
+			            "Customers", [# Customers (w/ Sales)],
+			            "New", [# New Customers],
+			            "Returning", [# Returning Customers]
+			        )
+			    RETURN
+			        PQL.Assert.ShouldBeTrue ( "Returning - date rows and grand total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) ),
+			    VAR results =
+			        SUMMARIZECOLUMNS (
+			            ROLLUPADDISSUBTOTAL ( 'Calendar'[Year-Month], "IsTotal" ),
+			            "Customers", [# Customers (w/ Sales)],
+			            "New", [# New Customers],
+			            "Returning", [# Returning Customers]
+			        )
+			    RETURN
+			        PQL.Assert.ShouldBeTrue ( "Returning - month rows and grand total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) ),
+			    VAR results =
+			        SUMMARIZECOLUMNS (
+			            ROLLUPADDISSUBTOTAL ( 'Customer'[CustomerKey], "IsTotal" ),
+			            "Customers", [# Customers (w/ Sales)],
+			            "New", [# New Customers],
+			            "Returning", [# Returning Customers]
+			        )
+			    RETURN
+			        PQL.Assert.ShouldBeTrue ( "Returning - customer rows and grand total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) ),
+			    VAR results =
+			        SUMMARIZECOLUMNS (
+			            ROLLUPADDISSUBTOTAL ( ROLLUPGROUP ( 'Product'[Category], 'Product'[Brand] ), "IsTotal" ),
+			            "Customers", [# Customers (w/ Sales)],
+			            "New", [# New Customers],
+			            "Returning", [# Returning Customers]
+			        )
+			    RETURN
+			        PQL.Assert.ShouldBeTrue ( "Returning - category brand rows and total reconcile", COUNTROWS ( results ) > 1 && ISEMPTY ( FILTER ( results, NOT ( [Customers] == [New] + [Returning] ) ) ) )
+			)
+		lineageTag: ce15773d-5b5a-4708-8f2c-b3ae3575ab40
+

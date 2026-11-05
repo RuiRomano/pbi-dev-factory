@@ -99,7 +99,7 @@ table Sales
 			    )
 			VAR Result =                                 
 			    CALCULATE (                             
-			        DISTINCTCOUNT ( Sales[CustomerKey] ), -- Counts the number of customers only
+			        DISTINCTCOUNT ( Sales[CustomerKey] ) + 1, -- Counts the number of customers only
 			        KEEPFILTERS ( CustomersWithLineage )  -- if they appear in their @NewCustomerDate
 			    )
 			RETURN
@@ -117,6 +117,22 @@ table Sales
 		lineageTag: 776a5215-e6ed-42f1-af05-6475332d8cec
 
 		annotation PBI_FormatHint = {"isCustom":true}
+
+	measure 'AVERAGE BASKET SIZE' =
+			VAR v_baskets =
+			    SUMMARIZE (
+			        'Sales',
+			        'Sales'[Order Number],
+			        'Sales'[StoreKey],
+			        'Sales'[Order Date],
+			        'Sales'[CustomerKey]
+			    )
+			RETURN
+			    AVERAGEX (
+			        v_baskets,
+			        CALCULATE ( DISTINCTCOUNT ( 'Sales'[ProductKey] ) )
+			    )
+		lineageTag: daa619a1-ef48-4a14-9e45-e7f25fddc1de
 
 	column 'Order Number'
 		dataType: int64
