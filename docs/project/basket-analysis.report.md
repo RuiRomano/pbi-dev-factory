@@ -12,6 +12,7 @@ Compares average product units per order across stores and product categories fo
 | Pages | 1 |
 | Visuals | 6: two bar charts, one matrix and three textboxes |
 | Theme | Team Contoso palette and Segoe UI on a Cloud canvas |
+| Canvas | 1280 by 720, FitToPage; chart colours reference Contoso palette index 0 |
 
 ## Report Flow
 
@@ -60,3 +61,5 @@ Report-authoring CLI 0.5.0 validation passed with zero errors and warnings. The 
 Both deployed models refreshed successfully. `scripts/test-data.py` passed all 48 Sales assertions, including 12 basket checks, and 14 HR assertions. An independent per-order calculation matched 395 store/category rows including the total. The current data has 2,029 baskets, 9,339 units and an average of 4.60 units per basket.
 
 Windows-only BPA was not run on Linux. Service preview failed with the `401` above, so no page screenshot was captured. Rendering, label clipping, scrolling, filtering and accessibility remain unverified. The spec stays In progress until a fresh preview and interaction review pass.
+
+PR validation initially failed the chart theme-colour rule and warned about the 1080px canvas height. Both bar charts now reference the Contoso theme instead of hard-coded colours, and the canvas and layout fit 1280 by 720. The corrected report passed CLI validation with zero errors and warnings; its data queries are unchanged. Full CI rerun results are recorded in the spec.

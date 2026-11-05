@@ -35,7 +35,7 @@ Design Brief:
       navigation: []
       page_background: "#F6F7FB"
       layout_contract:
-        canvas: { width: 1920, height: 1080, margin: 32, gutter: 24, snap: 8 }
+        canvas: { width: 1280, height: 720, margin: 24, gutter: 16, snap: 8 }
         grid:
           columns: 12
           rows: 12
@@ -103,6 +103,8 @@ Design Brief:
 O1 - Service preview failed with `RENDER_FAILED: CreateReportFailed`, code `401`, request `d890a171-0d3b-46c6-968a-870f0016f343`. Restore service preview access, then capture and review the page and test interactive filtering. Rendering, keyboard navigation and interaction checks remain unverified. The spec stays In progress until these checks pass. The units-per-order definition and category-only interpretation are explicit demo design decisions under the delegated approval.
 
 ## Change log
+- 2026-11-05: PR validation run 42043543066 found hard-coded bar colours and a page-height warning. Under the user's request to fix PR checks, replaced both bar colours with Contoso palette index 0 and resized the page to 1280 by 720 with adjusted positions and textbox sizes. Measures, queries, filters and ranking are unchanged. BPA rules and scripts remain unchanged.
+- 2026-11-05: Corrected report passed CLI validation with zero errors and warnings. Targeted checks confirmed theme references, a maximum page height of 720, six in-bounds non-overlapping visuals and unchanged visual data queries. Full Windows BPA, deployment and data tests are pending the PR pipeline rerun; O1 still blocks rendered validation.
 - 2026-11-05: Inspected the model, team rules and existing tests. Created and reviewed the spec; approved under the user's demo delegation before implementation.
 - 2026-11-05: Independent review prompted order-identity checks, exact numeric fixtures, an explicit Calendar date binding and a native top-10 scope. Verified the current partition preserves source quantities despite older documentation suggesting randomization. Changes self-approved under the same demo delegation.
 - 2026-11-05: Kept all stores in the ranked chart with scrolling to avoid top-N exclusions and preserve access to smaller locations. Self-approved under the demo delegation. Added both measures and 12 focused assertions; all 12 passed against live data with query-scoped candidate measures before deployment.

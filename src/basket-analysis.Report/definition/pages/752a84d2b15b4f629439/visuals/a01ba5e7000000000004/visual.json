@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "a01ba5e7000000000004",
-  "position": { "x": 968, "y": 120, "z": 3, "width": 920, "height": 496, "tabOrder": 3 },
+  "position": { "x": 648, "y": 88, "z": 3, "width": 608, "height": 320, "tabOrder": 3 },
   "visual": {
     "visualType": "barChart",
     "query": {
@@ -25,7 +25,7 @@
       }] }
     },
     "objects": {
-      "dataPoint": [{ "properties": { "defaultColor": { "solid": { "color": { "expr": { "Literal": { "Value": "'#536CE5'" } } } } }, "borderShow": { "expr": { "Literal": { "Value": "false" } } } } }],
+      "dataPoint": [{ "properties": { "defaultColor": { "solid": { "color": { "expr": { "ThemeDataColor": { "ColorId": 0, "Percent": 0 } } } } }, "borderShow": { "expr": { "Literal": { "Value": "false" } } } } }],
       "labels": [{ "properties": { "show": { "expr": { "Literal": { "Value": "true" } } }, "labelPosition": { "expr": { "Literal": { "Value": "'OutsideEnd'" } } }, "labelDisplayUnits": { "expr": { "Literal": { "Value": "1D" } } }, "labelPrecision": { "expr": { "Literal": { "Value": "2L" } } } } }],
       "valueAxis": [{ "properties": { "show": { "expr": { "Literal": { "Value": "false" } } }, "start": { "expr": { "Literal": { "Value": "0D" } } }, "gridlineShow": { "expr": { "Literal": { "Value": "false" } } } } }],
       "categoryAxis": [{ "properties": { "showAxisTitle": { "expr": { "Literal": { "Value": "false" } } }, "maxMarginFactor": { "expr": { "Literal": { "Value": "40L" } } }, "fontSize": { "expr": { "Literal": { "Value": "12D" } } } } }],

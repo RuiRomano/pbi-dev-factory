@@ -3,8 +3,8 @@
   "name": "752a84d2b15b4f629439",
   "displayName": "Where are baskets larger?",
   "displayOption": "FitToPage",
-  "height": 1080,
-  "width": 1920,
+  "height": 720,
+  "width": 1280,
   "objects": {
     "background": [{ "properties": {
       "color": { "solid": { "color": { "expr": { "Literal": { "Value": "'#F6F7FB'" } } } } },

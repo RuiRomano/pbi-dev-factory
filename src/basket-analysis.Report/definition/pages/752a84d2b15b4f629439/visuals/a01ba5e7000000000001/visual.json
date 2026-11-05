@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "a01ba5e7000000000001",
-  "position": { "x": 32, "y": 32, "z": 0, "width": 1520, "height": 80, "tabOrder": 0 },
+  "position": { "x": 24, "y": 24, "z": 0, "width": 1008, "height": 56, "tabOrder": 0 },
   "visual": {
     "visualType": "textbox",
     "objects": { "general": [{ "properties": { "paragraphs": [{
-      "textRuns": [{ "value": "Where are baskets larger?", "textStyle": { "fontFamily": "Segoe UI Light", "fontSize": "48px", "color": "#20283F" } }],
+      "textRuns": [{ "value": "Where are baskets larger?", "textStyle": { "fontFamily": "Segoe UI Light", "fontSize": "32px", "color": "#20283F" } }],
       "horizontalTextAlignment": "left"
     }] } }] },
     "visualContainerObjects": {
