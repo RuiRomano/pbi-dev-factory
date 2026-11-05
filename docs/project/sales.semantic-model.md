@@ -364,4 +364,14 @@ Run `python scripts\test-data.py` from the repository root against the configure
 
 An independent per-customer first-sale calculation matched the returning measure across 2,815 grouped results, including totals: 725 date rows, 1,974 customer rows, five year rows and 111 year/category/brand rows. Both reused measures matched their pre-change baseline in all five year/total rows and eight fixture scopes.
 
-Local BPA ran with `& .\scripts\bpa\bpa.ps1 -src @('.\src')` against the model and report using the repository rule files. It exited zero with 72 existing severity-2 `PROVIDE_DESCRIPTIONS_FOR_TABLES_MEASURES_AND_COLUMNS` warnings across five tables, 14 existing measures and 53 visible columns. The returning measure had no violations. Report definitions were unchanged; the repository deployment script republished the existing report alongside the model.
+During the returning-customer implementation, local BPA reported 72 existing description warnings across five tables, 14 measures and 53 visible columns. Those warnings were resolved by the subsequent remediation below. Report definitions were unchanged.
+
+## Local BPA Remediation, 2026-11-05
+
+The [approved remediation](../specs/bpa-remediation-202611.md) resolved all 74 current sales model findings. Added the 72 missing descriptions and disabled unused MDX attribute hierarchies for the hidden Quantity and Net Price columns. Descriptions document the existing calculations and source behavior, including the nonstandard fiscal-quarter labels, filter-dependent customer classification and absence of exchange-rate conversion.
+
+The saved local definition loads successfully with five tables, 63 columns, 15 measures and four relationships. Running `& .\scripts\bpa\bpa.ps1 -src @('.\src')` reported no model violations. Both dependent reports retained passing BPA results: customer-comparison 11 and sales-overview 17.
+
+Complete before/after metadata comparisons confirmed that all 15 measure expressions, test functions, partitions, relationships, roles, lineage tags, cultures and unrelated metadata were preserved. Existing DAX query and TMDL script edits were not changed.
+
+The developer selected local-only delivery. No deployment, Fabric refresh or live data tests were run for this remediation. Earlier live test results above remain historical evidence, not validation of a newly deployed model.

@@ -3,6 +3,7 @@ table Calendar
 	lineageTag: 119a9d89-4a5d-4160-8874-6167f38adcd6
 	dataCategory: Time
 
+	/// Calendar date used to filter month-end workforce snapshots and dated hire or exit events.
 	column Date
 		dataType: dateTime
 		isKey
@@ -13,6 +14,7 @@ table Calendar
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Last date of the calendar month. Used to group and evaluate month-end workforce snapshots.
 	column 'Month End'
 		dataType: dateTime
 		formatString: mmm yyyy
@@ -22,6 +24,7 @@ table Calendar
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Calendar month and year label, sorted chronologically by Year Month Key.
 	column 'Month Label'
 		dataType: string
 		lineageTag: cb6ed92e-ad8d-409e-a034-6190ac0528e5
@@ -36,6 +39,7 @@ table Calendar
 		summarizeBy: none
 		sourceColumn: Year Month Key
 
+	/// Full calendar month name, sorted by Month Number.
 	column 'Month Name'
 		dataType: string
 		lineageTag: 99fe8006-ce84-43d7-bde8-a641a265c704
@@ -50,18 +54,12 @@ table Calendar
 		summarizeBy: none
 		sourceColumn: Month Number
 
+	/// Fiscal year label for the February to January year, named for its January ending year.
 	column 'Fiscal Year'
 		dataType: string
 		lineageTag: 2760fcb0-a42d-47e4-982d-79e7eee9cd4b
 		summarizeBy: none
 		sourceColumn: Fiscal Year
-
-	column 'Fiscal Month'
-		dataType: int64
-		isHidden
-		lineageTag: 8ecc5d0f-cb84-43fc-91f6-8ea80d918186
-		summarizeBy: none
-		sourceColumn: Fiscal Month
 
 	partition Calendar = m
 		mode: import
@@ -76,8 +74,7 @@ table Calendar
 				    YearMonth = Table.AddColumn(Label, "Year Month Key", each Date.Year([Date]) * 100 + Date.Month([Date]), Int64.Type),
 				    MonthName = Table.AddColumn(YearMonth, "Month Name", each Date.ToText([Date], "MMMM", "en-US"), type text),
 				    MonthNumber = Table.AddColumn(MonthName, "Month Number", each Date.Month([Date]), Int64.Type),
-				    FiscalYear = Table.AddColumn(MonthNumber, "Fiscal Year", each "FY" & Text.End(Text.From(Date.Year([Date]) + (if Date.Month([Date]) >= 2 then 1 else 0)), 2), type text),
-				    FiscalMonth = Table.AddColumn(FiscalYear, "Fiscal Month", each Number.Mod(Date.Month([Date]) + 10, 12) + 1, Int64.Type)
+				    FiscalYear = Table.AddColumn(MonthNumber, "Fiscal Year", each "FY" & Text.End(Text.From(Date.Year([Date]) + (if Date.Month([Date]) >= 2 then 1 else 0)), 2), type text)
 				in
-				    Table.TransformColumnTypes(FiscalMonth, {{"Date", type date}})
+				    Table.TransformColumnTypes(FiscalYear, {{"Date", type date}})
 

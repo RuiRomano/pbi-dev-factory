@@ -5,10 +5,13 @@ table Department
 	column 'Department Key'
 		dataType: int64
 		isHidden
+		isKey
+		isAvailableInMdx: false
 		lineageTag: 028f29a1-31e4-42f5-83e7-f13bc1766088
 		summarizeBy: none
 		sourceColumn: Department Key
 
+	/// Fictional department assigned to the employee. Assignments remain fixed throughout the demo.
 	column Department
 		dataType: string
 		lineageTag: b72ca1f3-7620-490f-8453-f58d16adfaef
@@ -16,12 +19,14 @@ table Department
 		summarizeBy: none
 		sourceColumn: Department
 
+	/// Business division containing the fictional department.
 	column Division
 		dataType: string
 		lineageTag: bc24e834-bc65-4dff-bad2-f55024086ace
 		summarizeBy: none
 		sourceColumn: Division
 
+	/// Fictional cost center code assigned to the department.
 	column 'Cost Center'
 		dataType: string
 		lineageTag: bef8dd49-fbf8-4989-9fd4-22d3884efc4b

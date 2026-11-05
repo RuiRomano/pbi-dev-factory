@@ -21,7 +21,7 @@ table Headcount
 			        NOT ISBLANK ( _snapshot ),
 			        CALCULATE ( SUM ( 'Headcount'[FTE Value] ), 'Headcount'[Snapshot Date] = _snapshot )
 			    )
-		formatString: #,##0.0
+		formatString: #,0.0
 		lineageTag: bbcf3801-02be-46bb-bdd8-b006dba990f5
 
 	/// Mean monthly headcount across available month ends in the selected calendar period.
@@ -36,7 +36,7 @@ table Headcount
 			            TREATAS ( { _monthEnd }, 'Calendar'[Date] )
 			        )
 			)
-		formatString: #,##0.0
+		formatString: #,0.0
 		lineageTag: cc92d07d-6fab-4317-b835-0b8566a47154
 
 	/// Illustrative monthly base-salary cost in synthetic currency units: annual salary times FTE divided by 12 at the latest selected snapshot.
@@ -53,7 +53,7 @@ table Headcount
 			            'Headcount'[Snapshot Date] = _snapshot
 			        )
 			    )
-		formatString: #,##0.00
+		formatString: #,0.0
 		lineageTag: ffdbdf42-8e3b-454c-9acf-787e37bd8f60
 
 	/// Month-end headcount at the corresponding month end one year before the last date selected.
@@ -75,6 +75,7 @@ table Headcount
 	column 'Employee Key'
 		dataType: int64
 		isHidden
+		isAvailableInMdx: false
 		lineageTag: 3775d177-416f-42de-89b9-0df161d10207
 		summarizeBy: none
 		sourceColumn: Employee Key
@@ -82,6 +83,7 @@ table Headcount
 	column 'Department Key'
 		dataType: int64
 		isHidden
+		isAvailableInMdx: false
 		lineageTag: ecd0dae8-8166-4c6e-ad5b-9554ae85f1c2
 		summarizeBy: none
 		sourceColumn: Department Key
@@ -89,6 +91,7 @@ table Headcount
 	column 'Location Key'
 		dataType: int64
 		isHidden
+		isAvailableInMdx: false
 		lineageTag: eb614098-725f-4b67-bd39-20b7bea5f7a8
 		summarizeBy: none
 		sourceColumn: Location Key
@@ -97,6 +100,7 @@ table Headcount
 		dataType: dateTime
 		isHidden
 		formatString: yyyy-mm-dd
+		isAvailableInMdx: false
 		lineageTag: 3f1dc552-42df-49c2-86f1-4ebda3ca78ba
 		summarizeBy: none
 		sourceColumn: Snapshot Date
@@ -104,8 +108,9 @@ table Headcount
 		annotation UnderlyingDateTimeDataType = Date
 
 	column 'FTE Value'
-		dataType: double
+		dataType: decimal
 		isHidden
+		isAvailableInMdx: false
 		lineageTag: 896e821c-fc47-42f7-ae45-e0f3ca8791e6
 		sourceColumn: FTE
 
@@ -113,6 +118,7 @@ table Headcount
 	column 'Annual Base Salary'
 		dataType: decimal
 		isHidden
+		isAvailableInMdx: false
 		lineageTag: c23cf62c-f8df-4bb1-9efc-4b6a0dc726c0
 		sourceColumn: Annual Base Salary
 
@@ -138,7 +144,7 @@ table Headcount
 				    Typed = Table.TransformColumnTypes(Rows, {
 				        {"Employee Key", Int64.Type}, {"Department Key", Int64.Type},
 				        {"Location Key", Int64.Type}, {"Snapshot Date", type date},
-				        {"FTE", type number}, {"Annual Base Salary", Currency.Type}})
+				        {"FTE", Currency.Type}, {"Annual Base Salary", Currency.Type}})
 				in
 				    Typed
 
