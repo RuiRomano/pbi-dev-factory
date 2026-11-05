@@ -1,4 +1,4 @@
-# Write or update a spec
+# Spec workflow
 
 Turn the developer's intent into a short, code-grounded spec and keep it true as the work evolves. Stop after writing or updating the spec for developer review. Do not implement.
 
