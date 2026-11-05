@@ -26,7 +26,7 @@ Existing customers are customers with sales who are not new in the same period. 
 
 The report uses a registered [Contoso theme](../../src/sales-overview.Report/StaticResources/RegisteredResources/Contoso718570950292274.json) over the Fluent2 base theme. The model shares the `HttpSource`, `Environment` and `Randomizer` Power Query parameters across its queries.
 
-The [description specification](../specs/semantic-model-descriptions-202610.md) provides supporting interpretation and caveats. Its linked company-context file is absent from the current worktree, so it was not treated as an available business glossary.
+The [Copilot readiness specification](../specs/copilot-readiness.md) covers business descriptions and field-selection guidance. The [model's Copilot preparation](sales.semantic-model.md#copilot-preparation) contains recommended AI schema selections, draft instructions and validation questions. These are owner-reviewed recommendations, not configured AI settings.
 
 ## Run deployed model tests
 
@@ -64,4 +64,6 @@ Both page screenshots were captured and reviewed. They show the existing Desktop
 
 The model was saved locally, deployed to the configured DEV workspace and refreshed. The deployment script also republished the unchanged report. All 36 `Tests.Run` assertions passed, including the original four; the reused customer measures matched their baseline. Independent first-sale calculations matched 2,815 grouped returning-customer results. Source-data uniqueness and deployed access controls were not tested.
 
-Both artifacts have one document and both report pages retain their screenshots. Updated links were checked. The pre-existing description-spec link above points to a file absent from this worktree; it remains a documentation gap outside this change.
+Both artifacts have one document and both report pages retain their screenshots. Updated links were checked.
+
+On 2026-10-31, descriptions were added or refined for all five tables, 53 visible columns and 15 measures under the Copilot readiness spec. The model reloads offline; non-description model content and report definitions are unchanged. BPA could not start its Windows executable on the Linux runner. These changes have not been deployed, refreshed, regression-tested in DEV or tested in Copilot. Earlier live validation above applies only to returning customers.

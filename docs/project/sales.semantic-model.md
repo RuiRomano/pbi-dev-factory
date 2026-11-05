@@ -2,7 +2,7 @@
 
 ## Overview
 
-This model supports sample retail sales analysis for report consumers and self-service analysts. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, new and returning customers, customers with sales and time comparisons.
+This model supports sample retail sales analysis for report consumers, self-service analysts and Copilot. It connects order lines to product, customer, store and calendar attributes. Measures cover sales amount, cost, monetary margin, units, row counts, new and returning customers, customers with sales and time comparisons.
 
 The dependent [sales-overview report](sales-overview.report.md) uses these measures for summary cards, charts and an annual category matrix. The report names Northwind Retail Group, but the model sources workshop sample files and modifies some values during refresh. It is not evidence of certified company revenue.
 
@@ -354,7 +354,7 @@ No incremental-refresh policy or refresh schedule is present in the inspected mo
 
 The star schema and hidden relationship keys follow the team structure rules. The returning-customer measure follows existing customer-measure naming and placement. Visible numeric fields such as Product.Unit Price, Product.Unit Cost, Product.Weight, Sales.Exchange Rate and Store.Square Meters do not have corresponding explicit measures and hidden base columns. No unrelated objects were renamed or changed to address these deviations.
 
-The original documentation inspection was offline. The returning-customer implementation was subsequently loaded locally, deployed to `RR - PBI Factory {dev}`, refreshed and tested on 2026-10-30. Its live metadata reports Ready, Int64, visible, format `#,##0` and a populated description. Key uniqueness, inferred Age type and deployed security were not tested in this change. The diagram describes declared relationships, not tested referential integrity. The original company-context file is unavailable, so company-specific revenue and fiscal definitions remain unconfirmed.
+The original documentation inspection was offline. The returning-customer implementation was subsequently loaded locally, deployed to `RR - PBI Factory {dev}`, refreshed and tested on 2026-10-30. Its live metadata reports Ready, Int64, visible, format `#,##0` and a populated description. Key uniqueness, inferred Age type and deployed security were not tested in this change. The diagram describes declared relationships, not tested referential integrity. The current [company context](../../.agents/skills/team-practices/references/rules/company-context.md) defines revenue as net sales after returns and discounts and a February–January fiscal year. The sample model does not establish compliance with those definitions.
 
 ## Customer Classification Tests
 
@@ -365,3 +365,58 @@ Run `python scripts\test-data.py` from the repository root against the configure
 An independent per-customer first-sale calculation matched the returning measure across 2,815 grouped results, including totals: 725 date rows, 1,974 customer rows, five year rows and 111 year/category/brand rows. Both reused measures matched their pre-change baseline in all five year/total rows and eight fixture scopes.
 
 Local BPA ran with `& .\scripts\bpa\bpa.ps1 -src @('.\src')` against the model and report using the repository rule files. It exited zero with 72 existing severity-2 `PROVIDE_DESCRIPTIONS_FOR_TABLES_MEASURES_AND_COLUMNS` warnings across five tables, 14 existing measures and 53 visible columns. The returning measure had no violations. Report definitions were unchanged; the repository deployment script republished the existing report alongside the model.
+
+## Copilot Preparation
+
+The [Copilot readiness spec](../specs/copilot-readiness.md) covers description-only changes saved on 2026-10-31. All five tables, 53 visible columns and 15 measures now have descriptions, with key distinctions near the start. Names, calculations, visibility, formats, sources, relationships, tests, Q&A and report bindings remain unchanged. The folder reloads through the offline modeling tools. These changes have not been deployed or tested in Copilot; the earlier live test results above belong to the returning-customer change, not this change.
+
+### Recommended AI Data Schema
+
+Apply these recommendations through Power BI's **Prep data for AI** experience after owner review. They are not stored AI settings in this repository. Keep Q&A enabled while the AI data schema depends on it. Exclusion is guidance, not access control; review model permissions separately. Do not mark the model approved for Copilot until the questions below pass. See [Microsoft's Copilot model guidance](https://learn.microsoft.com/en-us/power-bi/create-reports/copilot-evaluate-data).
+
+| Table | Include in the initial schema | Exclude from the initial schema |
+|---|---|---|
+| Calendar | Date, Year, Quarter, Month, Month Name, Year-Month | Fiscal Year, Fiscal Quarter, Week Number, Day of Week, Day Name, Is Weekend, Day; sample fiscal fields and unverified week conventions are not business defaults. |
+| Sales | All 12 explicit measures; Currency Code for currency clarification | All other columns, including keys, raw quantity and prices, Order Number, Line Number, Delivery Date, Exchange Rate, Environment and Time; technical/detail fields are not default metrics. |
+| Product | Product, Product Code, Category, Subcategory, Brand, Manufacturer, Color; # Products only for product-record questions | ProductKey, category/subcategory codes, Weight, Weight Unit Measure, Unit Price and Unit Cost; no additive metric or currency/weight conversion is defined for these attributes. |
+| Customer | Country, State, City, Continent; # Customers only for customer-record questions | CustomerKey, Customer, Address, Zip Code, Birthday, Gender, Age, State Code and Country Code; start with aggregate geography, not personal detail or approximate age. |
+| Store | Store, Store Code, Country, State, Status; # Stores only for store-record questions | StoreKey, Square Meters, Open Date and Close Date; no sales-per-area or operating-period calculation is defined. |
+
+Monetary measures are for sample sales analysis only. Including Currency Code does not convert prices or establish that currencies are compatible. Clarify the currency basis before answering monetary questions; do not interpret the dollar format as evidence of USD. If the owner cannot establish a compatible currency basis, leave monetary measures out of the initial schema.
+
+### Draft AI Instructions
+
+Use the following text as a draft for owner review, not as evidence of configured or verified behavior:
+
+> This is sample retail data, not certified company revenue. Use existing explicit measures, not raw numeric columns or newly invented calculations. “Units sold” means Sales Qty; “sales lines” means # Sales, not orders or baskets. No distinct-order measure is defined.
+>
+> “Customers who bought” means Sales[# Customers (w/ Sales)]. Customer[# Customers], Product[# Products] and Store[# Stores] count dimension records, not entities with sales. New and returning customers use the existing qualifying-purchase definitions: product, category, brand and other remaining filters affect history. A customer with first and later purchases in one period is new only. Totals recalculate in their own context, not by summing row counts.
+>
+> Use Calendar Date, Year or Year-Month for order-date sales questions. Calendar filters Order Date, not Delivery Date, and covers only 2017–2021. Use calendar periods unless the user explicitly asks for a different definition. Company fiscal reporting is February–January, but this model's fiscal fields do not implement it; do not use them for company FY answers.
+>
+> Ask whether “country” or “state” means customer residence or store location when the question is ambiguous. Use full country names when presenting results. Do not assume store status filters are automatically applied.
+>
+> Sales Amount is sample quantity times net unit price. It has no currency conversion or explicit returns adjustment. Ask for clarification before treating it as company revenue or a USD amount; never infer currency from the display symbol or invent exchange-rate direction. Margin is monetary sales-line margin, not margin percentage or net profit. Cost is sales-line product cost, not operating expenses.
+>
+> Sales Amount Avg per Day averages nonblank daily values; days without sales are not zero days. The six- and 12-month averages average daily values in a trailing window ending at the latest selected date, not monthly totals or necessarily complete history. Do not use generated Time for hourly trends, Environment for channels, or Product Unit Price/Unit Cost as realized sales measures. No sales-per-area, loyalty, churn or lifetime-repeat metric is defined.
+
+### Representative Copilot Checks
+
+Run these questions in Copilot after applying the reviewed schema and instructions. Compare numbers with a direct query or existing visual in the same filter context. Record the prompt, filters, selected fields, expected and actual values, and pass/fail. A correctly routed field alone does not prove the numeric answer.
+
+| Question or context | Expected routing or response |
+|---|---|
+| How many units were sold in 2019? | Calendar[Year] = 2019 and Sales[Sales Qty], not # Sales or distinct orders. Compare with the existing measure in that context. |
+| How many customers bought in 2019? | Sales[# Customers (w/ Sales)], not Customer[# Customers]. The previous customer-count baseline was 621; recapture before/after on unchanged data. |
+| How many customer records are there? | Customer[# Customers], not purchasing-customer coverage. |
+| How many sales lines are there? | Sales[# Sales], not baskets or individual units. Ask for a metric definition if the question instead says “transactions.” |
+| What is margin in 2019? | Sales[Margin] is an amount, not a percentage or net profit. Confirm currency basis before presenting a monetary result. |
+| How many new and returning customers are there in 2019? | Sales[# New Customers] and Sales[# Returning Customers]. Previous baseline: 598 new and 23 returning. Recheck on unchanged data; category/brand selections alter qualifying history. |
+| Returning customers by date and total, customer 102075, dates 2017-06-27 and 2019-12-04 | Prior fixture: zero and one on date rows, zero at the total. Do not sum row counts for the total; verify through a direct query if customer detail is not in the AI schema. |
+| Sales by country | Ask whether customer or store country is intended before selecting Customer[Country] or Store[Country]. |
+| Revenue in USD | Explain that certified revenue and currency conversion are not established; ask for a supported currency/metric definition rather than assuming $ means USD. |
+| FY25 sales | Explain that company fiscal periods are not implemented and 2025 is outside Calendar coverage; do not substitute the sample fiscal fields or fabricate results. |
+| Average daily sales in a period with no-sales days | Sales[Sales Amount Avg per Day] omits blank days. Do not divide total sales by every calendar day or treat blank days as zeros. Confirm currency basis. |
+| Sales by delivery month or hour | Explain that Calendar filters order dates and Time is generated; do not present an order-date trend as delivery-date analysis or invent observed hourly sales. |
+
+Local BPA was attempted on 2026-10-31 with `& ./scripts/bpa/bpa.ps1 -src @('./src')`. It failed at `scripts/bpa/bpa.ps1:105` because the Windows TabularEditor.exe could not start on this Linux runner (permission denied). Neither model BPA nor report BPA completed. Description coverage and unchanged non-description content were checked locally; a supported BPA runner, authorized DEV regression tests and actual Copilot answers remain unverified.
