@@ -1,6 +1,6 @@
 ---
 name: team-practices
-description: "Apply this repository's Power BI team practices: write and maintain specs, follow team rules, implement changes with local BPA, deploy to the Fabric development environment, test and query live semantic models, and document the project. Team rules take precedence over conflicting guidance in other skills."
+description: "Defines how development is done in this repository: team rules, workflows, required checks and completion evidence. Use for every development task in this repository, including planning, specs, implementation, bug fixes, refactoring, code review, testing, deployment and documentation. Load before domain skills and use it to select the workflow and rules for the task. Team rules take precedence over conflicting guidance in other skills."
 argument-hint: "Describe what you want to spec, implement, document or test"
 ---
 
