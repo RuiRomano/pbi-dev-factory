@@ -249,7 +249,7 @@ table Sales
 
 		annotation SummarizationSetBy = Automatic
 
-	/// Synthetic time generated at refresh, with a random hour and minute and zero seconds. Not an observed transaction time.
+	/// Time of the sale
 	column Time
 		dataType: dateTime
 		formatString: Long Time
@@ -325,7 +325,7 @@ table Sales
 						#"Added 'Time'" = Table.AddColumn(
 							#"Changed Column Types",
 							"Time",
-							each #time(Number.RoundDown(Number.RandomBetween(0, 23), 0), Number.RoundDown(Number.RandomBetween(0, 59), 0), 0),
+							each #time(0, 0, 0),
 							type time
 						),
 						#"Removed Columns2" = Table.RemoveColumns(#"Added 'Time'", {"Unit Price"}),
