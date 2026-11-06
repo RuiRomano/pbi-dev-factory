@@ -56,7 +56,7 @@ table Movements
 			    )
 			RETURN
 			    IF ( NOT ISBLANK ( _selectedDate ) && _snapshots = 12, DIVIDE ( _exits, _average ) )
-		formatString: 0.0%
+		formatString: #,0.0%;-#,0.0%;#,0.0%
 		lineageTag: 79ea57a7-3970-4e68-8b27-567a9d245ffc
 
 	/// Trailing twelve-complete-month attrition rate as of the corresponding month end one year earlier.
@@ -72,12 +72,13 @@ table Movements
 			            TREATAS ( { _priorMonthEnd }, 'Calendar'[Date] )
 			        )
 			    )
-		formatString: 0.0%
+		formatString: #,0.0%;-#,0.0%;#,0.0%
 		lineageTag: 10f354cf-3686-4d1f-a4ce-05d7be478be6
 
 	column 'Employee Key'
 		dataType: int64
 		isHidden
+		isAvailableInMdx: false
 		lineageTag: d3167394-417a-42b2-a3ef-95baf34fdf5c
 		summarizeBy: none
 		sourceColumn: Employee Key
@@ -85,6 +86,7 @@ table Movements
 	column 'Department Key'
 		dataType: int64
 		isHidden
+		isAvailableInMdx: false
 		lineageTag: 3dbb87c7-32d0-4df2-8537-ff9cb1ec6093
 		summarizeBy: none
 		sourceColumn: Department Key
@@ -92,6 +94,7 @@ table Movements
 	column 'Location Key'
 		dataType: int64
 		isHidden
+		isAvailableInMdx: false
 		lineageTag: 9fc4c884-7936-4412-83c1-ef090f97caa3
 		summarizeBy: none
 		sourceColumn: Location Key
@@ -100,24 +103,28 @@ table Movements
 		dataType: dateTime
 		isHidden
 		formatString: yyyy-mm-dd
+		isAvailableInMdx: false
 		lineageTag: 9636859d-f378-47e4-8560-eeaef3e9eb9e
 		summarizeBy: none
 		sourceColumn: Event Date
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	/// Type of workforce event: Hire or Exit.
 	column 'Movement Type'
 		dataType: string
 		lineageTag: ccf281a2-2341-4ca4-a5e3-d5c6c15055c9
 		summarizeBy: none
 		sourceColumn: Movement Type
 
+	/// Fictional reason assigned to an exit: Voluntary, Retirement or Other. Blank for hires.
 	column 'Exit Reason'
 		dataType: string
 		lineageTag: 41f73715-0601-4ef8-b59a-809135d6c7f1
 		summarizeBy: none
 		sourceColumn: Exit Reason
 
+	/// Length of employment at exit, calculated from days divided by 365.25 and grouped as under 1, 1 to 3, 3 to 5 or 5 or more years. Blank for hires.
 	column 'Tenure Band'
 		dataType: string
 		lineageTag: 51130d83-4c6f-4137-a0a1-bb480401854c
