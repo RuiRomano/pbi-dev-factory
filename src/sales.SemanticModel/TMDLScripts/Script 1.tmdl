@@ -1,0 +1,19 @@
+createOrReplace
+
+	ref table Sales
+	
+		measure 'AVERAGE BASKET SIZE' =
+			VAR v_baskets =
+				SUMMARIZE (
+					'Sales',
+					'Sales'[Order Number],
+					'Sales'[StoreKey],
+					'Sales'[Order Date],
+					'Sales'[CustomerKey]
+				)
+			RETURN
+				AVERAGEX (
+					v_baskets,
+					CALCULATE ( DISTINCTCOUNT ( 'Sales'[ProductKey] ) )
+				)
+		lineageTag: daa619a1-ef48-4a14-9e45-e7f25fddc1de
