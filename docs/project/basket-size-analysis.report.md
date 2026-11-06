@@ -37,6 +37,8 @@ There are no slicers, bookmarks, drillthrough pages or report navigation control
 
 ## Validation and limitations
 
-The [implementation spec](../specs/market-basket-analysis-202611.md) records current deployment and validation evidence. Thirteen focused basket assertions passed against live data using query-scoped definitions before deployment. The local model loads with the two added measures. Final deployed tests and screenshot review are pending.
+The [implementation spec](../specs/market-basket-analysis-202611.md) records validation evidence. The local model loads with the two added measures. Deployment and refresh passed using the repository scripts. All 49 deployed sales assertions passed, including 13 basket assertions and all 36 existing assertions; all 14 HR assertions also passed. Existing sales measures matched their pre-change baseline before refresh. Independent code review found no significant issues. JSON, visual bounds, non-overlap and theme-color checks passed. Final report CLI validation and screenshot review remain pending.
+
+Open the [deployed development report](https://app.powerbi.com/groups/0a6ed388-8f6e-40a0-a9ac-df7d1522ba38/reports/a3f23b3f-9cda-49e7-bb88-7a1ec21191ca). The deployment script also republished existing source artifacts and the refresh script refreshed both models. Source definitions for those unrelated artifacts were not changed.
 
 Screenshot capture is not yet verified. No screenshot is included until the latest saved report has been rendered and reviewed. Source quantities can change at refresh, so this is sample analysis, not certified business performance. No causal claim or product-affinity analysis is made.
