@@ -10,15 +10,18 @@ The source queries can randomize sales quantities and net prices at refresh. Tre
 
 | Artifact | Type | Source | Connected artifact(s) | Purpose | Documentation |
 |---|---|---|---|---|---|
-| sales | Semantic model | `src/sales.SemanticModel` | sales-overview and customer-comparison reports | Sales amounts, cost, margin, quantities, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
+| sales | Semantic model | `src/sales.SemanticModel` | sales-overview, customer-comparison and basket-size-analysis reports | Sales amounts, cost, margin, quantities, basket size, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
 | hr | Semantic model | `src/hr.SemanticModel` | hr report | Synthetic employee snapshots and movements for headcount, FTE, salary cost and attrition demonstrations. | [Open](hr.semantic-model.md) |
 | hr | Report | `src/hr.Report` | hr semantic model, bound by relative path | Three-page fictional HR demo: workforce trends, exits and workforce mix. Local only; current Desktop screenshots documented. | [Open](hr.report.md) |
 | sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, and annual category KPIs. | [Open](sales-overview.report.md) |
 | customer-comparison | Report | `src/customer-comparison.Report` | sales semantic model, bound by relative path | Monthly comparison and detail for new, existing and total customers with sales. | [Source](../../src/customer-comparison.Report/definition/pages/2b3f5f9676144f1e9f79/page.json) |
+| basket-size-analysis | Report | `src/basket-size-analysis.Report` | sales semantic model, bound by relative path | Units per basket rankings by store and category, with basket counts and intersection detail. | [Open](basket-size-analysis.report.md) |
 
 ## Project Entry Point and Shared Resources
 
 Open [sales-overview.pbip](../../src/sales-overview.pbip) in Power BI Desktop. Its report definition binds to `../sales.SemanticModel`; no published workspace binding is specified.
+
+Open [basket-size-analysis.pbip](../../src/basket-size-analysis.pbip) for basket analysis using the shared sales model. Larger baskets mean more units per order. Category views use only the selected category's units and orders, not full baskets. See the [report documentation](basket-size-analysis.report.md) for filters, total behavior and validation limitations.
 
 Open [customer-comparison.pbip](../../src/customer-comparison.pbip) for the separate, single-page customer report. It uses the same local model and the [Contoso theme](../../src/customer-comparison.Report/StaticResources/RegisteredResources/Contoso.json). The chart groups by `Calendar[Year-Month]`, sorted ascending, and compares `Sales[# New Customers]` with `Sales[# Returning Customers]`, displayed as existing customers. The matrix also shows `Sales[# Customers (w/ Sales)]`. Date, category and brand filters are available in the filter pane; there are no slicers.
 

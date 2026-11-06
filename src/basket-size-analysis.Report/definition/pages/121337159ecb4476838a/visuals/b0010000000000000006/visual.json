@@ -1,0 +1,31 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "b0010000000000000006",
+  "position": {"x": 32, "y": 728, "z": 5000, "width": 1856, "height": 320, "tabOrder": 5000},
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {"queryState": {
+      "Rows": {"projections": [
+        {"field": {"Column": {"Expression": {"SourceRef": {"Entity": "Store"}}, "Property": "Store"}}, "queryRef": "Store.Store", "nativeQueryRef": "Store", "displayName": "Store", "active": true},
+        {"field": {"Column": {"Expression": {"SourceRef": {"Entity": "Product"}}, "Property": "Category"}}, "queryRef": "Product.Category", "nativeQueryRef": "Category", "displayName": "Product category", "active": true}
+      ]},
+      "Values": {"projections": [
+        {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "Sales Qty"}}, "queryRef": "Sales.Sales Qty", "nativeQueryRef": "Sales Qty", "displayName": "Units"},
+        {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "# BASKETS"}}, "queryRef": "Sales.# BASKETS", "nativeQueryRef": "# BASKETS", "displayName": "Baskets"},
+        {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "AVERAGE BASKET SIZE"}}, "queryRef": "Sales.AVERAGE BASKET SIZE", "nativeQueryRef": "AVERAGE BASKET SIZE", "displayName": "Units per basket"}
+      ]}
+    }},
+    "objects": {
+      "columnHeaders": [{"properties": {"autoSizeColumnWidth": {"expr": {"Literal": {"Value": "true"}}}, "columnAdjustment": {"expr": {"Literal": {"Value": "'growToFit'"}}}}}],
+      "rowHeaders": [{"properties": {"stepped": {"expr": {"Literal": {"Value": "false"}}}, "showExpandCollapseButtons": {"expr": {"Literal": {"Value": "true"}}}}}]
+    },
+    "expansionStates": [{"roles": ["Rows"], "levels": [
+      {"queryRefs": ["Store.Store"], "isCollapsed": false, "identityKeys": [{"Column": {"Expression": {"SourceRef": {"Entity": "Store"}}, "Property": "Store"}}]},
+      {"queryRefs": ["Product.Category"], "isCollapsed": false, "identityKeys": [{"Column": {"Expression": {"SourceRef": {"Entity": "Product"}}, "Property": "Category"}}]}
+    ]}],
+    "visualContainerObjects": {
+      "title": [{"properties": {"show": {"expr": {"Literal": {"Value": "true"}}}, "text": {"expr": {"Literal": {"Value": "'Store and category detail'"}}}, "fontSize": {"expr": {"Literal": {"Value": "18D"}}}}}],
+      "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Store and product category detail with units, distinct baskets and average units per basket. Totals recalculate the average; they do not add or average the displayed ratios.'"}}}}}]
+    }
+  }
+}

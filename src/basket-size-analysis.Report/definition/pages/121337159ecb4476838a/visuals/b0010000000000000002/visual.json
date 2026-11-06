@@ -1,0 +1,19 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "b0010000000000000002",
+  "position": {"x": 32, "y": 128, "z": 1000, "width": 912, "height": 144, "tabOrder": 1000},
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [{"properties": {"paragraphs": [
+        {"textRuns": [{"value": "Which stores and categories have larger baskets?", "textStyle": {"fontFamily": "Segoe UI Semibold", "fontSize": "24px", "color": "#20283F"}}]},
+        {"textRuns": [{"value": "Basket size is units per order, not spending. Category views include only that category's units and orders, not full baskets. Use the filter pane for date, country, store and category.", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "18px", "color": "#20283F"}}]},
+        {"textRuns": [{"value": "Sample retail data. Quantities can change at refresh.", "textStyle": {"fontFamily": "Segoe UI", "fontSize": "16px", "color": "#20283F"}}]}
+      ]}}]
+    },
+    "visualContainerObjects": {
+      "background": [{"properties": {"show": {"expr": {"Literal": {"Value": "false"}}}}}],
+      "border": [{"properties": {"show": {"expr": {"Literal": {"Value": "false"}}}}}]
+    }
+  }
+}

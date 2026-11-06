@@ -12,7 +12,7 @@ The dependent [sales-overview report](sales-overview.report.md) uses these measu
 | Storage mode(s) | Import |
 | Tables | 5 |
 | Columns | 63: 53 visible, 10 hidden |
-| Measures | 15 |
+| Measures | 17 |
 | Relationships | 4 |
 | Hierarchies | 1, with 3 levels |
 | Calculation groups | None |
@@ -317,6 +317,16 @@ Counts store dimension rows in context. It does not automatically exclude closed
 ```dax
 COUNTROWS('Store')
 ```
+
+### # BASKETS
+
+Distinct nonblank `Sales[Order Number]` values in the current filter context. One order can have many lines. Category filters count orders containing that category, and a shared order can appear in several category rows. Grand totals count each selected order once. Format: `#,##0`; display folder: `Basket analysis`.
+
+### AVERAGE BASKET SIZE
+
+Units on identified orders divided by `# BASKETS`. Reuses `Sales Qty`, intersecting the current selection with nonblank order numbers. Returns blank when no orders qualify. Date, store, customer and product filters remain in effect. Category views include only that category's units and orders, not full baskets containing the category. Totals divide selected units by distinct orders instead of averaging the displayed ratios. Format: `#,##0.00`; display folder: `Basket analysis`.
+
+The separate [basket size analysis report](basket-size-analysis.report.md) compares these metrics by store and category. The demo defines basket size in units, not currency value or line count. The pre-change development data had 2,029 orders without order numbers spanning multiple stores, customers or dates; `Tests.Baskets` retains this key check alongside independent grouped-order comparisons, multiline and empty-selection checks. `Tests.Run` includes all 13 basket assertions without changing the existing assertions. See the [spec](../specs/market-basket-analysis-202611.md) for current validation evidence.
 
 ## Security
 

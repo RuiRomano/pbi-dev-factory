@@ -1,0 +1,24 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "b0010000000000000003",
+  "position": {"x": 968, "y": 144, "z": 2000, "width": 920, "height": 104, "tabOrder": 2000},
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {"queryState": {"Data": {"projections": [
+      {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "AVERAGE BASKET SIZE"}}, "queryRef": "Sales.AVERAGE BASKET SIZE", "nativeQueryRef": "AVERAGE BASKET SIZE", "displayName": "Units per basket"},
+      {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "# BASKETS"}}, "queryRef": "Sales.# BASKETS", "nativeQueryRef": "# BASKETS", "displayName": "Baskets"}
+    ]}}},
+    "objects": {
+      "value": [{"properties": {"fontSize": {"expr": {"Literal": {"Value": "28D"}}}, "labelDisplayUnits": {"expr": {"Literal": {"Value": "1D"}}}}, "selector": {"id": "default"}}],
+      "label": [{"properties": {"fontSize": {"expr": {"Literal": {"Value": "14D"}}}}, "selector": {"id": "default"}}],
+      "padding": [{"properties": {"paddingUniform": {"expr": {"Literal": {"Value": "8D"}}}}, "selector": {"id": "default"}}],
+      "layout": [{"properties": {"paddingUniform": {"expr": {"Literal": {"Value": "0D"}}}, "columnCount": {"expr": {"Literal": {"Value": "2L"}}}}, "selector": {"id": "default"}}]
+    },
+    "visualContainerObjects": {
+      "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Average units per distinct order and order count for the current filter selection.'"}}}}}],
+      "title": [{"properties": {"show": {"expr": {"Literal": {"Value": "false"}}}}}],
+      "padding": [{"properties": {"top": {"expr": {"Literal": {"Value": "8D"}}}, "bottom": {"expr": {"Literal": {"Value": "8D"}}}, "left": {"expr": {"Literal": {"Value": "8D"}}}, "right": {"expr": {"Literal": {"Value": "8D"}}}}}],
+      "spacing": [{"properties": {"customizeSpacing": {"expr": {"Literal": {"Value": "true"}}}, "verticalSpacing": {"expr": {"Literal": {"Value": "2D"}}}}}]
+    }
+  }
+}

@@ -21,6 +21,7 @@ function 'PQL.Assert.Tbl.ShouldHaveRows' =
 function 'Tests.Run' =
 		() =>
 		UNION (
+		    Tests.Baskets (),
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Sales should have rows", 'Sales' ),
 		    PQL.Assert.Tbl.ShouldHaveRows ( "Customer should have rows", 'Customer' ),
 			// Tests [# New Customers]
@@ -599,3 +600,105 @@ function 'PQL.Assert.Tbl.ShouldHaveColumns' =
 
 	annotation DAXLIB_PackageVersion = 0.8.0
 
+/// Basket analysis assertions for distinct orders, unit averages, filter context, totals and empty selections.
+function 'Tests.Baskets' =
+		() =>
+		UNION (
+		    VAR orders =
+		        SUMMARIZE (
+		            FILTER ( 'Sales', NOT ISBLANK ( 'Sales'[Order Number] ) ),
+		            'Sales'[Order Number],
+		            "Stores", DISTINCTCOUNT ( 'Sales'[StoreKey] ),
+		            "Customers", DISTINCTCOUNT ( 'Sales'[CustomerKey] ),
+		            "Dates", DISTINCTCOUNT ( 'Sales'[Order Date] )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldBeTrue (
+		            "Baskets - order numbers identify one store customer and date",
+		            COUNTROWS ( orders ) > 0
+		                && ISEMPTY ( FILTER ( orders, [Stores] <> 1 || [Customers] <> 1 || [Dates] <> 1 ) )
+		        ),
+		    VAR orders = FILTER ( VALUES ( 'Sales'[Order Number] ), NOT ISBLANK ( 'Sales'[Order Number] ) )
+		    RETURN
+		        PQL.Assert.ShouldEqual ( "Baskets - distinct orders not sales lines", COUNTROWS ( orders ), [# BASKETS] ),
+		    VAR orders =
+		        SUMMARIZE (
+		            FILTER ( 'Sales', NOT ISBLANK ( 'Sales'[Order Number] ) ),
+		            'Sales'[Order Number],
+		            "Units", SUM ( 'Sales'[Quantity] )
+		        )
+		    VAR expected = AVERAGEX ( orders, [Units] )
+		    RETURN
+		        PQL.Assert.ShouldBeTrue (
+		            "Baskets - total is average order units not average line units",
+		            NOT ISBLANK ( expected ) && ABS ( [AVERAGE BASKET SIZE] - expected ) < 0.000000001
+		        ),
+		    VAR orders =
+		        FILTER (
+		            SUMMARIZE ( 'Sales', 'Sales'[Order Number], "Lines", COUNTROWS ( 'Sales' ) ),
+		            NOT ISBLANK ( 'Sales'[Order Number] ) && [Lines] > 1
+		        )
+		    VAR selectedOrder = TOPN ( 1, orders, 'Sales'[Order Number], ASC )
+		    RETURN
+		        CALCULATETABLE (
+		            UNION (
+		                PQL.Assert.ShouldBeTrue ( "Baskets - multiline fixture exists", COUNTROWS ( selectedOrder ) = 1 ),
+		                PQL.Assert.ShouldEqual ( "Baskets - multiline order counts once", 1, [# BASKETS] ),
+		                PQL.Assert.ShouldEqual ( "Baskets - single order includes every unit", SUM ( 'Sales'[Quantity] ), [AVERAGE BASKET SIZE] )
+		            ),
+		            TREATAS ( SELECTCOLUMNS ( selectedOrder, "Order", 'Sales'[Order Number] ), 'Sales'[Order Number] )
+		        ),
+		    VAR results =
+		        SUMMARIZECOLUMNS (
+		            ROLLUPADDISSUBTOTAL ( 'Store'[Store], "StoreTotal" ),
+		            ROLLUPADDISSUBTOTAL ( 'Product'[Category], "CategoryTotal" ),
+		            "Baskets", [# BASKETS],
+		            "Size", [AVERAGE BASKET SIZE],
+		            "ExpectedBaskets", COUNTROWS ( FILTER ( VALUES ( 'Sales'[Order Number] ), NOT ISBLANK ( 'Sales'[Order Number] ) ) ),
+		            "ExpectedSize", AVERAGEX (
+		                SUMMARIZE (
+		                    FILTER ( 'Sales', NOT ISBLANK ( 'Sales'[Order Number] ) ),
+		                    'Sales'[Order Number],
+		                    "Units", SUM ( 'Sales'[Quantity] )
+		                ),
+		                [Units]
+		            )
+		        )
+		    RETURN
+		        PQL.Assert.ShouldBeTrue (
+		            "Baskets - stores categories intersections and totals match grouped orders",
+		            COUNTROWS ( results ) > 1
+		                && ISEMPTY ( FILTER ( results, NOT ( [Baskets] == [ExpectedBaskets] ) || ISBLANK ( [Size] ) <> ISBLANK ( [ExpectedSize] ) || ABS ( [Size] - [ExpectedSize] ) >= 0.000000001 ) )
+		        ),
+		    CALCULATETABLE (
+		        VAR orders =
+		            SUMMARIZE (
+		                FILTER ( 'Sales', NOT ISBLANK ( 'Sales'[Order Number] ) ),
+		                'Sales'[Order Number],
+		                "Units", SUM ( 'Sales'[Quantity] )
+		            )
+		        VAR expected = AVERAGEX ( orders, [Units] )
+		        RETURN
+		            UNION (
+		                PQL.Assert.ShouldEqual ( "Baskets - date and category retain order scope", COUNTROWS ( orders ), [# BASKETS] ),
+		                PQL.Assert.ShouldBeTrue ( "Baskets - category size excludes other category units", NOT ISBLANK ( expected ) && ABS ( [AVERAGE BASKET SIZE] - expected ) < 0.000000001 )
+		            ),
+		        TREATAS ( { 2019 }, 'Calendar'[Year] ),
+		        TREATAS ( { "Games and Toys" }, 'Product'[Category] )
+		    ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldBeNull ( "Baskets - empty selection count is blank", [# BASKETS] ),
+		            PQL.Assert.ShouldBeNull ( "Baskets - empty selection size is blank", [AVERAGE BASKET SIZE] )
+		        ),
+		        FILTER ( ALL ( 'Calendar' ), FALSE () )
+		    ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldBeNull ( "Baskets - blank order number excluded from count", [# BASKETS] ),
+		            PQL.Assert.ShouldBeNull ( "Baskets - blank order number excluded from size", [AVERAGE BASKET SIZE] )
+		        ),
+		        TREATAS ( { BLANK () }, 'Sales'[Order Number] )
+		    )
+		)
+	lineageTag: dc63109a-bf77-4a51-acf2-cab12d89b712

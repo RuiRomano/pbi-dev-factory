@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "b0010000000000000001",
+  "position": {"x": 32, "y": 32, "z": 0, "width": 1856, "height": 96, "tabOrder": 0},
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [{"properties": {"paragraphs": [
+        {"textRuns": [{"value": "Market basket analysis", "textStyle": {"fontFamily": "Segoe UI Light", "fontSize": "48px", "color": "#20283F"}}]}
+      ]}}]
+    },
+    "visualContainerObjects": {
+      "background": [{"properties": {"show": {"expr": {"Literal": {"Value": "false"}}}}}],
+      "border": [{"properties": {"show": {"expr": {"Literal": {"Value": "false"}}}}}]
+    }
+  }
+}

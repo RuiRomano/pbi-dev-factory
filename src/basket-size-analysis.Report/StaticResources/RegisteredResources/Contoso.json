@@ -1,0 +1,173 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.159.json",
+  "name": "Contoso.json",
+  "dataColors": [
+    "#536CE5",
+    "#C8BCF4",
+    "#9CCDC6",
+    "#EAC9C8",
+    "#20283F"
+  ],
+  "firstLevelElements": "#20283F",
+  "secondLevelElements": "#20283F",
+  "thirdLevelElements": "#F6F7FB",
+  "fourthLevelElements": "#20283F",
+  "background": "#FFFFFF",
+  "secondaryBackground": "#F6F7FB",
+  "tableAccent": "#536CE5",
+  "textClasses": {
+    "callout": {
+      "fontFace": "Segoe UI Light",
+      "fontSize": 36,
+      "color": "#20283F"
+    },
+    "title": {
+      "fontFace": "Segoe UI",
+      "fontSize": 12,
+      "color": "#20283F"
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#20283F"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 12,
+      "color": "#20283F"
+    },
+    "largeTitle": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#20283F"
+    },
+    "smallLabel": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10.5,
+      "color": "#20283F"
+    },
+    "smallLightLabel": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10.5,
+      "color": "#20283F"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "title": [
+          {
+            "fontFamily": "Segoe UI Semibold",
+            "fontSize": 12,
+            "fontColor": { "solid": { "color": "#20283F" } },
+            "alignment": "left",
+            "bold": false,
+            "titleWrap": true
+          }
+        ],
+        "subTitle": [
+          {
+            "fontFamily": "Segoe UI",
+            "fontSize": 10.5,
+            "fontColor": { "solid": { "color": "#20283F" } },
+            "alignment": "left",
+            "bold": false
+          }
+        ],
+        "background": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#FFFFFF" } },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#F6F7FB" } },
+            "radius": 12,
+            "width": 1
+          }
+        ],
+        "dropShadow": [
+          { "show": false }
+        ],
+        "padding": [
+          { "top": 12, "bottom": 12, "left": 12, "right": 12 }
+        ]
+      }
+    },
+    "textbox": {
+      "*": {
+        "padding": [
+          { "top": 0, "bottom": 0, "left": 0, "right": 0 }
+        ],
+        "border": [
+          { "show": false }
+        ],
+        "background": [
+          { "show": false, "transparency": 100 }
+        ]
+      }
+    },
+    "cardVisual": {
+      "*": {
+        "padding": [{ "paddingUniform": 8 }],
+        "layout": [{ "paddingUniform": 0 }],
+        "spacing": [{ "verticalSpacing": 2 }]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": { "solid": { "color": "#F6F7FB" } },
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": { "solid": { "color": "#F6F7FB" } },
+            "transparency": 0
+          }
+        ],
+        "outspacePane": [
+          {
+            "backgroundColor": { "solid": { "color": "#F6F7FB" } },
+            "foregroundColor": { "solid": { "color": "#20283F" } },
+            "checkboxAndApplyColor": { "solid": { "color": "#536CE5" } },
+            "inputBoxColor": { "solid": { "color": "#FFFFFF" } },
+            "fontFamily": "Segoe UI",
+            "titleSize": 12,
+            "headerSize": 12,
+            "searchTextSize": 11,
+            "border": false,
+            "transparency": 0
+          }
+        ],
+        "filterCard": [
+          {
+            "$id": "Available",
+            "backgroundColor": { "solid": { "color": "#FFFFFF" } },
+            "foregroundColor": { "solid": { "color": "#20283F" } },
+            "inputBoxColor": { "solid": { "color": "#FFFFFF" } },
+            "fontFamily": "Segoe UI",
+            "textSize": 11,
+            "border": false,
+            "transparency": 0
+          },
+          {
+            "$id": "Applied",
+            "backgroundColor": { "solid": { "color": "#C8BCF4" } },
+            "foregroundColor": { "solid": { "color": "#20283F" } },
+            "inputBoxColor": { "solid": { "color": "#FFFFFF" } },
+            "fontFamily": "Segoe UI",
+            "textSize": 11,
+            "border": false,
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}

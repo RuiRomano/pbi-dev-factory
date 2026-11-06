@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "b0010000000000000004",
+  "position": {"x": 32, "y": 296, "z": 3000, "width": 912, "height": 408, "tabOrder": 3000},
+  "visual": {
+    "visualType": "barChart",
+    "query": {
+      "queryState": {
+        "Category": {"projections": [{"field": {"Column": {"Expression": {"SourceRef": {"Entity": "Store"}}, "Property": "Store"}}, "queryRef": "Store.Store", "nativeQueryRef": "Store", "displayName": "Store"}]},
+        "Y": {"projections": [{"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "AVERAGE BASKET SIZE"}}, "queryRef": "Sales.AVERAGE BASKET SIZE", "nativeQueryRef": "AVERAGE BASKET SIZE", "displayName": "Units per basket"}]},
+        "Tooltips": {"projections": [{"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "# BASKETS"}}, "queryRef": "Sales.# BASKETS", "nativeQueryRef": "# BASKETS", "displayName": "Baskets"}]}
+      },
+      "sortDefinition": {"sort": [{"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "AVERAGE BASKET SIZE"}}, "direction": "Descending"}], "isDefaultSort": false}
+    },
+    "objects": {
+      "dataPoint": [{"properties": {"defaultColor": {"solid": {"color": {"expr": {"ThemeDataColor": {"ColorId": 0, "Percent": 0}}}}}}}],
+      "labels": [{"properties": {"show": {"expr": {"Literal": {"Value": "true"}}}, "labelPrecision": {"expr": {"Literal": {"Value": "2L"}}}, "labelDisplayUnits": {"expr": {"Literal": {"Value": "1D"}}}}}],
+      "valueAxis": [{"properties": {"start": {"expr": {"Literal": {"Value": "0D"}}}, "titleText": {"expr": {"Literal": {"Value": "'Units per basket'"}}}, "showAxisTitle": {"expr": {"Literal": {"Value": "true"}}}}}],
+      "categoryAxis": [{"properties": {"showAxisTitle": {"expr": {"Literal": {"Value": "false"}}}}}]
+    },
+    "visualContainerObjects": {
+      "title": [{"properties": {"show": {"expr": {"Literal": {"Value": "true"}}}, "text": {"expr": {"Literal": {"Value": "'Stores ranked by basket size'"}}}, "fontSize": {"expr": {"Literal": {"Value": "18D"}}}}}],
+      "general": [{"properties": {"altText": {"expr": {"Literal": {"Value": "'Stores ranked by average units per order, largest first. Hover to see basket count; scroll to see more stores.'"}}}}}]
+    }
+  }
+}

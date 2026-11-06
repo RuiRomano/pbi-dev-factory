@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "basket-size-analysis"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "72f5ae9e-b5e7-4bd2-a4a7-6b3f5d9639ec"
+  }
+}

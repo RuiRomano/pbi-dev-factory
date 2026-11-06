@@ -130,6 +130,22 @@ table Sales
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Number of distinct orders with a nonblank order number in the current selection. An order with multiple sales lines counts once. Category selections count orders containing that category.
+	measure '# BASKETS' = DISTINCTCOUNTNOBLANK ( 'Sales'[Order Number] )
+		formatString: #,##0
+		displayFolder: Basket analysis
+		lineageTag: 01ada4c7-2dea-41c5-af77-6091d29233fe
+
+	/// Average product units per order in the current selection, excluding lines without an order number. Larger means more units, not more spending or sales lines. Category views include only that category's units and orders containing it, not full baskets. Totals divide total units by distinct orders. Returns blank when no orders qualify.
+	measure 'AVERAGE BASKET SIZE' =
+			DIVIDE (
+			    CALCULATE ( [Sales Qty], KEEPFILTERS ( NOT ISBLANK ( 'Sales'[Order Number] ) ) ),
+			    [# BASKETS]
+			)
+		formatString: #,##0.00
+		displayFolder: Basket analysis
+		lineageTag: e08dfa5e-7d62-4002-afd6-d8d73cbdc86e
+
 	/// Sales order identifier. An order can contain multiple order lines.
 	column 'Order Number'
 		dataType: int64

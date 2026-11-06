@@ -1,6 +1,6 @@
 # Market basket analysis
 
-**Status:** Approved
+**Status:** In progress
 **Updated:** 2026-11-06
 
 ## Goal
@@ -51,9 +51,8 @@ Design Brief:
             detail: [1, 9, 13, 13]
         placements:
           - { id: page_title, region: header, kind: textbox, text: "Market basket analysis" }
-          - { id: definition, region: summary, kind: textbox, text: "Basket size is units per order. Category views include only that category's units and orders. Use the filter pane to narrow date, country, store or category.", slot: 1, of: 3 }
-          - { id: average_size, region: summary, kind: cardVisual, field_bindings: "Sales[AVERAGE BASKET SIZE]", slot: 2, of: 3 }
-          - { id: baskets, region: summary, kind: cardVisual, field_bindings: "Sales[# BASKETS]", slot: 3, of: 3 }
+          - { id: definition, region: summary, kind: textbox, text: "Basket size is units per order. Category views include only that category's units and orders. Use the filter pane to narrow date, country, store or category.", slot: 1, of: 2 }
+          - { id: basket_summary, region: summary, kind: cardVisual, field_bindings: ["Sales[AVERAGE BASKET SIZE]", "Sales[# BASKETS]"], slot: 2, of: 2 }
           - { id: stores, region: stores, kind: barChart, field_bindings: { Category: "Store[Store]", Y: "Sales[AVERAGE BASKET SIZE]" }, sort_policy: value_desc, color_strategy: measure_match }
           - { id: categories, region: categories, kind: barChart, field_bindings: { Category: "Product[Category]", Y: "Sales[AVERAGE BASKET SIZE]" }, sort_policy: value_desc, color_strategy: measure_match }
           - { id: detail, region: detail, kind: pivotTable, field_bindings: ["Store[Store]", "Product[Category]", "Sales[Sales Qty]", "Sales[# BASKETS]", "Sales[AVERAGE BASKET SIZE]"] }
