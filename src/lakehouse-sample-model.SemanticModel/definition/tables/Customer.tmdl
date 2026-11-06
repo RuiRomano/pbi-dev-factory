@@ -1,0 +1,36 @@
+/// Purchasing-customer role, one row per delivered CustomerKey. Independent of the billing-customer role; source unknown-member key 0 is preserved.
+table Customer
+	lineageTag: 02fbade7-123b-4ccc-80ea-2fb00b8e68b8
+
+	column 'Customer Key'
+		dataType: int64
+		isHidden
+		lineageTag: b04ad2b4-8f49-4dc2-9263-0cfbf6627ddc
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+	column Customer
+		dataType: string
+		lineageTag: 7d939497-c51f-4d73-af80-6c56c04e3cda
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: Customer
+
+	column Category
+		dataType: string
+		lineageTag: 08b6ecb6-1b86-462f-9dfa-3270c34f5bdb
+		summarizeBy: none
+		sourceColumn: Category
+
+	column 'Buying Group'
+		dataType: string
+		lineageTag: bd648f36-c8c5-441f-9bc0-aa442f8259a5
+		summarizeBy: none
+		sourceColumn: BuyingGroup
+
+	partition Customer = entity
+		mode: directLake
+		source
+			entityName: dimension_customer
+			expressionSource: OneLake
+

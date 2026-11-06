@@ -1,0 +1,60 @@
+/// Delivered stock-item dimension, one row per StockItemKey, named Product consistently with the sales model. Technical IDs, barcode and nonessential numeric attributes are omitted.
+table Product
+	lineageTag: 48800c04-5f86-4ba6-9863-b86aefa0bf15
+
+	column 'Product Key'
+		dataType: int64
+		isHidden
+		lineageTag: f9314c67-d306-43bf-96a5-0531c1b8bcb3
+		summarizeBy: none
+		sourceColumn: StockItemKey
+
+	column Product
+		dataType: string
+		lineageTag: 8c706219-e646-4d16-85b6-2b7316b58b6e
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: StockItem
+
+	column Color
+		dataType: string
+		lineageTag: 2723d746-d320-4c4f-a3c6-b1b178a74bb4
+		summarizeBy: none
+		sourceColumn: Color
+
+	column 'Selling Package'
+		dataType: string
+		lineageTag: cdc758e5-8015-492a-aec2-f3581c88effd
+		summarizeBy: none
+		sourceColumn: SellingPackage
+
+	column 'Buying Package'
+		dataType: string
+		lineageTag: eaeaf808-250a-45e3-b4cb-0851195bdc22
+		summarizeBy: none
+		sourceColumn: BuyingPackage
+
+	column Brand
+		dataType: string
+		lineageTag: 1ac26b66-27e4-4298-80c6-6db3108f9edf
+		summarizeBy: none
+		sourceColumn: Brand
+
+	column Size
+		dataType: string
+		lineageTag: 2e6e27f1-1df4-4650-a950-dfaca61f3d19
+		summarizeBy: none
+		sourceColumn: Size
+
+	column 'Is Chiller Stock'
+		dataType: boolean
+		lineageTag: 4a995f21-59a4-46bb-9035-2af413ca9fbc
+		summarizeBy: none
+		sourceColumn: IsChillerStock
+
+	partition Product = entity
+		mode: directLake
+		source
+			entityName: dimension_stock_item
+			expressionSource: OneLake
+

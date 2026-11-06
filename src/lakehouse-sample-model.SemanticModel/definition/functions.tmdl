@@ -1,0 +1,121 @@
+/// Existing PQL.Assert 0.8.0 type-aware assertion pattern, reused without existing object lineage.
+function 'PQL.Assert.ShouldEqual' =
+		(testName : STRING, expected : VARIANT, actual : VARIANT) =>
+		    VAR _ExpType = SWITCH(TRUE(), ISBLANK(expected), 0, ISLOGICAL(expected), 1, ISTEXT(expected), 2, ISNUMBER(expected), 3, 4)
+		    VAR _ActType = SWITCH(TRUE(), ISBLANK(actual), 0, ISLOGICAL(actual), 1, ISTEXT(actual), 2, ISNUMBER(actual), 3, 4)
+		    VAR _Passed = _ExpType = _ActType && FORMAT(expected, "") = FORMAT(actual, "")
+		    RETURN ROW("TestName", testName, "Expected", FORMAT(expected, ""), "Actual", FORMAT(actual, ""), "Passed", _Passed)
+	lineageTag: 864a4c1c-6957-4493-b0e0-7b6ef8972347
+
+/// Existing PQL.Assert table-nonempty assertion pattern.
+function 'PQL.Assert.Tbl.ShouldHaveRows' =
+		(testName : STRING, tableRef : TABLE EXPR) =>
+		    VAR _RowCount = COUNTROWS(tableRef)
+		    VAR _Passed = _RowCount > 0
+		    RETURN ROW("TestName", testName, "Expected", "Table has rows", "Actual", IF(_Passed, "HAS ROWS (" & FORMAT(_RowCount, "0") & ")", "EMPTY (0 rows)"), "Passed", _Passed)
+	lineageTag: 1fdce186-d660-4247-b96a-61f1cfd324e6
+
+/// One-cent absolute tolerance for source doubles, with matching blank state. Keeps numeric expected/actual diagnostics; never treats missing data as zero.
+function 'Tests.AssertAmount' =
+		(testName : STRING, expected : DOUBLE, actual : DOUBLE) =>
+		    VAR _Passed = IF(ISBLANK(expected) || ISBLANK(actual), ISBLANK(expected) && ISBLANK(actual), ABS(expected - actual) <= 0.01)
+		    RETURN ROW("TestName", testName, "Expected", IF(ISBLANK(expected), "BLANK", FORMAT(expected, "0.0000000000")), "Actual", IF(ISBLANK(actual), "BLANK", FORMAT(actual, "0.0000000000")), "Passed", _Passed)
+	lineageTag: c25ac476-9224-43e6-b22d-ed919201603b
+
+/// Checks dimension keys for uniqueness and absence of nulls without masking invalid source keys.
+function 'Tests.AssertKey' =
+		(testName : STRING, keys : TABLE EXPR) =>
+		    VAR _Rows = COUNTROWS(keys)
+		    VAR _Unique = COUNTROWS(DISTINCT(keys))
+		    VAR _HasBlank = COUNTROWS(INTERSECT(keys, { BLANK() })) > 0
+		    RETURN ROW("TestName", testName, "Expected", "Unique nonblank keys", "Actual", FORMAT(_Rows, "0") & " rows / " & FORMAT(_Unique, "0") & " unique / blank=" & IF(_HasBlank, "yes", "no"), "Passed", _Rows == _Unique && NOT(_HasBlank))
+	lineageTag: 5bba5852-7a7f-4085-8e88-1145f56e4253
+
+/// Compares foreign keys with delivered dimension keys; source defects must fail rather than being accepted as fixtures.
+function 'Tests.AssertNoOrphans' =
+		(testName : STRING, foreignKeys : TABLE EXPR, dimensionKeys : TABLE EXPR) =>
+		    VAR _Missing = COUNTROWS(EXCEPT(DISTINCT(foreignKeys), DISTINCT(dimensionKeys)))
+		    RETURN ROW("TestName", testName, "Expected", "0 missing distinct keys", "Actual", FORMAT(_Missing, "0"), "Passed", NOT(_Missing > 0))
+	lineageTag: 885d6e03-650f-4276-b8ec-a3d3d5b9f297
+
+/// Independent SQL totals and stable role fixtures captured 2026-11-01; integer comparisons exact, source doubles within $0.01. Required delivery-date coverage intentionally fails for the unmodified source's 2026 dates.
+function 'Tests.Run' =
+		() =>
+		UNION (
+		    PQL.Assert.Tbl.ShouldHaveRows ( "Sales has rows", 'Sales' ),
+		    PQL.Assert.Tbl.ShouldHaveRows ( "City has rows", 'City' ),
+		    PQL.Assert.Tbl.ShouldHaveRows ( "Customer has rows", 'Customer' ),
+		    PQL.Assert.Tbl.ShouldHaveRows ( "Bill To Customer has rows", 'Bill To Customer' ),
+		    PQL.Assert.Tbl.ShouldHaveRows ( "Product has rows", 'Product' ),
+		    PQL.Assert.Tbl.ShouldHaveRows ( "Employee has rows", 'Employee' ),
+		    PQL.Assert.Tbl.ShouldHaveRows ( "Calendar has rows", 'Calendar' ),
+		    PQL.Assert.Tbl.ShouldHaveRows ( "Delivery Calendar has rows", 'Delivery Calendar' ),
+		    PQL.Assert.ShouldEqual ( "SQL total SALES QUANTITY", 308365, [SALES QUANTITY] ),
+		    Tests.AssertAmount ( "SQL total SALES AMOUNT EXCLUDING TAX", 14700260.73, [SALES AMOUNT EXCLUDING TAX] ),
+		    Tests.AssertAmount ( "SQL total TAX AMOUNT", 2141698.99, [TAX AMOUNT] ),
+		    Tests.AssertAmount ( "SQL total SALES AMOUNT INCLUDING TAX", 16841959.72, [SALES AMOUNT INCLUDING TAX] ),
+		    Tests.AssertAmount ( "SQL total PROFIT", 5870550.66, [PROFIT] ),
+		    PQL.Assert.ShouldEqual ( "SQL total TOTAL DRY ITEMS", 300680, [TOTAL DRY ITEMS] ),
+		    PQL.Assert.ShouldEqual ( "SQL total TOTAL CHILLER ITEMS", 7685, [TOTAL CHILLER ITEMS] ),
+		    PQL.Assert.ShouldEqual ( "SQL total # SALES", 20000, [# SALES] ),
+		    Tests.AssertAmount ( "Amount plus tax reconciliation", [SALES AMOUNT INCLUDING TAX], [SALES AMOUNT EXCLUDING TAX] + [TAX AMOUNT] ),
+		    PQL.Assert.ShouldEqual ( "SQL purchasing key 0 rows", 57, CALCULATE ( [# SALES], TREATAS ( { 0 }, 'Customer'[Customer Key] ) ) ),
+		    PQL.Assert.ShouldEqual ( "SQL billing key 66 rows", 58, CALCULATE ( [# SALES], TREATAS ( { 66 }, 'Bill To Customer'[Customer Key] ) ) ),
+		    PQL.Assert.ShouldEqual ( "SQL both customer roles rows", 1, CALCULATE ( [# SALES], TREATAS ( { 0 }, 'Customer'[Customer Key] ), TREATAS ( { 66 }, 'Bill To Customer'[Customer Key] ) ) ),
+		    PQL.Assert.ShouldEqual ( "SQL invoice 2025-07-14 rows", 32, CALCULATE ( [# SALES], TREATAS ( { DATE ( 2025, 7, 14 ) }, 'Calendar'[Date] ) ) ),
+		    PQL.Assert.ShouldEqual ( "SQL delivery 2025-07-15 rows", 34, CALCULATE ( [# SALES], TREATAS ( { DATE ( 2025, 7, 15 ) }, 'Delivery Calendar'[Date] ) ) ),
+		    PQL.Assert.ShouldEqual ( "SQL both date roles rows", 6, CALCULATE ( [# SALES], TREATAS ( { DATE ( 2025, 7, 14 ) }, 'Calendar'[Date] ), TREATAS ( { DATE ( 2025, 7, 15 ) }, 'Delivery Calendar'[Date] ) ) ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldEqual ( "SQL four roles SALES QUANTITY", 28, [SALES QUANTITY] ),
+		            Tests.AssertAmount ( "SQL four roles SALES AMOUNT EXCLUDING TAX", 39.2, [SALES AMOUNT EXCLUDING TAX] ),
+		            Tests.AssertAmount ( "SQL four roles TAX AMOUNT", 5.49, [TAX AMOUNT] ),
+		            Tests.AssertAmount ( "SQL four roles SALES AMOUNT INCLUDING TAX", 44.69, [SALES AMOUNT INCLUDING TAX] ),
+		            Tests.AssertAmount ( "SQL four roles PROFIT", 11.25, [PROFIT] ),
+		            PQL.Assert.ShouldEqual ( "SQL four roles TOTAL DRY ITEMS", 28, [TOTAL DRY ITEMS] ),
+		            PQL.Assert.ShouldEqual ( "SQL four roles TOTAL CHILLER ITEMS", 0, [TOTAL CHILLER ITEMS] ),
+		            PQL.Assert.ShouldEqual ( "SQL four roles # SALES", 1, [# SALES] )
+		        ),
+		        TREATAS ( { 0 }, 'Customer'[Customer Key] ),
+		        TREATAS ( { 66 }, 'Bill To Customer'[Customer Key] ),
+		        TREATAS ( { DATE ( 2025, 7, 14 ) }, 'Calendar'[Date] ),
+		        TREATAS ( { DATE ( 2025, 7, 15 ) }, 'Delivery Calendar'[Date] )
+		    ),
+		    CALCULATETABLE (
+		        UNION (
+		            PQL.Assert.ShouldEqual ( "Empty SALES QUANTITY is blank", TRUE(), ISBLANK ( [SALES QUANTITY] ) ),
+		            PQL.Assert.ShouldEqual ( "Empty SALES AMOUNT EXCLUDING TAX is blank", TRUE(), ISBLANK ( [SALES AMOUNT EXCLUDING TAX] ) ),
+		            PQL.Assert.ShouldEqual ( "Empty TAX AMOUNT is blank", TRUE(), ISBLANK ( [TAX AMOUNT] ) ),
+		            PQL.Assert.ShouldEqual ( "Empty SALES AMOUNT INCLUDING TAX is blank", TRUE(), ISBLANK ( [SALES AMOUNT INCLUDING TAX] ) ),
+		            PQL.Assert.ShouldEqual ( "Empty PROFIT is blank", TRUE(), ISBLANK ( [PROFIT] ) ),
+		            PQL.Assert.ShouldEqual ( "Empty TOTAL DRY ITEMS is blank", TRUE(), ISBLANK ( [TOTAL DRY ITEMS] ) ),
+		            PQL.Assert.ShouldEqual ( "Empty TOTAL CHILLER ITEMS is blank", TRUE(), ISBLANK ( [TOTAL CHILLER ITEMS] ) ),
+		            PQL.Assert.ShouldEqual ( "Empty # SALES is blank", TRUE(), ISBLANK ( [# SALES] ) )
+		        ),
+		        TREATAS ( {}, 'Customer'[Customer Key] )
+		    ),
+		    Tests.AssertKey ( "Sales grain key", SELECTCOLUMNS ( 'Sales', "Key", 'Sales'[Sale Key] ) ),
+		    Tests.AssertKey ( "City key", SELECTCOLUMNS ( 'City', "Key", 'City'[City Key] ) ),
+		    Tests.AssertKey ( "Customer key", SELECTCOLUMNS ( 'Customer', "Key", 'Customer'[Customer Key] ) ),
+		    Tests.AssertKey ( "Bill To Customer key", SELECTCOLUMNS ( 'Bill To Customer', "Key", 'Bill To Customer'[Customer Key] ) ),
+		    Tests.AssertKey ( "Product key", SELECTCOLUMNS ( 'Product', "Key", 'Product'[Product Key] ) ),
+		    Tests.AssertKey ( "Employee key", SELECTCOLUMNS ( 'Employee', "Key", 'Employee'[Employee Key] ) ),
+		    Tests.AssertKey ( "Calendar date key", SELECTCOLUMNS ( 'Calendar', "Key", 'Calendar'[Date] ) ),
+		    Tests.AssertKey ( "Delivery Calendar date key", SELECTCOLUMNS ( 'Delivery Calendar', "Key", 'Delivery Calendar'[Date] ) ),
+		    Tests.AssertNoOrphans ( "City foreign keys", SELECTCOLUMNS ( 'Sales', "Key", 'Sales'[City Key] ), SELECTCOLUMNS ( 'City', "Key", 'City'[City Key] ) ),
+		    Tests.AssertNoOrphans ( "Customer foreign keys", SELECTCOLUMNS ( 'Sales', "Key", 'Sales'[Customer Key] ), SELECTCOLUMNS ( 'Customer', "Key", 'Customer'[Customer Key] ) ),
+		    Tests.AssertNoOrphans ( "Bill To Customer foreign keys", SELECTCOLUMNS ( 'Sales', "Key", 'Sales'[Bill To Customer Key] ), SELECTCOLUMNS ( 'Bill To Customer', "Key", 'Bill To Customer'[Customer Key] ) ),
+		    Tests.AssertNoOrphans ( "Product foreign keys", SELECTCOLUMNS ( 'Sales', "Key", 'Sales'[Product Key] ), SELECTCOLUMNS ( 'Product', "Key", 'Product'[Product Key] ) ),
+		    Tests.AssertNoOrphans ( "Employee foreign keys", SELECTCOLUMNS ( 'Sales', "Key", 'Sales'[Employee Key] ), SELECTCOLUMNS ( 'Employee', "Key", 'Employee'[Employee Key] ) ),
+		    Tests.AssertNoOrphans ( "Invoice date foreign keys", SELECTCOLUMNS ( 'Sales', "Key", 'Sales'[Invoice Date] ), SELECTCOLUMNS ( 'Calendar', "Key", 'Calendar'[Date] ) ),
+		    Tests.AssertNoOrphans ( "Delivery date foreign keys", SELECTCOLUMNS ( 'Sales', "Key", 'Sales'[Delivery Date] ), SELECTCOLUMNS ( 'Delivery Calendar', "Key", 'Delivery Calendar'[Date] ) ),
+		    PQL.Assert.ShouldEqual ( "SQL Calendar rows", 731, COUNTROWS ( 'Calendar' ) ),
+		    PQL.Assert.ShouldEqual ( "SQL Delivery Calendar rows", 731, COUNTROWS ( 'Delivery Calendar' ) ),
+		    PQL.Assert.ShouldEqual ( "Calendar starts full year", DATE ( 2024, 1, 1 ), MIN ( 'Calendar'[Date] ) ),
+		    PQL.Assert.ShouldEqual ( "Calendar ends full year", DATE ( 2025, 12, 31 ), MAX ( 'Calendar'[Date] ) ),
+		    PQL.Assert.ShouldEqual ( "Calendar contiguous", 731, DATEDIFF ( MIN ( 'Calendar'[Date] ), MAX ( 'Calendar'[Date] ), DAY ) + 1 ),
+		    PQL.Assert.ShouldEqual ( "Delivery Calendar contiguous", 731, DATEDIFF ( MIN ( 'Delivery Calendar'[Date] ), MAX ( 'Delivery Calendar'[Date] ), DAY ) + 1 ),
+		    PQL.Assert.ShouldEqual ( "Delivery Calendar covers source maximum", TRUE(), MAX ( 'Sales'[Delivery Date] ) <= MAX ( 'Delivery Calendar'[Date] ) )
+		)
+	lineageTag: 6d8c830b-56a9-458b-8021-5c262623fd23
+

@@ -1,0 +1,36 @@
+/// Billing-customer role, one row per delivered CustomerKey, related through Sales.BillToCustomerKey. Labels identify the referenced customer row, not its BillToCustomer attribute.
+table 'Bill To Customer'
+	lineageTag: 479b7888-d180-4566-ac1b-26d9926fb53b
+
+	column 'Customer Key'
+		dataType: int64
+		isHidden
+		lineageTag: a5c10ccc-5044-47d2-b644-be5194c4b0f9
+		summarizeBy: none
+		sourceColumn: CustomerKey
+
+	column 'Bill To Customer'
+		dataType: string
+		lineageTag: b776e310-301f-4869-8aec-65e6d904e82b
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: Customer
+
+	column Category
+		dataType: string
+		lineageTag: 981a203f-6ce7-49ee-8291-5b1d734eb9cc
+		summarizeBy: none
+		sourceColumn: Category
+
+	column 'Buying Group'
+		dataType: string
+		lineageTag: f7e6dcd4-0638-4b39-818b-f645cb81df22
+		summarizeBy: none
+		sourceColumn: BuyingGroup
+
+	partition 'Bill To Customer' = entity
+		mode: directLake
+		source
+			entityName: dimension_customer
+			expressionSource: OneLake
+

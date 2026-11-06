@@ -1,0 +1,64 @@
+/// Delivered geography at CityKey grain; filters the city recorded on each sale.
+table City
+	lineageTag: 61c525a2-c54a-4db4-b782-9da9196f7bff
+
+	column 'City Key'
+		dataType: int64
+		isHidden
+		lineageTag: 720e747e-864c-4e1d-a795-72a826064c21
+		summarizeBy: none
+		sourceColumn: CityKey
+
+	column City
+		dataType: string
+		lineageTag: bf9a8a8e-c7a7-40d6-aa6d-a09925714771
+		dataCategory: City
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: City
+
+	column 'State Province'
+		dataType: string
+		lineageTag: ac4898d6-a4b9-4ae0-8493-75a7c42326fb
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: StateProvince
+
+	column Country
+		dataType: string
+		lineageTag: 136f7446-3f08-4aa2-b6b3-db20ad42dfe5
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Country
+
+	column Continent
+		dataType: string
+		lineageTag: 5a8bba20-682c-4142-96f4-3cae1f74f3a9
+		dataCategory: Continent
+		summarizeBy: none
+		sourceColumn: Continent
+
+	column 'Sales Territory'
+		dataType: string
+		lineageTag: 88f2cf01-f42c-48cb-89b3-d402a00c9f53
+		summarizeBy: none
+		sourceColumn: SalesTerritory
+
+	column Region
+		dataType: string
+		lineageTag: 69213c65-293a-4545-b500-570920ca2517
+		summarizeBy: none
+		sourceColumn: Region
+
+	column Subregion
+		dataType: string
+		lineageTag: 4387e16c-ad51-49c8-9cd8-5302cd793c00
+		summarizeBy: none
+		sourceColumn: Subregion
+
+	partition City = entity
+		mode: directLake
+		source
+			entityName: dimension_city
+			expressionSource: OneLake
+
