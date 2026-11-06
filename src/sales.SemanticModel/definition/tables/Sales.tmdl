@@ -130,6 +130,24 @@ table Sales
 
 		annotation PBI_FormatHint = {"isCustom":true}
 
+	/// Average number of distinct products per qualifying basket in the current filter context. A basket is an order number, store, order date and customer combination. Category selections count only selected-category products in baskets containing them; store, date and other filters remain applied. Repeated product lines count once, irrespective of quantity. Totals recalculate across qualifying baskets, not averages of group averages. Returns blank with no sales.
+	measure 'AVERAGE BASKET SIZE' =
+			VAR v_baskets =
+			    SUMMARIZE (
+			        'Sales',
+			        'Sales'[Order Number],
+			        'Sales'[StoreKey],
+			        'Sales'[Order Date],
+			        'Sales'[CustomerKey]
+			    )
+			RETURN
+			    AVERAGEX (
+			        v_baskets,
+			        CALCULATE ( DISTINCTCOUNT ( 'Sales'[ProductKey] ) )
+			    )
+		formatString: #,##0.00
+		lineageTag: daa619a1-ef48-4a14-9e45-e7f25fddc1de
+
 	/// Sales order identifier. An order can contain multiple order lines.
 	column 'Order Number'
 		dataType: int64
@@ -344,4 +362,3 @@ table Sales
 	annotation PBI_ResultType = Table
 
 	annotation PBI_NavigationStepName = Navigation
-

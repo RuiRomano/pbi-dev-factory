@@ -10,11 +10,12 @@ The source queries can randomize sales quantities and net prices at refresh. Tre
 
 | Artifact | Type | Source | Connected artifact(s) | Purpose | Documentation |
 |---|---|---|---|---|---|
-| sales | Semantic model | `src/sales.SemanticModel` | sales-overview and customer-comparison reports | Sales amounts, cost, margin, quantities, new and returning customers, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
+| sales | Semantic model | `src/sales.SemanticModel` | sales-overview, customer-comparison and market-basket-analysis reports | Sales amounts, cost, margin, quantities, new and returning customers, average distinct products per basket, and entity counts by date, product, customer and store. | [Open](sales.semantic-model.md) |
 | hr | Semantic model | `src/hr.SemanticModel` | hr report | Synthetic employee snapshots and movements for headcount, FTE, salary cost and attrition demonstrations. | [Open](hr.semantic-model.md) |
 | hr | Report | `src/hr.Report` | hr semantic model, bound by relative path | Three-page fictional HR demo: workforce trends, exits and workforce mix. Local only; current Desktop screenshots documented. | [Open](hr.report.md) |
 | sales-overview | Report | `src/sales-overview.Report` | sales semantic model, bound by relative path | Sales overview, trends, product and store comparisons, and annual category KPIs. | [Open](sales-overview.report.md) |
 | customer-comparison | Report | `src/customer-comparison.Report` | sales semantic model, bound by relative path | Monthly comparison and detail for new, existing and total customers with sales. | [Source](../../src/customer-comparison.Report/definition/pages/2b3f5f9676144f1e9f79/page.json) |
+| market-basket-analysis | Report | `src/market-basket-analysis.Report` | sales semantic model, bound by relative path | Average distinct products per qualifying basket, ranked by store and category, with category-only scope and a store/category matrix. | [Open](market-basket-analysis.report.md) |
 
 ## Project Entry Point and Shared Resources
 

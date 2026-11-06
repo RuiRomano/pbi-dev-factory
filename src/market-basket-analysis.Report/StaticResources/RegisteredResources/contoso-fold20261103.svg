@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="288" height="80" viewBox="0 0 288 80" role="img" aria-label="contoso">
+  <path fill="#536CE5" d="M32 16H68L58 32H42L34 40L42 48H58L68 64H32L16 40Z"/>
+  <path fill="#C8BCF4" d="M32 16H68L58 32H42Z"/>
+  <text x="84" y="55" font-family="Segoe UI, Arial, sans-serif" font-size="46" font-weight="600" fill="#20283F">contoso</text>
+</svg>

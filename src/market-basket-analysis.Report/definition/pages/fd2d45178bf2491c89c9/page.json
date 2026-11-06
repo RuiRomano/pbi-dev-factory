@@ -1,0 +1,45 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "fd2d45178bf2491c89c9",
+  "displayName": "Market basket analysis",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "objects": {
+    "background": [{"properties": {
+      "color": {"solid": {"color": {"expr": {"Literal": {"Value": "'#F6F7FB'"}}}}},
+      "transparency": {"expr": {"Literal": {"Value": "0D"}}}
+    }}]
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "Filterabb036000000000000000001",
+        "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Calendar"}}, "Property": "Date"}},
+        "displayName": "Date",
+        "type": "Advanced",
+        "howCreated": "User"
+      },
+      {
+        "name": "Filterabb036000000000000000002",
+        "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Store"}}, "Property": "Store"}},
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "Filterabb036000000000000000003",
+        "field": {"Column": {"Expression": {"SourceRef": {"Entity": "Product"}}, "Property": "Category"}},
+        "type": "Categorical",
+        "howCreated": "User"
+      }
+    ]
+  },
+  "visualInteractions": [
+    {"source": "abb03600000000000006", "target": "abb03600000000000004", "type": "DataFilter"},
+    {"source": "abb03600000000000006", "target": "abb03600000000000007", "type": "DataFilter"},
+    {"source": "abb03600000000000006", "target": "abb03600000000000008", "type": "DataFilter"},
+    {"source": "abb03600000000000007", "target": "abb03600000000000004", "type": "DataFilter"},
+    {"source": "abb03600000000000007", "target": "abb03600000000000006", "type": "DataFilter"},
+    {"source": "abb03600000000000007", "target": "abb03600000000000008", "type": "DataFilter"}
+  ]
+}
